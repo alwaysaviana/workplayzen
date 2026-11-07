@@ -7246,6 +7246,7 @@ act=function(a,d){
 };
 
 /* v341 backup: export / import your data */
+var WPZ_VER="v342";
 var _sv341=settingsView;
 settingsView=function(){
   var o=_sv341();
@@ -7257,9 +7258,10 @@ settingsView=function(){
    +'<textarea id="bk_txt" rows="3" placeholder="Paste backup here" aria-label="Paste backup" style="width:100%;margin-top:8px;box-sizing:border-box"></textarea>'
    +'<div class="row" style="margin-top:8px"><button type="button" class="btn small" data-act="bkrestore">Restore from pasted backup</button></div>'+m+'</div>';
   var i=o.indexOf('<div class="card lpink mc"><h2>Your info</h2>');
-  return i<0?o+c:o.slice(0,i)+c+o.slice(i);
+  var v='<p class="hint" style="text-align:center;font-size:11px;opacity:.5;margin:20px 0 6px">Work. Play. Zen. '+WPZ_VER+'</p>';
+  return (i<0?o+c:o.slice(0,i)+c+o.slice(i))+v;
 };
-function bkJson(){return JSON.stringify({app:"work-play-zen",v:1,saved:new Date().toISOString(),data:S})}
+function bkJson(){return JSON.stringify({app:"work-play-zen",v:1,ver:WPZ_VER,saved:new Date().toISOString(),data:S})}
 function bkApply(txt){
   try{
     var j=JSON.parse(String(txt||"").trim()),d=(j&&j.app==="work-play-zen"&&j.data)?j.data:null;
