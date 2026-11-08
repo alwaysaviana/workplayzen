@@ -1348,6 +1348,11 @@ html body .mc .mbh b{font-size:19px!important}
 html body .mc .mbh b.mbig,html body .mc .mbig{font-size:22px!important}
 html body .mc .mleft{font-size:15px!important;color:var(--text);opacity:.92;font-weight:600}
 html body .mc .mtrack{height:8px;margin:1px 0}
+html body .card.mc,html body .card.lpink.mc,html body #qadd{background:#2f2736!important}
+html body .mc .mtrack{background:#463b50!important}
+html body .mc input[type=text],html body .mc .chip{background:#3a3043}
+html body .mc .chip[aria-pressed="true"]{background:#ff9a3c}
+html body #qadd.qtop,html body #qadd.qcmp,html body #qadd.qcmp.mc{background:#2f2736!important}
 </style>
 
 <div id="app"></div>
@@ -7288,7 +7293,7 @@ act=function(a,d){
 };
 
 /* v341 backup: export / import your data */
-var WPZ_VER="v348";
+var WPZ_VER="v349";
 var _sv341=settingsView;
 settingsView=function(){
   var o=_sv341();
@@ -7343,11 +7348,11 @@ function ooWeek(){
 }
 mBar=function(label,val,tgt,col,big){
   var fmtv=function(x){return k(x)},o=oo(),key=String(label).toLowerCase(),isP=key==="protein";
-  var u=big?" kcal":"g",cel=!!(o.celeb&&S.celeb&&S.celeb[mDate()]);
+  var bc=key==="calories"?"#ff9a3c":isP?"#ff86b8":key==="carbs"?"#c3dd7a":"#ffb066";var u=big?" kcal":"g",cel=!!(o.celeb&&S.celeb&&S.celeb[mDate()]);
   var over=tgt&&val>tgt,real=over&&!(o.tol&&val<=tgt*1.1)&&!cel&&!(isP&&o.soft);
   var pc=tgt?Math.min(100,val/tgt*100):0,fill;
-  if(over&&real&&o.look){var b=tgt/val*100;fill='<div style="display:flex;height:100%"><i style="width:'+b+'%;background:#ffc2d4;border-radius:999px 0 0 999px"></i><i style="width:'+(100-b)+'%;background:#ffd6a8;border-radius:0 999px 999px 0"></i></div>'}
-  else fill='<i style="width:'+pc+'%;background:#ffc2d4"></i>';
+  if(over&&real&&o.look){var b=tgt/val*100;fill='<div style="display:flex;height:100%"><i style="width:'+b+'%;background:'+bc+';border-radius:999px 0 0 999px"></i><i style="width:'+(100-b)+'%;background:#ffd6a8;border-radius:0 999px 999px 0"></i></div>'}
+  else fill='<i style="width:'+pc+'%;background:'+bc+'"></i>';
   var left="";
   if(tgt){
     if(val<=tgt)left=fmtv(tgt-val)+u+" left";
