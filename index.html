@@ -1453,6 +1453,9 @@ html body .card.ytacc .ytc>b{color:#cfa8ff}
 html body .card.ytwg{border:1.5px solid #ffc2d4!important;display:grid;grid-template-columns:1fr 1fr;gap:14px}
 html body .card.ytwg .ytc{min-width:0;overflow-wrap:anywhere}
 .ytacc,.ytwg{margin-bottom:12px}
+.wgz{display:flex;flex-direction:column;gap:8px;padding:12px;border:1.5px solid #ffc2d4;border-radius:16px}
+.wgstep{font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--muted)}
+.wgq{font-size:20px;font-weight:800;line-height:1.2}
 </style>
 
 <div id="app"></div>
@@ -7393,7 +7396,7 @@ act=function(a,d){
 };
 
 /* v341 backup: export / import your data */
-var WPZ_VER="v357";
+var WPZ_VER="v358";
 var _sv341=settingsView;
 settingsView=function(){
   var o=_sv341();
@@ -7873,6 +7876,36 @@ settingsView=function(){
   var c='<div class="card"><h2>BMI meter</h2><p class="hint">How your BMI is shown in Gym progress.</p><div class="row" style="flex-wrap:wrap;gap:8px">'+BMET.map(function(x){return '<button type="button" class="btn small'+(s===x[0]?'':' ghost')+'" data-act="bmet_'+x[0]+'" aria-pressed="'+(s===x[0])+'">'+x[1]+'</button>'}).join("")+'</div></div>';
   var i=o.indexOf('<div class="card"><h2>Back up your data</h2>');
   return i<0?o+c:o.slice(0,i)+c+o.slice(i);
+};
+/* v358 financial goals: one question at a time */
+var _wc358=wealthCard;
+wealthCard=function(){
+  var o=_wc358(),s=session.wg||0,i=o.indexOf('<form class="res" data-submit="wgadd">'),e=i<0?-1:o.indexOf('</form>',i);
+  if(i<0||e<0)return o;
+  var w;
+  if(!s)w='<div class="row"><button type="button" class="btn small" data-act="wgstart">+ Add a goal</button></div>';
+  else{
+    var q=[null,["What is the goal?","wg_name","text",'e.g. Emergency fund',"Next: target, then saved so far"],["How much is the target?","wg_target","decimal","5000","Next: saved so far"],["How much have you saved so far?","wg_cur","decimal","0 is fine","Last step"]][s];
+    w='<form class="wgz" data-submit="wgnext"><span class="wgstep">STEP '+s+' OF 3</span><div class="wgq">'+q[0]+'</div><input type="text" inputmode="'+q[2]+'" id="'+q[1]+'" data-draft="'+q[1]+'" maxlength="60" placeholder="'+q[3]+'" aria-label="'+q[0]+'" value="'+esc(drafts[q[1]]||"")+'"><span class="wgstep">'+q[4].toUpperCase()+'</span><div class="row" style="justify-content:space-between"><button type="button" class="btn small ghost" data-act="wgback">'+(s===1?"Cancel":"Back")+'</button><button class="btn small" type="submit">'+(s===3?"Add goal":"Next")+'</button></div></form>';
+  }
+  return o.slice(0,i)+w+o.slice(e+7);
+};
+var _a358=act;
+act=function(a,d){
+  if(a==="wgstart"){session.wg=1;render();setTimeout(function(){var x=document.getElementById("wg_name");if(x)x.focus()},50);return}
+  if(a==="wgback"){session.wg=Math.max(0,(session.wg||1)-1);render();return}
+  return _a358(a,d);
+};
+var _sub358=submit;
+submit=function(a){
+  if(a==="wgnext"){
+    var s=session.wg||1,nm=(drafts.wg_name||"").trim(),tg=num(String(drafts.wg_target||"").replace(/[$,]/g,""));
+    if(s===1&&!nm){toast("Add a goal name");return true}
+    if(s===2&&!(tg>0)){toast("Add a target amount");return true}
+    if(s<3){session.wg=s+1;render();setTimeout(function(){var x=document.getElementById(s===1?"wg_target":"wg_cur");if(x)x.focus()},50);return true}
+    session.wg=0;return _sub358("wgadd");
+  }
+  return _sub358(a);
 };
 
 
