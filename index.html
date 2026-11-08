@@ -7246,7 +7246,7 @@ act=function(a,d){
 };
 
 /* v341 backup: export / import your data */
-var WPZ_VER="v342";
+var WPZ_VER="v343";
 var _sv341=settingsView;
 settingsView=function(){
   var o=_sv341();
@@ -7287,6 +7287,56 @@ act=function(a,d){
   }
   if(a==="bkrestore"){var ta=document.getElementById("bk_txt");bkApply(ta?ta.value:"");return}
   return _aw341(a,d);
+};
+
+/* v343 going over target: gentle options, each can be switched on or off in Settings */
+var OO_DEF={note:true,soft:true,tol:true,ideas:true,week:true,celeb:true,look:true};
+var OO_LAB=[["note","Gentle note"],["soft","Softer wording"],["tol","Within 10% counts as on track"],["ideas","Ideas for the rest of today"],["week","7-day average"],["celeb","Celebration day"],["look","Calmer look for extra"]];
+function oo(){var o=S.oo||{},r={};Object.keys(OO_DEF).forEach(function(x){r[x]=o[x]===undefined?OO_DEF[x]:!!o[x]});return r}
+var OO_NOTES=["Over today, and that is okay. One day does not undo your progress.","Some days need more fuel. Tomorrow is a fresh start.","Your body asked for more today. Listen, then keep going.","Nothing to fix here. One day is just one day."];
+function ooWeek(){
+  var t=0,n=0,d=new Date();
+  for(var i=0;i<7;i++){var es=dayEntries(dstr(d));if(es.length){t+=mTot(es).cal;n++}d.setDate(d.getDate()-1)}
+  return n>=2?{avg:Math.round(t/n),n:n}:null;
+}
+mBar=function(label,val,tgt,col,big){
+  var fmtv=function(x){return k(x)},o=oo(),key=String(label).toLowerCase(),isP=key==="protein";
+  var u=big?" kcal":"g",cel=!!(o.celeb&&S.celeb&&S.celeb[mDate()]);
+  var over=tgt&&val>tgt,real=over&&!(o.tol&&val<=tgt*1.1)&&!cel&&!(isP&&o.soft);
+  var pc=tgt?Math.min(100,val/tgt*100):0,fill;
+  if(over&&real&&o.look){var b=tgt/val*100;fill='<div style="display:flex;height:100%"><i style="width:'+b+'%;background:#ffc2d4;border-radius:999px 0 0 999px"></i><i style="width:'+(100-b)+'%;background:#d9b8ff;border-radius:0 999px 999px 0"></i></div>'}
+  else fill='<i style="width:'+pc+'%;background:#ffc2d4"></i>';
+  var left="";
+  if(tgt){
+    if(val<=tgt)left=fmtv(tgt-val)+u+" left";
+    else if(cel)left="Celebration day";
+    else if(isP&&o.soft)left="Strong protein day";
+    else if(o.tol&&val<=tgt*1.1)left="Right on track";
+    else left=o.soft?(big?fmtv(val-tgt)+" kcal beyond your target":fmtv(val-tgt)+"g extra"):fmtv(val-tgt)+u+" over";
+  }
+  var h='<div class="mrow"><div class="mbh"><span>'+label+'</span><b'+(big?' class="mbig"':"")+'>'+fmtv(val)+(tgt?' / '+fmtv(tgt):"")+(big?"":"g")+'</b></div><div class="mtrack" role="img" aria-label="'+label+' '+fmtv(val)+(tgt?" of "+fmtv(tgt):"")+'">'+fill+'</div>'+(tgt?'<span class="mleft">'+left+'</span>':"");
+  if(tgt&&real){
+    if(big&&o.note)h+='<p class="hint" style="margin:6px 0 0">'+OO_NOTES[(new Date()).getDate()%OO_NOTES.length]+'</p>';
+    if(o.ideas){var id=key==="calories"?"A short walk, a lighter next meal, or simply reset tomorrow.":key==="fat"?"Lighter on fat for now: veggies, lean protein, fruit.":key==="carbs"?"For your next meal: protein and veggies.":"";if(id)h+='<p class="hint" style="margin:4px 0 0;font-size:12px">Idea: '+id+'</p>'}
+  }
+  if(big&&tgt){
+    if(o.week){var w=ooWeek();if(w)h+='<p class="hint" style="margin:6px 0 0;font-size:12px">7-day average: '+fmtv(w.avg)+' / '+fmtv(tgt)+' kcal</p>'}
+    if(o.celeb&&(over||cel))h+='<div class="row" style="margin-top:6px"><button type="button" class="btn ghost small" data-act="celeb" aria-pressed="'+cel+'">'+(cel?"Celebration day: on":"Mark as celebration day")+'</button></div>';
+  }
+  return h+'</div>';
+};
+var _sv343=settingsView;
+settingsView=function(){
+  var o=_sv343(),s=oo();
+  var c='<div class="card"><h2>When you go over target</h2><p class="hint">Try these on or off to see what feels right.</p><div class="row" style="flex-wrap:wrap;gap:8px">'+OO_LAB.map(function(x){return '<button type="button" class="btn small'+(s[x[0]]?'':' ghost')+'" data-act="oo_'+x[0]+'" aria-pressed="'+s[x[0]]+'">'+x[1]+'</button>'}).join("")+'</div></div>';
+  var i=o.indexOf('<div class="card"><h2>Back up your data</h2>');
+  return i<0?o+c:o.slice(0,i)+c+o.slice(i);
+};
+var _aw343=act;
+act=function(a,d){
+  if(a.indexOf("oo_")===0&&OO_DEF[a.slice(3)]!==undefined){var kx=a.slice(3),cur=oo();S.oo=cur;S.oo[kx]=!cur[kx];save();render();return}
+  if(a==="celeb"){S.celeb=S.celeb||{};var dt=mDate();if(S.celeb[dt])delete S.celeb[dt];else S.celeb[dt]=true;save();render();return}
+  return _aw343(a,d);
 };
 
 
