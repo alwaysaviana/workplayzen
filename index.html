@@ -1422,6 +1422,37 @@ html body .cardcyc input[type=text],html body .cardcyc input[type=number],html b
 .cyck.on{background:#c0475f;border-color:#c0475f}
 .cyck.pr{border:2.5px dashed #c0475f}
 html body .cardcyc .cyck{color:#fff}
+/* v357 */
+html body .choice[data-act="pick"]{justify-content:center!important;text-align:center!important}
+html body .choice[data-act="pick"]>span,html body .choice[data-act="pick"] .nm{width:100%;text-align:center!important}
+html body .gymc .gstat b small.gof{font-size:inherit!important}
+.bmsm{margin:0;font-size:17px;color:var(--text)}
+.bmmsg{margin:4px 0 6px;font-size:17px;font-weight:700;line-height:1.3}
+.bmw{margin:6px 0}
+.bmz{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.bmz span{border:2px solid;border-radius:999px;text-align:center;padding:6px 4px;font-size:16px;font-weight:700}
+.bmbar{position:relative;height:16px;border-radius:99px;margin:26px 4px 0;overflow:visible}
+.bmbar i{position:absolute;top:0;bottom:0}
+.bmbar i:first-child{border-radius:99px 0 0 99px}.bmbar i:nth-child(3){border-radius:0 99px 99px 0}
+.bmk{position:absolute;top:-5px;width:5px;height:26px;border-radius:3px;background:#fff;transform:translateX(-50%)}
+.bmk span{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);font-size:15px;font-weight:800;white-space:nowrap;color:var(--text)}
+.bmk.gl{background:#ffc2d4;top:-2px;height:20px}.bmk.gl span{bottom:auto;top:24px;color:#ffc2d4;font-size:14px}
+.bmleg{display:flex;justify-content:space-between;font-size:15px;font-weight:700}
+.bmchip{display:inline-block;color:#1b1020;font-weight:800;font-size:17px;border-radius:999px;padding:6px 16px}
+.bmrec{margin-top:8px;padding:12px;border:1.5px solid #ffc2d4;border-radius:16px}
+.bmrec h4{margin:10px 0 4px;font-size:17px}.bmrec h4:first-child{margin-top:0}
+.bmrec p{margin:4px 0;font-size:15.5px}
+.rl{margin:4px 0 6px;padding-left:20px;font-size:15.5px;line-height:1.45}.rl li{margin:3px 0}
+html body .card.cardsteps{border:1.5px solid #ffe047!important;box-shadow:0 0 10px rgba(255,224,71,.3)}
+html body .cardsteps h2,html body .cardsteps summary{color:#ffe047}
+html body .cardsteps .btn{background:#ffe047!important;color:#241d00!important;border-color:#ffe047!important}
+html body .cardsteps .btn.ghost{background:transparent!important;color:#ffe047!important;border:1.5px solid #ffe047!important}
+html body .cardsteps input{border-color:#ffe047!important}
+html body .card.ytacc{border:1.5px solid #b57bff!important;box-shadow:0 0 12px rgba(181,123,255,.45)}
+html body .card.ytacc .ytc>b{color:#cfa8ff}
+html body .card.ytwg{border:1.5px solid #ffc2d4!important;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+html body .card.ytwg .ytc{min-width:0;overflow-wrap:anywhere}
+.ytacc,.ytwg{margin-bottom:12px}
 </style>
 
 <div id="app"></div>
@@ -7362,7 +7393,7 @@ act=function(a,d){
 };
 
 /* v341 backup: export / import your data */
-var WPZ_VER="v356";
+var WPZ_VER="v357";
 var _sv341=settingsView;
 settingsView=function(){
   var o=_sv341();
@@ -7772,6 +7803,76 @@ var _aw356=act;
 act=function(a,d){
   if(a==="cycscroll"){var el=document.getElementById("cycal");if(el&&el.scrollIntoView)el.scrollIntoView({behavior:"smooth",block:"start"});return}
   return _aw356(a,d);
+};
+
+/* v357 gym progress tidy, softer BMI wording, BMI meter styles, recommendations, My Year top cards */
+var BMET=[["B","Three zones"],["A","Bar"],["C","Dial"],["D","Words only"]];
+function bmetStyle(){var s=S.bmiMeter;return s==="A"||s==="C"||s==="D"?s:"B"}
+var BM_COL={u:"#b9a6ff",o:"#8adfe2",h:"#ffb066"};
+function bmiCat(b){return b<18.5?"u":b<25?"o":"h"}
+function bmiMsg(b){var c=bmiCat(b);return c==="u"?"You are under recommended weight based on your height.":c==="o"?"You’re right on track. Nice work.":"You are over recommended weight based on your height."}
+function bmiMeter(b){
+  var st=bmetStyle(),c=bmiCat(b),pc=function(x){return Math.max(0,Math.min(100,(x-15)/25*100))};
+  var nm={u:"Under",o:"Healthy",h:"Over"};
+  if(st==="D")return '<div class="bmw"><span class="bmchip" style="background:'+BM_COL[c]+'">'+(c==="o"?"In the healthy range":c==="u"?"Below the healthy range":"Above the healthy range")+'</span><p class="hint" style="margin:6px 0 0">Healthy range is a BMI of 18.5 to 24.9. Yours is <b>'+b+'</b>.</p></div>';
+  if(st==="C"){
+    var a=Math.PI*(1-pc(b)/100),cx=100,cy=100,r=80,x=cx+r*Math.cos(a),y=cy-r*Math.sin(a);
+    var arc=function(f,t,col){var a1=Math.PI*(1-f/100),a2=Math.PI*(1-t/100);return '<path d="M'+(cx+r*Math.cos(a1))+' '+(cy-r*Math.sin(a1))+' A'+r+' '+r+' 0 0 1 '+(cx+r*Math.cos(a2))+' '+(cy-r*Math.sin(a2))+'" stroke="'+col+'" stroke-width="16" fill="none" stroke-linecap="butt"/>'};
+    return '<div class="bmw" style="text-align:center"><svg viewBox="0 0 200 112" width="220" role="img" aria-label="BMI dial. Your BMI '+b+', '+nm[c]+'">'+arc(0,pc(18.5),BM_COL.u)+arc(pc(18.5),pc(25),BM_COL.o)+arc(pc(25),100,BM_COL.h)+'<circle cx="'+x+'" cy="'+y+'" r="9" fill="#fff" stroke="#14121a" stroke-width="3"/><text x="100" y="96" text-anchor="middle" font-size="26" font-weight="800" fill="currentColor">'+b+'</text></svg><div class="bmleg"><span style="color:'+BM_COL.u+'">Under</span><span style="color:'+BM_COL.o+'">Healthy</span><span style="color:'+BM_COL.h+'">Over</span></div></div>';
+  }
+  if(st==="A"){
+    var g=ciGoal();
+    return '<div class="bmw"><div class="bmbar" role="img" aria-label="BMI '+b+', goal '+g+'"><i style="left:0;width:'+pc(18.5)+'%;background:'+BM_COL.u+'"></i><i style="left:'+pc(18.5)+'%;width:'+(pc(25)-pc(18.5))+'%;background:'+BM_COL.o+'"></i><i style="left:'+pc(25)+'%;width:'+(100-pc(25))+'%;background:'+BM_COL.h+'"></i><b class="bmk" style="left:'+pc(b)+'%"><span>You '+b+'</span></b><b class="bmk gl" style="left:'+pc(g)+'%"><span>Goal</span></b></div><div class="bmleg" style="margin-top:22px"><span style="color:'+BM_COL.u+'">Under</span><span style="color:'+BM_COL.o+'">Healthy</span><span style="color:'+BM_COL.h+'">Over</span></div></div>';
+  }
+  return '<div class="bmw"><div class="bmz">'+["u","o","h"].map(function(k){return '<span class="'+(k===c?'on':'')+'" style="'+(k===c?'background:'+BM_COL[k]+';color:#1b1020;border-color:'+BM_COL[k]:'border-color:'+BM_COL[k]+';color:'+BM_COL[k])+'">'+nm[k]+'</span>'}).join("")+'</div><p class="hint" style="margin:6px 0 0">Your BMI is <b>'+b+'</b>. Healthy range is 18.5 to 24.9.</p></div>';
+}
+function bmiRecs(c){
+  var L=function(a){return '<ul class="rl">'+a.map(function(x){return '<li>'+x+'</li>'}).join("")+'</ul>'};
+  var met=['<h4>Your metabolism, simply</h4><p>Your metabolism is just how much energy your body uses each day to keep you alive and moving. A few easy things help it work well:</p>',L(["<b>Build a little muscle.</b> Muscle uses more energy even while you rest. Strength workouts two or three times a week are enough.","<b>Eat protein.</b> Your body burns extra energy just digesting it, and it helps you keep muscle.","<b>Walk after meals.</b> Even ten minutes helps your body use the food you ate.","<b>Sleep 7 to 9 hours.</b> Tired bodies hold on to energy and crave more food.","<b>Drink water through the day.</b> Being low on water can make you feel sluggish."])].join("");
+  if(c==="h")return '<h4>Gentle ideas for you</h4>'+L(["Aim for protein at every meal, like eggs, yogurt, chicken, fish, beans or tofu.","Swap sugary drinks for water, sparkling water or unsweetened tea.","Skip sweets and sugar close to bedtime, since your body is winding down.","Try to finish eating a couple of hours before sleep.","Eat regular meals. Skipping food to “catch up” can make your body hold on to energy and leave you hungrier later."])+met+'<h4>Small steps for this week</h4>'+L(["Add a protein to breakfast tomorrow.","Replace one sugary drink a day with water.","Take a 10 minute walk after your biggest meal.","Do two strength workouts."])+'<p class="hint">Small, steady changes work better than strict ones. If you are unsure, a doctor or dietitian can help you plan.</p>';
+  return '<h4>Gentle ideas for you</h4>'+L(["Make time to eat every 3 to 4 hours instead of waiting until you are very hungry.","Prep meals and snacks ahead so food is ready when you are busy.","If you work a lot, pack food and keep a snack in your bag.","Eat after you work out or dance, ideally within an hour or two, with protein and carbs.","Add easy extra energy: nuts, nut butter, avocado, olive oil, smoothies, and whole grains."])+met+'<h4>Small steps for this week</h4>'+L(["Set two phone reminders to eat.","Prep three grab-and-go snacks on Sunday.","Add a snack after your next workout.","Do two strength workouts to build muscle."])+'<p class="hint">Your body needs enough fuel to feel strong. If you are worried about your weight or appetite, a doctor or dietitian can support you.</p>';
+}
+gymBmiBlock=function(){
+  var cw=curW(),h=ciBaseH();
+  if(!cw||!(h>0))return '<div class="gymbmi"><p class="hint" style="margin:0 0 8px">Add your weight and height in a monthly check-in to see your BMI and goal here.</p>'+fbtn("btn small ghost","gymgo",{v:"checkin"},"Open monthly check-in")+'</div>';
+  var b=ciBmi(cw.lb,h),c=bmiCat(b),L=(CI().list||[]).filter(function(x){return parseFloat(x.w)>0}),first=L[0];
+  var u=ciU("w"),cv=function(v){var r=ciConv("w",v);return ciMetric()?r:Math.round(r*10)/10},dlt="",w=cw.lb;
+  if(first&&Math.abs(w-parseFloat(first.w))>=0.2){var d=w-parseFloat(first.w);dlt=cv(Math.abs(d))+" "+u+(d<0?" down":" up")+" since "+new Date(first.ts).toLocaleDateString(undefined,{month:"short",day:"numeric"})}
+  var o='<div class="gymbmi"><p class="bmsm"><b>'+cv(w)+' '+u+'</b> now &nbsp;·&nbsp; BMI <b>'+b+'</b></p>';
+  o+='<p class="bmmsg" style="color:'+BM_COL[c]+'">'+bmiMsg(b)+'</p>'+(dlt?'<p class="hint" style="margin:0 0 4px">'+dlt+'.</p>':'')+bmiMeter(b);
+  if(c!=="o")o+='<div class="row" style="margin:8px 0 0"><button type="button" class="btn small ghost" data-act="bmirecs" aria-expanded="'+!!session.bmiRecs+'">'+(session.bmiRecs?'Hide recommendations':'Give me some recommendations')+'</button></div>'+(session.bmiRecs?'<div class="bmrec">'+bmiRecs(c)+'</div>':'');
+  o+='<div class="row" style="margin:8px 0 0"><button type="button" class="btn small" data-act="gymupd">Update current weight</button></div>';
+  o+='<p class="hint" style="font-size:14px;margin:8px 0 0">BMI is a rough guide. Use it alongside how you feel and your other check-in numbers.</p></div>';
+  return o;
+};
+var _gc357=gymCard;
+gymCard=function(){
+  var o=_gc357();
+  o=o.replace(/<small> of (\d+)<\/small>/g,'<small class="gof">/$1</small>');
+  o=o.replace(/<b>0<\/b>(<span>workouts this month)/,'<b>—</b>$1').replace(/<b>0<\/b>(<span>week streak)/,'<b>—</b>$1');
+  return o;
+};
+var _my357=null;
+mYearTop=function(){
+  var Y=YOG(),acc=[];for(var i=0;i<12;i++)(Y.goals[yogKey(i)]||[]).forEach(function(g){if(g.done)acc.push({m:i,g:g})});
+  var W=WL(),col=function(t,b){return '<div class="ytc"><b>'+t+'</b>'+b+'</div>'};
+  var a=acc.length?'<ul>'+acc.slice(-4).reverse().map(function(x){return '<li>'+esc(x.g.text)+'</li>'}).join("")+'</ul>'+(acc.length>4?'<span class="hint">+'+(acc.length-4)+' more</span>':""):'<span class="hint">Checked-off goals show up here.</span>';
+  var r=W.rich.length?'<ul class="ytp">'+W.rich.slice(0,5).map(function(x){return '<li>'+esc(x.text)+'</li>'}).join("")+'</ul>'+(W.rich.length>5?'<span class="hint">+'+(W.rich.length-5)+' more</span>':""):'<span class="hint">What makes you feel rich?</span>';
+  var g=W.goals.length?W.goals.slice(0,4).map(function(x){var pc=x.target>0?Math.min(100,x.current/x.target*100):0;return '<div class="ytg"><span>'+esc(x.name)+'</span><div class="mtrack"><i style="width:'+pc+'%;background:#ffc2d4"></i></div><span class="hint">'+Math.round(pc)+'%</span></div>'}).join(""):'<span class="hint">Add a goal below.</span>';
+  return '<div class="card ytacc">'+col("Accomplishments",a)+'</div><div class="card ytwg">'+col("Wealth Code",r)+col("Goal progress",g)+'</div>';
+};
+var _a357=act;
+act=function(a,d){
+  if(a==="bmirecs"){session.bmiRecs=!session.bmiRecs;render();return}
+  if(a.indexOf("bmet_")===0){S.bmiMeter=a.slice(5);save();render();return}
+  return _a357(a,d);
+};
+var _sv357=settingsView;
+settingsView=function(){
+  var o=_sv357(),s=bmetStyle();
+  var c='<div class="card"><h2>BMI meter</h2><p class="hint">How your BMI is shown in Gym progress.</p><div class="row" style="flex-wrap:wrap;gap:8px">'+BMET.map(function(x){return '<button type="button" class="btn small'+(s===x[0]?'':' ghost')+'" data-act="bmet_'+x[0]+'" aria-pressed="'+(s===x[0])+'">'+x[1]+'</button>'}).join("")+'</div></div>';
+  var i=o.indexOf('<div class="card"><h2>Back up your data</h2>');
+  return i<0?o+c:o.slice(0,i)+c+o.slice(i);
 };
 
 
