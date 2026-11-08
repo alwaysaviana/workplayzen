@@ -1369,8 +1369,8 @@ html body .mc .calbox.cD .btn.ghost{color:#b25a00!important;border-color:#b25a00
 html body nav button{font-size:14.5px!important}
 
 /* v354 field styles + celebration checkbox */
-body{--fb:#efeaff;--ftx:#20143d;--fbd:#b9a6ff;--fph:#857aa6;--flb:#ddd3ff}
-body[data-fs="A"]{--fb:#fff6ec;--ftx:#1d1520;--fbd:#ffc2d4;--fph:#8a7580;--flb:#ffe9f0}
+body{--fb:#fff6ec;--ftx:#1d1520;--fbd:#ffc2d4;--fph:#8a7580;--flb:#ffe9f0}
+body[data-fs="F"]{--fb:#efeaff;--ftx:#20143d;--fbd:#b9a6ff;--fph:#857aa6;--flb:#ddd3ff}
 html body input[type=text],html body input[type=number],html body input[type=search],html body input[type=email],html body input[type=time],html body input[type=date],html body input:not([type]),html body select,html body textarea,html body #qadd .fld input,html body #qadd.qtop .fld input,html body .cardsteps input{background:var(--fb)!important;color:var(--ftx)!important;border:1.5px solid var(--fbd)!important;padding:3px 12px!important;min-height:32px!important;font-size:16px!important;font-weight:600!important}
 html body .cardsteps input{border-color:#c6ff3d!important}
 html body input::placeholder,html body textarea::placeholder{color:var(--fph)!important;opacity:1}
@@ -7396,7 +7396,7 @@ act=function(a,d){
 };
 
 /* v341 backup: export / import your data */
-var WPZ_VER="v358";
+var WPZ_VER="v359";
 var _sv341=settingsView;
 settingsView=function(){
   var o=_sv341();
@@ -7722,7 +7722,7 @@ act=function(a,d){
 
 /* v354 Home button goes to main page, profile info merged into Settings Profile, field styles (lilac / cream) */
 var FSTY=[["F","Lilac"],["A","Cream"]];
-function fStyle(){return S.fieldStyle==="A"?"A":"F"}
+function fStyle(){return session.hset?"F":"A"}
 var _r354=render;
 render=function(){try{document.body.dataset.fs=fStyle()}catch(e){}return _r354.apply(this,arguments)};
 var _sv354=settingsView;
@@ -7735,8 +7735,7 @@ settingsView=function(){
   var ps2=o.indexOf('<div class="card lpink mc"><h2>Profile</h2>'),ft=o.indexOf('<div class="card lpink mc" id="ftargets">'),hm='margin:4px 0">Settings</h1>',hi=o.indexOf(hm);
   if(ps2>=0&&ft>ps2&&hi>=0&&hi<ps2){var en=o.indexOf('<div class="card',ft+10);if(en<0)en=o.length;var blk=o.slice(ps2,en);o=o.slice(0,ps2)+o.slice(en);hi=o.indexOf(hm)+hm.length;o=o.slice(0,hi)+blk+o.slice(hi)}
   var s=fStyle(),c='<div class="card"><h2>Field style</h2><p class="hint">The look of the boxes you type in.</p><div class="row" style="flex-wrap:wrap;gap:8px">'+FSTY.map(function(x){return '<button type="button" class="btn small'+(s===x[0]?'':' ghost')+'" data-act="fsty_'+x[0]+'" aria-pressed="'+(s===x[0])+'">'+x[1]+'</button>'}).join("")+'</div></div>';
-  var i=o.indexOf('<div class="card"><h2>Back up your data</h2>');
-  return i<0?o+c:o.slice(0,i)+c+o.slice(i);
+  return o;
 };
 var _aw354=act;
 act=function(a,d){
