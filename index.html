@@ -7247,7 +7247,7 @@ act=function(a,d){
 };
 
 /* v341 backup: export / import your data */
-var WPZ_VER="v345";
+var WPZ_VER="v346";
 var _sv341=settingsView;
 settingsView=function(){
   var o=_sv341();
@@ -7472,6 +7472,62 @@ act=function(a,d){
     return;
   }
   return _aw345(a,d);
+};
+
+/* v346 dreams in the sleep check-in, Good Dreams log in Zen, stretch wording */
+SL_Q=["Poorly","Okay","Good","Great","Weird dreams","Good dreams"];
+var DR_NOREAD="Not reading too much into it this time.";
+var _sc346=sleepCard;
+sleepCard=function(){
+  var h=_sc346(),q=drafts.sl_q,r=(S.sleep||{})[today()];
+  h=h.replace('>Yes</button>','>Yes, I feel amazing</button>').replace('>No</button>','>Not today</button>');
+  if(r){
+    h=h.replace('Stretched: yes.','Stretched: yes, feeling amazing.');
+    var x='';
+    if(r.q==="Good dreams"&&r.dream)x='<p class="hint" style="margin:0 0 8px">You dreamed: “'+esc(r.dream)+'” Saved to your Good Dreams log in Zen.</p>';
+    if(r.q==="Weird dreams"&&r.dream)x='<p class="hint" style="margin:0 0 8px">Your subconscious may be saying: “'+esc(r.dream)+'”</p>';
+    return h.replace('<div class="row"><button type="button" class="btn ghost small" data-act="slundo">',x+'<div class="row"><button type="button" class="btn ghost small" data-act="slundo">');
+  }
+  var box='';
+  if(q==="Good dreams")box='<div class="fld"><label for="sl_dream">What did you dream about?</label><textarea id="sl_dream" data-draft="sl_dream" rows="3" maxlength="600" placeholder="Write it down while you remember" style="width:100%;box-sizing:border-box">'+esc(drafts.sl_dream||"")+'</textarea><p class="hint" style="margin:4px 0 0">It will be saved to your Good Dreams log in Zen.</p></div>';
+  if(q==="Weird dreams")box='<div class="fld"><label for="sl_dream">What do you think your subconscious is telling you?</label><textarea id="sl_dream" data-draft="sl_dream" rows="3" maxlength="600" placeholder="Optional" style="width:100%;box-sizing:border-box">'+esc(drafts.sl_dream||"")+'</textarea><div class="chips" style="margin-top:8px"><button type="button" class="chip" aria-pressed="'+(drafts.sl_dream===DR_NOREAD)+'" data-act="sldnr">'+DR_NOREAD.replace(/\.$/,"")+'</button></div></div>';
+  var m='<div class="fld"><span>How do you feel this morning?</span>';
+  return box?h.replace(m,box+m):h;
+};
+/* Good Dreams log */
+function dreamsPage(){
+  var L=(S.dreams||[]).slice().sort(function(a,b){return b.ts-a.ts}),h='<h1 class="disp" style="font-size:34px;margin:4px 0">Good Dreams</h1><p class="hint">The sweet ones, saved so you can read them again.</p>';
+  if(!L.length)return h+'<div class="card"><p class="hint" style="margin:0">Nothing here yet. Choose <b>Good dreams</b> in your morning sleep check-in and write what you dreamt.</p></div>';
+  return h+'<ul class="list">'+L.map(function(x){return '<li class="item" style="display:block"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><b>'+esc(cyFmt(cyD(x.date)))+'</b><button type="button" class="iconbtn" aria-label="Remove dream" data-act="dreamdel" data-id="'+x.id+'">✕</button></div><p style="margin:6px 0 0">'+esc(x.text)+'</p></li>'}).join("")+'</ul>';
+}
+var _zmn346=zenMenu;
+zenMenu=function(){
+  var n=(S.dreams||[]).length;
+  var t='<div class="choices"><button type="button" class="choice" data-act="znv" data-v="dreams" style="--c:'+P.zen.c+'"><span class="em" aria-hidden="true">💭</span><span><span class="nm">Good Dreams</span><br><span class="ds">'+(n?n+' saved to read again':'Your sweet dreams, saved')+'</span></span></button></div>';
+  return _zmn346()+t;
+};
+var _vz346=viewZen;
+viewZen=function(){
+  if(session.znv==="dreams")return head("zen","Peace, reflection, gratitude, safety, love, and God.")+'<div class="row"><button type="button" class="btn ghost small" data-act="znv" data-v="">← Zen options</button></div>'+dreamsPage();
+  return _vz346();
+};
+var _aw346=act;
+act=function(a,d){
+  if(a==="sldnr"){drafts.sl_dream=drafts.sl_dream===DR_NOREAD?"":DR_NOREAD;render();return}
+  if(a==="dreamdel"&&d){S.dreams=(S.dreams||[]).filter(function(x){return x.id!==d.id});save();render();return}
+  if(a==="slundo"){var r0=(S.sleep||{})[today()];if(r0&&r0.dream)drafts.sl_dream=r0.dream}
+  if(a==="slsave"){
+    var q=drafts.sl_q,tx=String(drafts.sl_dream||"").trim(),td=today(),had=!!(S.sleep||{})[td];
+    _aw346(a,d);
+    var r=(S.sleep||{})[td];
+    if(r&&(q==="Good dreams"||q==="Weird dreams")){
+      if(tx)r.dream=tx;
+      if(q==="Good dreams"&&tx){S.dreams=(S.dreams||[]).filter(function(x){return x.date!==td});S.dreams.push({id:uid(),date:td,text:tx,ts:Date.now()})}
+      delete drafts.sl_dream;save();render();
+    }
+    return;
+  }
+  return _aw346(a,d);
 };
 
 
