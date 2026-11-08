@@ -1456,6 +1456,29 @@ html body .card.ytwg .ytc{min-width:0;overflow-wrap:anywhere}
 .wgz{display:flex;flex-direction:column;gap:8px;padding:12px;border:1.5px solid #ffc2d4;border-radius:16px}
 .wgstep{font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--muted)}
 .wgq{font-size:20px;font-weight:800;line-height:1.2}
+/* v360 Settings in the cream-fields (A) look, BMI text, cycle month view */
+html body[data-set] .card:not(.cardcyc){background:#211d28!important;border:1.5px solid #ffc2d4!important;box-shadow:none!important}
+html body[data-set] .card:not(.cardcyc) h2{color:#ffc2d4!important}
+html body[data-set] .card:not(.cardcyc) .btn:not(.ghost){background:#ffc2d4!important;color:#2a0516!important;border:0!important}
+html body[data-set] .card:not(.cardcyc) .btn.ghost{background:transparent!important;color:#ffc2d4!important;border:1.5px solid #ffc2d4!important}
+html body[data-set] .card:not(.cardcyc) .chip{border:1.5px solid #ffc2d4!important;color:#ffe9f0!important;background:transparent!important}
+html body[data-set] .card:not(.cardcyc) .chip[aria-pressed="true"]{background:#ffc2d4!important;color:#2a0516!important}
+html body[data-set] .card:not(.cardcyc) input,html body[data-set] .card:not(.cardcyc) select,html body[data-set] .card:not(.cardcyc) textarea{border:2px solid #ffc2d4!important;min-height:36px!important}
+html body[data-set] .card:not(.cardcyc) .fld,html body[data-set] .card:not(.cardcyc) .fld>span,html body[data-set] .card:not(.cardcyc) label{color:#ffe9f0!important;font-size:16px}
+html body .bmmsg{font-size:15px;font-weight:400;color:var(--muted);margin:4px 0 6px;line-height:1.4}
+.bmzl{display:flex;margin-top:4px;font-size:15px;font-weight:700}
+.bmzl span{box-sizing:border-box;white-space:nowrap}
+.cynav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:2px 0 4px}
+.cynav b{font-size:20px;color:#3a1a26}
+.cyar{width:38px;height:38px;border-radius:50%;border:0;background:#fff;color:#c0475f;font-size:26px;font-weight:700;line-height:1;padding:0;cursor:pointer;box-shadow:0 1px 4px rgba(120,30,60,.2)}
+.cyyear{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.cymini{background:#fff6ec;border:1.5px solid #ffc2d4;border-radius:12px;padding:6px 6px 8px;cursor:pointer;font:inherit;color:#3a1a26}
+html body .cardcyc .cymini span{font-size:14px;font-weight:800;color:#3a1a26!important;display:block;margin-bottom:4px;text-align:center}
+.cymg{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cymg i{display:block;aspect-ratio:1;border-radius:50%;background:transparent}
+.cymg i.lg{background:#c0475f}.cymg i.pr{border:1px dashed #c0475f;box-sizing:border-box}.cymg i.td{box-shadow:0 0 0 1.5px #3a1a26}
+.cypast .g2c{display:grid;grid-template-columns:1.4fr 1fr;gap:8px;margin-bottom:8px}
+html body .cardcyc .btn:not(.ghost){background:#d62f4b!important;color:#fff!important}
 </style>
 
 <div id="app"></div>
@@ -7396,7 +7419,7 @@ act=function(a,d){
 };
 
 /* v341 backup: export / import your data */
-var WPZ_VER="v359";
+var WPZ_VER="v360";
 var _sv341=settingsView;
 settingsView=function(){
   var o=_sv341();
@@ -7722,9 +7745,9 @@ act=function(a,d){
 
 /* v354 Home button goes to main page, profile info merged into Settings Profile, field styles (lilac / cream) */
 var FSTY=[["F","Lilac"],["A","Cream"]];
-function fStyle(){return session.hset?"F":"A"}
+function fStyle(){return "A"}
 var _r354=render;
-render=function(){try{document.body.dataset.fs=fStyle()}catch(e){}return _r354.apply(this,arguments)};
+render=function(){try{document.body.dataset.fs=fStyle();if(session.hset)document.body.setAttribute("data-set","1");else document.body.removeAttribute("data-set")}catch(e){}return _r354.apply(this,arguments)};
 var _sv354=settingsView;
 settingsView=function(){
   var o=_sv354(),nm=fld("First name","set_name",'<input type="text" id="set_name" data-draft="set_name" maxlength="30" autocomplete="given-name" value="'+esc(drafts.set_name!==undefined?drafts.set_name:(S.name||""))+'">');
@@ -7761,7 +7784,7 @@ fuelToday=function(){
 function cyPeriodDay(){var n=0,d=cyD(today());while(cy().days[dstr(d)]){n++;d=cyAdd(d,-1)}return n}
 function cycleView(){
   var m=cyModel(),ph=cyPhase(m),tx=ph?CY_TXT[ph]:null,key=today(),on=!!cy().days[key],t=m.t;
-  var pred={};if(m.last){for(var j=1;j<=3;j++){var s0=cyAdd(m.last,m.len*j);for(var q=0;q<m.P;q++)pred[dstr(cyAdd(s0,q))]=1}}
+  var pred={};if(m.last){for(var j=1;j<=14;j++){var s0=cyAdd(m.last,m.len*j);for(var q=0;q<m.P;q++)pred[dstr(cyAdd(s0,q))]=1}}
   var nx=m.last?cyAdd(m.last,m.len):null,dn=nx?cyDiff(nx,t):null,pd=cyPeriodDay();
   var head,sub="",btn;
   if(on){head="Period day "+pd;btn='<button type="button" class="cybtn" data-act="cycscroll">Edit period dates</button>'}
@@ -7789,15 +7812,8 @@ function cycleView(){
   if(cards.length)h+='<h3 class="cyh3">My cycle today</h3><div class="cycards">'+cards.map(function(c){return '<div class="cycard" style="background:'+c[0]+'"><span>'+c[1]+'</span>'+c[2]+'</div>'}).join("")+'</div>';
   if(tx)h+='<div class="card cardcyc"><h2>'+tx.n+'</h2><p><b>Energy.</b> '+tx.e+'</p><p><b>Workouts.</b> '+tx.w+'</p><p style="margin-bottom:0"><b>Caring for yourself.</b> '+tx.c+'</p></div>';
   else h+='<div class="card cardcyc"><h2>Start tracking</h2><p class="hint">Tap Log period when your period starts. After two cycles, predictions get personal.</p></div>';
-  /* calendar */
-  var st=cyAdd(t,-28);st=cyAdd(st,-st.getDay());
-  h+='<div class="card cardcyc" id="cycal"><h2>Your cycle calendar</h2><p class="hint">Tap a circle to check or uncheck a period day. Dashed circles are predicted.</p><div class="cygrid">';
-  "SMTWTFS".split("").forEach(function(x){h+='<span class="cyl">'+x+'</span>'});
-  for(var n=0;n<42;n++){
-    var d2=cyAdd(st,n),ds2=dstr(d2),fu=d2>t,lg2=!!cy().days[ds2],pr2=!lg2&&pred[ds2],td2=ds2===key;
-    h+='<div class="cyc'+(fu&&!pr2?' fu':'')+(lg2?' lg':'')+'"><span class="cyn">'+(td2?'<i>TODAY</i>':'')+(d2.getDate()===1?d2.toLocaleDateString(undefined,{month:"short"})+' ':'')+d2.getDate()+'</span>'+(fu&&!pr2?'':'<button type="button" class="cyck'+(lg2?' on':'')+(pr2?' pr':'')+'" '+(fu?'disabled ':'data-act="cycd" data-d="'+ds2+'" ')+'aria-label="'+cyFmt(d2)+(lg2?', period day':pr2?', predicted':'')+'" aria-pressed="'+lg2+'">'+(lg2?'✓':'')+'</button>')+'</div>';
-  }
-  h+='</div></div>';
+  /* calendar: one month at a time, or the whole year */
+  h+=cycCal(t,pred,key)+cyPast();
   h+='<p class="hint" style="font-size:15px">These are general patterns and estimates, not medical advice or birth control. Everyone is different. Talk with a clinician about very irregular cycles, severe pain or heavy bleeding. Your cycle data stays on this device.</p>';
   return h;
 }
@@ -7807,9 +7823,62 @@ act=function(a,d){
   return _aw356(a,d);
 };
 
+var CY_MN=["January","February","March","April","May","June","July","August","September","October","November","December"];
+function cyDot(ds,lg,pr,fu,key){return {ds:ds,lg:lg,pr:pr,fu:fu}}
+function cycCal(t,pred,key){
+  var mo=session.cycMo||0,yr=!!session.cycYr,b=new Date(t.getFullYear(),t.getMonth()+mo,1);
+  var head='<div class="cynav"><button type="button" class="cyar" data-act="cycnav" data-s="-1" aria-label="'+(yr?"Previous year":"Previous month")+'">\u2039</button><b>'+(yr?b.getFullYear():CY_MN[b.getMonth()]+" "+b.getFullYear())+'</b><button type="button" class="cyar" data-act="cycnav" data-s="1" aria-label="'+(yr?"Next year":"Next month")+'">\u203a</button></div>';
+  var tog='<div class="row" style="justify-content:center;gap:8px;margin-top:2px">'+(mo!==0?'<button type="button" class="btn small ghost" data-act="cyctoday">This month</button>':'')+'<button type="button" class="btn small ghost" data-act="cycyr">'+(yr?"Month view":"Year at a glance")+'</button></div>';
+  var h='<div class="card cardcyc" id="cycal"><h2>Your cycle calendar</h2>'+head;
+  if(yr){
+    h+='<div class="cyyear">';
+    for(var mi=0;mi<12;mi++){
+      var f=new Date(b.getFullYear(),mi,1),dn=new Date(b.getFullYear(),mi+1,0).getDate(),cells="";
+      for(var k=0;k<f.getDay();k++)cells+='<i class="e"></i>';
+      for(var d=1;d<=dn;d++){var dd=new Date(b.getFullYear(),mi,d),ds=dstr(dd),lg=!!cy().days[ds],pr=!lg&&pred[ds]&&dd>t;cells+='<i class="'+(lg?'lg':pr?'pr':'')+(ds===key?' td':'')+'"></i>'}
+      var off=(b.getFullYear()-t.getFullYear())*12+mi-t.getMonth();
+      h+='<button type="button" class="cymini" data-act="cycopen" data-o="'+off+'" aria-label="Open '+CY_MN[mi]+'"><span>'+CY_MN[mi].slice(0,3)+'</span><div class="cymg">'+cells+'</div></button>';
+    }
+    h+='</div><p class="hint" style="margin:6px 0 0">Filled red is a period day, dashed is predicted. Tap a month to open it.</p>';
+  }else{
+    h+='<p class="hint" style="margin:0">Tap a circle to check or uncheck a period day. Dashed circles are predicted.</p><div class="cygrid">';
+    "SMTWTFS".split("").forEach(function(x){h+='<span class="cyl">'+x+'</span>'});
+    var dn2=new Date(b.getFullYear(),b.getMonth()+1,0).getDate();
+    for(var k2=0;k2<b.getDay();k2++)h+='<div class="cyc"></div>';
+    for(var d2=1;d2<=dn2;d2++){
+      var x=new Date(b.getFullYear(),b.getMonth(),d2),s=dstr(x),fu=x>t,lg2=!!cy().days[s],pr2=!lg2&&pred[s]&&fu,td2=s===key;
+      h+='<div class="cyc'+(fu&&!pr2?' fu':'')+(lg2?' lg':'')+'"><span class="cyn">'+(td2?'<i>TODAY</i>':'')+d2+'</span>'+(fu&&!pr2?'':'<button type="button" class="cyck'+(lg2?' on':'')+(pr2?' pr':'')+'" '+(fu?'disabled ':'data-act="cycd" data-d="'+s+'" ')+'aria-label="'+cyFmt(x)+(lg2?', period day':pr2?', predicted':'')+'" aria-pressed="'+lg2+'">'+(lg2?'\u2713':'')+'</button>')+'</div>';
+    }
+    h+='</div>';
+  }
+  return h+tog+'</div>';
+}
+function cyPast(){
+  return '<div class="card cardcyc"><h2>Add past periods</h2><p class="hint">Coming from another app? Add your earlier periods here so predictions start out accurate. Enter the first day and how many days it lasted. You can add as many as you like.</p><form class="cypast" data-submit="cyaddpast"><div class="g2c"><label class="fld">First day<input type="date" id="cy_start" data-draft="cy_start" value="'+esc(drafts.cy_start||"")+'"></label><label class="fld">Days<input type="text" inputmode="numeric" id="cy_len" data-draft="cy_len" maxlength="2" placeholder="5" value="'+esc(drafts.cy_len||"")+'"></label></div><div class="row"><button class="btn small" type="submit">Add period</button></div></form></div>';
+}
+var _aw359=act;
+act=function(a,d){
+  if(a==="cycnav"){var s=+d.s;session.cycMo=(session.cycMo||0)+(session.cycYr?12*s:s);render();return}
+  if(a==="cycyr"){session.cycYr=!session.cycYr;render();return}
+  if(a==="cyctoday"){session.cycMo=0;render();return}
+  if(a==="cycopen"){session.cycMo=+d.o;session.cycYr=false;render();return}
+  return _aw359(a,d);
+};
+var _sub359=submit;
+submit=function(a){
+  if(a==="cyaddpast"){
+    var s=String(drafts.cy_start||"").trim(),n=Math.max(1,Math.min(10,parseInt(drafts.cy_len,10)||5));
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(s)){toast("Pick the first day");return true}
+    var st=cyD(s),td=cyD(today());if(st>td){toast("That date is in the future");return true}
+    for(var i=0;i<n;i++){var dd=cyAdd(st,i);if(dd<=td)cy().days[dstr(dd)]=1}
+    drafts.cy_start="";drafts.cy_len="";save();toast("Period added");render();return true;
+  }
+  return _sub359(a);
+};
+
 /* v357 gym progress tidy, softer BMI wording, BMI meter styles, recommendations, My Year top cards */
-var BMET=[["B","Three zones"],["A","Bar"],["C","Dial"],["D","Words only"]];
-function bmetStyle(){var s=S.bmiMeter;return s==="A"||s==="C"||s==="D"?s:"B"}
+var BMET=[["A","Bar"],["B","Three zones"],["C","Dial"],["D","Words only"]];
+function bmetStyle(){var s=S.bmiMeter;return s==="B"||s==="C"||s==="D"?s:"A"}
 var BM_COL={u:"#b9a6ff",o:"#8adfe2",h:"#ffb066"};
 function bmiCat(b){return b<18.5?"u":b<25?"o":"h"}
 function bmiMsg(b){var c=bmiCat(b);return c==="u"?"You are under recommended weight based on your height.":c==="o"?"You’re right on track. Nice work.":"You are over recommended weight based on your height."}
@@ -7824,7 +7893,7 @@ function bmiMeter(b){
   }
   if(st==="A"){
     var g=ciGoal();
-    return '<div class="bmw"><div class="bmbar" role="img" aria-label="BMI '+b+', goal '+g+'"><i style="left:0;width:'+pc(18.5)+'%;background:'+BM_COL.u+'"></i><i style="left:'+pc(18.5)+'%;width:'+(pc(25)-pc(18.5))+'%;background:'+BM_COL.o+'"></i><i style="left:'+pc(25)+'%;width:'+(100-pc(25))+'%;background:'+BM_COL.h+'"></i><b class="bmk" style="left:'+pc(b)+'%"><span>You '+b+'</span></b><b class="bmk gl" style="left:'+pc(g)+'%"><span>Goal</span></b></div><div class="bmleg" style="margin-top:22px"><span style="color:'+BM_COL.u+'">Under</span><span style="color:'+BM_COL.o+'">Healthy</span><span style="color:'+BM_COL.h+'">Over</span></div></div>';
+    return '<div class="bmw"><div class="bmbar" role="img" aria-label="BMI '+b+'. Under is on the left, over is on the right, healthy is 18.5 to 24.9. Goal '+g+'."><i style="left:0;width:'+pc(18.5)+'%;background:'+BM_COL.u+'"></i><i style="left:'+pc(18.5)+'%;width:'+(pc(25)-pc(18.5))+'%;background:'+BM_COL.o+'"></i><i style="left:'+pc(25)+'%;width:'+(100-pc(25))+'%;background:'+BM_COL.h+'"></i><b class="bmk" style="left:'+pc(b)+'%"><span>You</span></b></div><div class="bmzl"><span style="width:'+pc(18.5)+'%;color:'+BM_COL.u+'">Under</span><span style="width:'+(pc(25)-pc(18.5))+'%;color:'+BM_COL.o+';text-align:center">Healthy</span><span style="width:'+(100-pc(25))+'%;color:'+BM_COL.h+';text-align:right">Over</span></div><p class="hint" style="margin:6px 0 0">Your BMI is <b>'+b+'</b>. Healthy range is 18.5 to 24.9.</p></div>';
   }
   return '<div class="bmw"><div class="bmz">'+["u","o","h"].map(function(k){return '<span class="'+(k===c?'on':'')+'" style="'+(k===c?'background:'+BM_COL[k]+';color:#1b1020;border-color:'+BM_COL[k]:'border-color:'+BM_COL[k]+';color:'+BM_COL[k])+'">'+nm[k]+'</span>'}).join("")+'</div><p class="hint" style="margin:6px 0 0">Your BMI is <b>'+b+'</b>. Healthy range is 18.5 to 24.9.</p></div>';
 }
@@ -7840,8 +7909,9 @@ gymBmiBlock=function(){
   var b=ciBmi(cw.lb,h),c=bmiCat(b),L=(CI().list||[]).filter(function(x){return parseFloat(x.w)>0}),first=L[0];
   var u=ciU("w"),cv=function(v){var r=ciConv("w",v);return ciMetric()?r:Math.round(r*10)/10},dlt="",w=cw.lb;
   if(first&&Math.abs(w-parseFloat(first.w))>=0.2){var d=w-parseFloat(first.w);dlt=cv(Math.abs(d))+" "+u+(d<0?" down":" up")+" since "+new Date(first.ts).toLocaleDateString(undefined,{month:"short",day:"numeric"})}
-  var o='<div class="gymbmi"><p class="bmsm"><b>'+cv(w)+' '+u+'</b> now &nbsp;·&nbsp; BMI <b>'+b+'</b></p>';
-  o+='<p class="bmmsg" style="color:'+BM_COL[c]+'">'+bmiMsg(b)+'</p>'+(dlt?'<p class="hint" style="margin:0 0 4px">'+dlt+'.</p>':'')+bmiMeter(b);
+  var wu=ciMetric()?"kilograms":"pounds";
+  var o='<div class="gymbmi"><p class="bmsm"><b>Current weight</b> '+cv(w)+' '+wu+'<br><b>Current BMI</b> '+b+'</p>';
+  o+='<p class="bmmsg">'+bmiMsg(b)+(dlt?' '+dlt+'.':'')+'</p>'+bmiMeter(b);
   if(c!=="o")o+='<div class="row" style="margin:8px 0 0"><button type="button" class="btn small ghost" data-act="bmirecs" aria-expanded="'+!!session.bmiRecs+'">'+(session.bmiRecs?'Hide recommendations':'Give me some recommendations')+'</button></div>'+(session.bmiRecs?'<div class="bmrec">'+bmiRecs(c)+'</div>':'');
   o+='<div class="row" style="margin:8px 0 0"><button type="button" class="btn small" data-act="gymupd">Update current weight</button></div>';
   o+='<p class="hint" style="font-size:14px;margin:8px 0 0">BMI is a rough guide. Use it alongside how you feel and your other check-in numbers.</p></div>';
