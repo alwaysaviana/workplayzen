@@ -1479,6 +1479,12 @@ html body .cardcyc .cymini span{font-size:14px;font-weight:800;color:#3a1a26!imp
 .cymg i.lg{background:#c0475f}.cymg i.pr{border:1px dashed #c0475f;box-sizing:border-box}.cymg i.td{box-shadow:0 0 0 1.5px #3a1a26}
 .cypast .g2c{display:grid;grid-template-columns:1.4fr 1fr;gap:8px;margin-bottom:8px}
 html body .cardcyc .btn:not(.ghost){background:#d62f4b!important;color:#fff!important}
+/* v361 breathing steps */
+.bsteps{text-align:left;margin:10px auto;max-width:21em;padding-left:22px;display:flex;flex-direction:column;gap:8px;font-size:19px;line-height:1.4;color:#fff}
+.bsteps li{color:#fff}.bsteps li::marker{color:#8adfe2;font-size:1.2em}
+.bstartrow{align-items:flex-end;gap:10px;flex-wrap:wrap}
+.bsl{display:flex;flex-direction:column;gap:3px;font-size:15px;color:var(--muted)}
+.bsl select{min-width:130px}
 </style>
 
 <div id="app"></div>
@@ -7419,7 +7425,7 @@ act=function(a,d){
 };
 
 /* v341 backup: export / import your data */
-var WPZ_VER="v360";
+var WPZ_VER="v361";
 var _sv341=settingsView;
 settingsView=function(){
   var o=_sv341();
@@ -7976,6 +7982,21 @@ submit=function(a){
   }
   return _sub358(a);
 };
+
+/* v361 nightly check-in label, breathing steps as bullets, session length dropdown */
+var BSEL=[1,2,3,5,10];
+var _tc361=timeCard;
+timeCard=function(){return _tc361().replace('>Nightly Check-in<','>Complete Nightly Check-in<')};
+var _bh361=breathHtml;
+breathHtml=function(){
+  var o=_bh361();
+  o=o.replace(/<p style="max-width:34em">Place one hand[^<]*<\/p>/,'<ul class="bsteps"><li>Place one hand on your belly and one on your chest.</li><li>Breathe gently through your nose, letting your belly expand as you inhale.</li><li>Exhale slowly and comfortably.</li><li>Relax your shoulders.</li><li>Never force your breath.</li></ul>');
+  o=o.replace(/<div class="chips" role="group" aria-label="Session length">.*?<\/div>/,"");
+  if(!B.running){var m=session.bmins||1;
+    o=o.replace('<div class="row"><button type="button" class="btn" data-act="bstart">','<div class="row bstartrow"><label class="bsl"><span>Length</span><select id="bmin_sel" aria-label="Session length">'+BSEL.map(function(x){return '<option value="'+x+'"'+(m===x?" selected":"")+'>'+x+(x===1?" minute":" minutes")+'</option>'}).join("")+'</select></label><button type="button" class="btn" data-act="bstart">');}
+  return o;
+};
+document.addEventListener("change",function(e){var t=e.target;if(t&&t.id==="bmin_sel"){session.bmins=+t.value||1;setBreath()}});
 
 
 function ideaCard(p){
