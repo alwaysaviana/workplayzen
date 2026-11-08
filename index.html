@@ -7246,7 +7246,7 @@ act=function(a,d){
 };
 
 /* v341 backup: export / import your data */
-var WPZ_VER="v343";
+var WPZ_VER="v344";
 var _sv341=settingsView;
 settingsView=function(){
   var o=_sv341();
@@ -7337,6 +7337,77 @@ act=function(a,d){
   if(a.indexOf("oo_")===0&&OO_DEF[a.slice(3)]!==undefined){var kx=a.slice(3),cur=oo();S.oo=cur;S.oo[kx]=!cur[kx];save();render();return}
   if(a==="celeb"){S.celeb=S.celeb||{};var dt=mDate();if(S.celeb[dt])delete S.celeb[dt];else S.celeb[dt]=true;save();render();return}
   return _aw343(a,d);
+};
+
+/* v344 cycle tracking: check-mark days, predictions, phases (local only) */
+function cy(){S.cyc=S.cyc||{days:{}};S.cyc.days=S.cyc.days||{};return S.cyc}
+function cyD(s){var p=String(s).split("-");return new Date(+p[0],+p[1]-1,+p[2])}
+function cyAdd(d,n){var x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.setDate(x.getDate()+n);return x}
+function cyDiff(a,b){return Math.round((a-b)/86400000)}
+function cyFmt(d){return d.toLocaleDateString(undefined,{month:"short",day:"numeric"})}
+function cyModel(){
+  var ds=Object.keys(cy().days).filter(function(x){return cy().days[x]}).sort(),runs=[];
+  ds.forEach(function(s){var d=cyD(s),r=runs[runs.length-1];if(r&&cyDiff(d,r.end)<=3){r.end=d;r.n=cyDiff(d,r.start)+1}else runs.push({start:d,end:d,n:1})});
+  var L=[],i;for(i=1;i<runs.length;i++){var g=cyDiff(runs[i].start,runs[i-1].start);if(g>=15&&g<=60)L.push(g)}
+  L=L.slice(-6);var len=L.length?Math.round(L.reduce(function(a,b){return a+b},0)/L.length):28;
+  var pl=runs.slice(-6).map(function(r){return r.n}),P=pl.length?Math.round(pl.reduce(function(a,b){return a+b},0)/pl.length):5;
+  P=Math.max(2,Math.min(8,P));
+  var last=runs.length?runs[runs.length-1].start:null,t=cyD(today()),day=last?cyDiff(t,last)+1:0;
+  return {runs:runs,len:len,P:P,cycles:L.length,last:last,day:day,t:t}
+}
+function cyPhase(m){
+  if(!m.last)return null;var d=m.day,ov=m.len-14;
+  if(d<=m.P)return "menstrual";if(d<ov-1)return "follicular";if(d<=ov+1)return "ovulation";if(d<=m.len)return "luteal";return "late";
+}
+var CY_TXT={
+ menstrual:{n:"Menstrual phase",e:"Energy is often lower. Rest counts as progress right now.",w:"Gentle movement tends to feel best: walks, yoga, mobility, light strength. It is okay to skip a day.",c:"Warmth like a heat pad or tea, iron-rich foods, plenty of water, and extra sleep. Be soft with yourself."},
+ follicular:{n:"Follicular phase",e:"Energy often rises and you may feel more motivated and clear-headed.",w:"A good time to build strength, try a new class, or push intensity a little.",c:"Protein with meals, try something new, and plan the weeks ahead while your drive is up."},
+ ovulation:{n:"Ovulation window",e:"Many people feel their strongest and most social around now.",w:"Great for heavy lifts, intervals and group classes. Warm up well, since joints can feel looser.",c:"Hydrate, enjoy connecting with people, and notice what feels good in your body."},
+ luteal:{n:"Luteal phase",e:"Energy often starts steady and may dip toward the end. Mood and cravings can shift.",w:"Steady strength, moderate cardio, pilates and walks. Ease intensity if you feel drained late in the phase.",c:"Regular meals, magnesium-rich foods like nuts and greens, good sleep, and quiet time. Cravings are normal."},
+ late:{n:"Period may be due",e:"Cycles vary. Stress, travel, illness and sleep can all shift timing.",w:"Move in whatever way feels good today.",c:"Be patient with your body. Log your first period day when it arrives and the predictions will adjust."}
+};
+function cycleView(){
+  var m=cyModel(),ph=cyPhase(m),tx=ph?CY_TXT[ph]:null,key=today(),on=!!cy().days[key],h='';
+  h+='<div class="row"><button type="button" class="btn ghost small" data-act="cycx">← Home</button></div><h1 class="disp" style="font-size:36px;margin:4px 0">Cycle</h1>';
+  h+='<div class="card lpink">';
+  if(ph){h+='<div style="font-size:44px;font-weight:800;line-height:1.05">Day '+m.day+'</div><div class="hint" style="font-size:16px;margin-top:2px">'+tx.n+'</div>'}
+  else h+='<h2 style="margin:0">Start tracking</h2><p class="hint">Check today when your period starts. After two cycles, predictions get personal.</p>';
+  h+='<div class="row" style="margin-top:12px"><button type="button" class="btn'+(on?'':' ghost')+'" data-act="cycd" data-d="'+key+'" aria-pressed="'+on+'">'+(on?"✓ On my period today":"I’m on my period today")+'</button></div>';
+  if(m.last){
+    var nx=cyAdd(m.last,m.len),dn=cyDiff(nx,m.t);
+    h+='<p class="hint" style="margin:12px 0 0">'+(dn>0?'Next period expected around '+cyFmt(nx)+' (in '+dn+' day'+(dn===1?'':'s')+').':dn===0?'Your period may start today.':'Your period was expected around '+cyFmt(nx)+'. Cycles run late sometimes.')+' '+(m.cycles?'Based on '+m.cycles+' past cycle'+(m.cycles===1?'':'s')+' (about '+m.len+' days).':'This is an estimate until you log two cycles.')+'</p>';
+  }
+  h+='</div>';
+  if(tx)h+='<div class="card lpink"><h2>'+tx.n+'</h2><p><b>Energy.</b> '+tx.e+'</p><p><b>Workouts.</b> '+tx.w+'</p><p style="margin-bottom:0"><b>Caring for yourself.</b> '+tx.c+'</p></div>';
+  /* calendar: 4 weeks back to 2 weeks ahead */
+  var t=m.t,st=cyAdd(t,-28);st=cyAdd(st,-st.getDay());
+  var pred={};if(m.last){for(var j=1;j<=3;j++){var s0=cyAdd(m.last,m.len*j);for(var q=0;q<m.P;q++)pred[dstr(cyAdd(s0,q))]=1}}
+  h+='<div class="card"><h2>Your cycle calendar</h2><p class="hint">Tap a day to check or uncheck it. Dashed circles are predicted.</p><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center">';
+  "SMTWTFS".split("").forEach(function(x){h+='<span class="hint" style="font-size:12px">'+x+'</span>'});
+  for(var n=0;n<42;n++){
+    var d=cyAdd(st,n),ds=dstr(d),fut=d>t,lg=!!cy().days[ds],pd=!lg&&pred[ds],td=ds===key;
+    var sty='width:100%;aspect-ratio:1;max-width:44px;margin:0 auto;border-radius:50%;font:inherit;font-size:13px;display:flex;align-items:center;justify-content:center;flex-direction:column;line-height:1;padding:0;cursor:pointer;'
+      +(lg?'background:#ff4fa3;color:#14121a;border:2px solid #ff4fa3;font-weight:800;':pd?'background:transparent;color:inherit;border:2px dashed #ff4fa3;':'background:transparent;color:inherit;border:2px solid '+(td?'#ffc2d4':'transparent')+';')+(fut&&!pd?'opacity:.4;':'');
+    h+='<button type="button" style="'+sty+'" '+(fut?'disabled ':'data-act="cycd" data-d="'+ds+'" ')+'aria-label="'+cyFmt(d)+(lg?', period day':pd?', predicted':'')+'" aria-pressed="'+lg+'">'+(d.getDate()===1?'<small style="font-size:9px;opacity:.8">'+d.toLocaleDateString(undefined,{month:"short"})+'</small>':'')+d.getDate()+'</button>';
+  }
+  h+='</div></div>';
+  h+='<p class="hint" style="font-size:12px">These are general patterns and estimates, not medical advice or birth control. Everyone is different. Talk with a clinician about very irregular cycles, severe pain or heavy bleeding. Your cycle data stays on this device.</p>';
+  return h;
+}
+function cycleCard(){
+  var m=cyModel(),ph=cyPhase(m);
+  return '<div class="card lpink"><div class="mbh" style="margin-bottom:4px"><h2 style="margin:0;font-size:18px">Cycle</h2><button type="button" class="btn small" data-act="cycv">Open</button></div><p class="hint" style="margin:0">'+(ph?'Day '+m.day+' · '+CY_TXT[ph].n:'Track your period and see what each phase means for you.')+'</p></div>';
+}
+var _vh344=viewHome;
+viewHome=function(){return session.cycv?cycleView():_vh344()+cycleCard()};
+var _go344=go;
+go=function(){session.cycv=false;return _go344.apply(this,arguments)};
+var _aw344=act;
+act=function(a,d){
+  if(a==="cycv"){session.cycv=true;window.scrollTo(0,0);render();return}
+  if(a==="cycx"){session.cycv=false;window.scrollTo(0,0);render();return}
+  if(a==="cycd"&&d&&d.d){var c=cy();if(c.days[d.d])delete c.days[d.d];else c.days[d.d]=1;save();render();return}
+  return _aw344(a,d);
 };
 
 
