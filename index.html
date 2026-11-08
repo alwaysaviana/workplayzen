@@ -1383,6 +1383,14 @@ html body .qbub.macbig{display:block;width:100%;box-sizing:border-box;font-size:
 html body #qadd.qcmp input[type=text],html body #qadd.qtop .fld input,html body #qadd.qtop input[type=text],html body #qadd.qcmp .qnums input{background:var(--fb)!important;color:var(--ftx)!important;border:1.5px solid var(--fbd)!important;height:34px!important;min-height:32px!important;font-size:16px!important;font-weight:600!important}
 html body #qadd.qtop input::placeholder,html body #qadd.qcmp input::placeholder{color:var(--fph)!important;opacity:1}
 html body #qadd.qtop label,html body #qadd.qtop label>span,html body #qadd.qtop .fld,html body #qadd.qtop .fld *:not(input):not(button){color:var(--flb)!important}
+/* v355 cycle: light pink cards, cream fields (style A) */
+html body .card.cardcyc{background:#ffe9f0!important;color:#3a1a26!important;--fb:#fff6ec;--ftx:#1d1520;--fbd:#ffc2d4;--fph:#8a7580;--flb:#7d5365}
+html body .cardcyc .hint,html body .cardcyc p,html body .cardcyc .fld,html body .cardcyc span{color:#6b4456!important}
+html body .cardcyc b,html body .cardcyc div{color:#3a1a26}
+html body .cardcyc h2,html body .cardcyc h1{color:#d62f4b!important}
+html body .cardcyc button:not(.btn){color:#3a1a26}
+html body .cardcyc .btn.ghost{color:#c0233f!important;background:#fff6ec!important}
+html body .cardcyc input[type=text],html body .cardcyc input[type=number],html body .cardcyc textarea{border-color:#ffc2d4!important}
 </style>
 
 <div id="app"></div>
@@ -7323,7 +7331,7 @@ act=function(a,d){
 };
 
 /* v341 backup: export / import your data */
-var WPZ_VER="v354";
+var WPZ_VER="v355";
 var _sv341=settingsView;
 settingsView=function(){
   var o=_sv341();
@@ -7458,7 +7466,7 @@ function cycleView(){
   /* calendar: 4 weeks back to 2 weeks ahead */
   var t=m.t,st=cyAdd(t,-28);st=cyAdd(st,-st.getDay());
   var pred={};if(m.last){for(var j=1;j<=3;j++){var s0=cyAdd(m.last,m.len*j);for(var q=0;q<m.P;q++)pred[dstr(cyAdd(s0,q))]=1}}
-  h+='<div class="card"><h2>Your cycle calendar</h2><p class="hint">Tap a day to check or uncheck it. Dashed circles are predicted.</p><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center">';
+  h+='<div class="card cardcyc"><h2>Your cycle calendar</h2><p class="hint">Tap a day to check or uncheck it. Dashed circles are predicted.</p><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center">';
   "SMTWTFS".split("").forEach(function(x){h+='<span class="hint" style="font-size:15px">'+x+'</span>'});
   for(var n=0;n<42;n++){
     var d=cyAdd(st,n),ds=dstr(d),fut=d>t,lg=!!cy().days[ds],pd=!lg&&pred[ds],td=ds===key;
