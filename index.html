@@ -1354,6 +1354,18 @@ html body .mc input[type=text],html body .mc .chip{background:#3a3043}
 html body .mc .chip[aria-pressed="true"]{background:#ff9a3c}
 html body #qadd.qtop,html body #qadd.qcmp,html body #qadd.qcmp.mc{background:#2f2736!important}
 html body[data-zm="day"] .qbub.qmac{color:#000!important}
+html body .mc .calbox{border-radius:14px;padding:10px 12px;margin-bottom:2px}
+html body .mc .calbox.cA,html body .mc .calbox.cF{background:#121014}
+html body .mc .calbox.cF{border:1.5px solid #f6efe4}
+html body .mc .calbox.cD{background:#fbf3e6}
+html body .mc .calbox.cA .mbh span,html body .mc .calbox.cA .mbh b,html body .mc .calbox.cA .mleft,html body .mc .calbox.cA .hint,html body .mc .calbox.cF .mbh span,html body .mc .calbox.cF .mbh b,html body .mc .calbox.cF .mleft,html body .mc .calbox.cF .hint{color:#f6efe4!important}
+html body .mc .calbox.cD .mbh span,html body .mc .calbox.cD .mbh b,html body .mc .calbox.cD .mleft,html body .mc .calbox.cD .hint{color:#1a1417!important}
+html body .mc .calbox.cA .mtrack,html body .mc .calbox.cF .mtrack{background:#3a3540!important}
+html body .mc .calbox.cA .mtrack i,html body .mc .calbox.cF .mtrack i{background:#f6efe4!important}
+html body .mc .calbox.cD .mtrack{background:#e4d8c6!important}
+html body .mc .calbox.cD .mtrack i{background:#1a1417!important}
+html body .mc .calbox .btn.ghost{color:#ff9a3c!important}
+html body .mc .calbox.cD .btn.ghost{color:#b25a00!important;border-color:#b25a00!important}
 </style>
 
 <div id="app"></div>
@@ -7294,7 +7306,7 @@ act=function(a,d){
 };
 
 /* v341 backup: export / import your data */
-var WPZ_VER="v350";
+var WPZ_VER="v351";
 var _sv341=settingsView;
 settingsView=function(){
   var o=_sv341();
@@ -7595,6 +7607,28 @@ var _aw347=act;
 act=function(a,d){
   if(a==="qmacros"){session.hset=false;session.cycv=false;session.qlog="";go("work");session.wkv="macros";session.fuel="track";window.scrollTo(0,0);render();return}
   return _aw347(a,d);
+};
+
+/* v351 calories box styles A (black), D (cream), F (black with cream outline) */
+var CALST=[["A","Black"],["D","Cream"],["F","Black outline"]];
+function calStyle(){var s=S.calStyle;return s==="D"||s==="F"?s:"A"}
+var _mb351=mBar;
+mBar=function(label,val,tgt,col,big){
+  var h=_mb351.apply(this,arguments);
+  if(String(label).toLowerCase()==="calories"&&big)h=h.replace('<div class="mrow">','<div class="mrow calbox c'+calStyle()+'">');
+  return h;
+};
+var _sv351=settingsView;
+settingsView=function(){
+  var o=_sv351(),s=calStyle();
+  var c='<div class="card"><h2>Calories box</h2><p class="hint">How the calories section looks on your macros cards.</p><div class="row" style="flex-wrap:wrap;gap:8px">'+CALST.map(function(x){return '<button type="button" class="btn small'+(s===x[0]?'':' ghost')+'" data-act="calst_'+x[0]+'" aria-pressed="'+(s===x[0])+'">'+x[1]+'</button>'}).join("")+'</div></div>';
+  var i=o.indexOf('<div class="card"><h2>When you go over target</h2>');
+  return i<0?o+c:o.slice(0,i)+c+o.slice(i);
+};
+var _aw351=act;
+act=function(a,d){
+  if(a.indexOf("calst_")===0){S.calStyle=a.slice(6);save();render();return}
+  return _aw351(a,d);
 };
 
 
