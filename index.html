@@ -1306,6 +1306,7 @@ body[data-zm="day"] .qlog .lgchooser .btn[data-act="lgchoosego"]{background:#000
 html body .qlog .lgchooser .btn[data-act="qwelse"]{background:#000!important;color:#fff!important;border:1.5px solid #ffe047!important}
 html body .qlog .lgchooser .btn[data-act="qwelse"][aria-pressed="true"]{background:#ffe047!important;color:#1a1200!important}
 body[data-zm="day"] .qlog .lgchooser .btn[data-act="qwelse"]:not([aria-pressed="true"]){background:#000!important;color:#fff!important}
+html body input[type=time]{font:inherit!important;font-size:16px!important;color:var(--text);background:var(--card2);border:1.5px solid #ffc2d4!important;border-radius:999px!important;padding:9px 14px;width:100%;box-sizing:border-box;min-height:44px}
 </style>
 
 <div id="app"></div>
@@ -7246,7 +7247,7 @@ act=function(a,d){
 };
 
 /* v341 backup: export / import your data */
-var WPZ_VER="v344";
+var WPZ_VER="v345";
 var _sv341=settingsView;
 settingsView=function(){
   var o=_sv341();
@@ -7408,6 +7409,69 @@ act=function(a,d){
   if(a==="cycx"){session.cycv=false;window.scrollTo(0,0);render();return}
   if(a==="cycd"&&d&&d.d){var c=cy();if(c.days[d.d])delete c.days[d.d];else c.days[d.d]=1;save();render();return}
   return _aw344(a,d);
+};
+
+/* v345 morning sleep check-in (Zen > Morning) and steps from Health shortcut / manual */
+function slMin(s){var p=String(s||"").split(":");return p.length<2||isNaN(+p[0])||isNaN(+p[1])?null:(+p[0])*60+(+p[1])}
+function slHrs(b,w){var x=slMin(b),y=slMin(w);if(x===null||y===null)return null;var d=y-x;if(d<=0)d+=1440;return d}
+function slFmt(m){return Math.floor(m/60)+"h "+(m%60)+"m"}
+var SL_Q=["Poorly","Okay","Good","Great"],SL_F=["Tired","Okay","Rested","Energized"];
+function slMsg(r){
+  var m=r.mins<360?"A shorter night happens. Be extra kind to yourself today, and an earlier night tonight can help. ":"";
+  var t=(r.feel==="Tired"||r.q==="Poorly")?"Go gently today. Small steps still count, and you are doing better than you think.":(r.feel==="Energized"||r.q==="Great")?"What a start. Carry that energy into something you love today.":"A fresh day is a gift. You showed up for yourself this morning, and that matters.";
+  return m+t;
+}
+function sleepCard(){
+  var td=today(),r=(S.sleep||{})[td],h;
+  if(r){
+    h='<div class="card"><h2>Sleep check-in</h2><p style="font-weight:700;margin:0">'+neonCheck("#8adfe2","#d6f7f8","rgba(138,223,226,.85)")+' Complete for today</p>'
+     +'<p class="hint" style="margin:8px 0">You slept '+slFmt(r.mins)+' ('+esc(r.bed)+' to '+esc(r.wake)+'). Sleep: '+esc(r.q)+'. Feeling: '+esc(r.feel)+'. Stretched: '+(r.stretch?"yes":"not today")+'.</p>'
+     +'<p style="margin:0">'+esc(slMsg(r))+'</p><div class="row"><button type="button" class="btn ghost small" data-act="slundo">Edit</button></div></div>';
+    return h;
+  }
+  var d=function(k){return drafts[k]||""},chips=function(k,L){return '<div class="chips" role="group" aria-label="'+k+'">'+L.map(function(x){return '<button type="button" class="chip" aria-pressed="'+(d(k)===x)+'" data-act="slpick" data-k="'+k+'" data-v="'+x+'">'+x+'</button>'}).join("")+'</div>'};
+  h='<div class="card"><h2>Sleep check-in</h2><p class="hint">A quick look at last night.</p>'
+   +'<div class="grid2">'+fld("Bedtime last night","sl_bed",'<input type="time" id="sl_bed" data-draft="sl_bed" value="'+esc(d("sl_bed"))+'">')+fld("Woke up","sl_wake",'<input type="time" id="sl_wake" data-draft="sl_wake" value="'+esc(d("sl_wake"))+'">')+'</div>'
+   +'<div class="fld"><span>How did you sleep?</span>'+chips("sl_q",SL_Q)+'</div>'
+   +'<div class="fld"><span>How do you feel this morning?</span>'+chips("sl_f",SL_F)+'</div>'
+   +'<div class="fld"><span>Did you stretch?</span>'+chips("sl_s",["Yes","No"])+'</div>'
+   +'<div class="row"><button type="button" class="btn" data-act="slsave">Save sleep check-in</button></div></div>';
+  return h;
+}
+var _zm345=zenMorning;
+zenMorning=function(){return sleepCard()+_zm345()};
+/* steps */
+function stN(){S.steps=S.steps||{};return S.steps}
+function stCard(){
+  var td=today(),n=stN()[td],t=0,c=0,x=new Date();
+  for(var i=0;i<7;i++){var v=stN()[dstr(x)];if(v>0){t+=v;c++}x.setDate(x.getDate()-1)}
+  var steps=['Open the <b>Shortcuts</b> app and tap +','Add <b>Find Health Samples</b>: Type is Steps, Start Date is today','Add <b>Calculate Statistics</b>: Sum of the Health Samples','Add <b>Copy to Clipboard</b>','Run it, then come back here and tap <b>Paste from Health</b>'];
+  return '<div class="card lpink"><h2 style="margin:0 0 4px;font-size:18px">Steps</h2><p class="hint" style="margin:0 0 8px">Today: <b>'+(n>0?k(n):"not added yet")+'</b>'+(c>1?' · 7-day average '+k(t/c):"")+'</p>'
+   +'<div class="row" style="flex-wrap:wrap;gap:8px"><input type="text" inputmode="numeric" id="st_n" data-draft="st_n" maxlength="6" placeholder="Steps" aria-label="Steps today" style="max-width:110px" value="'+esc(drafts.st_n||"")+'"><button type="button" class="btn small" data-act="stsave">Save</button><button type="button" class="btn ghost small" data-act="stpaste">Paste from Health</button></div>'
+   +'<details class="acc"><summary>Set up the Health shortcut</summary><div class="body"><ol style="margin:0;padding-left:20px">'+steps.map(function(s){return '<li>'+s+'</li>'}).join("")+'</ol><p class="hint">Menu names can look a little different on your phone. Once it works, a daily Personal Automation can run it each evening.</p></div></details></div>';
+}
+function stSet(v){v=Math.round(v);if(!(v>=0&&v<200000)){toast("That number doesn’t look right");return}stN()[today()]=v;drafts.st_n="";save();toast("Steps saved");render()}
+var _vh345=viewHome;
+viewHome=function(){var o=_vh345();return session.cycv||session.hset?o:o+stCard()};
+var _aw345=act;
+act=function(a,d){
+  if(a==="slpick"&&d){drafts[d.k]=drafts[d.k]===d.v?"":d.v;render();return}
+  if(a==="slsave"){
+    var m=slHrs(drafts.sl_bed,drafts.sl_wake);
+    if(m===null||!drafts.sl_q||!drafts.sl_f||!drafts.sl_s){toast("Add bedtime, wake time and your answers");return}
+    S.sleep=S.sleep||{};var td=today();
+    S.sleep[td]={bed:drafts.sl_bed,wake:drafts.sl_wake,mins:m,q:drafts.sl_q,feel:drafts.sl_f,stretch:drafts.sl_s==="Yes",ts:Date.now()};
+    if(drafts.sl_s==="Yes"&&!S.activities.some(function(x){return x.key==="stretch:"+td}))logAct("Morning stretch","zen","stretch:"+td);
+    ["sl_bed","sl_wake","sl_q","sl_f","sl_s"].forEach(function(x){delete drafts[x]});save();toast("Sleep check-in saved");render();return;
+  }
+  if(a==="slundo"){var r=(S.sleep||{})[today()];if(r){drafts.sl_bed=r.bed;drafts.sl_wake=r.wake;drafts.sl_q=r.q;drafts.sl_f=r.feel;drafts.sl_s=r.stretch?"Yes":"No";delete S.sleep[today()];save()}render();return}
+  if(a==="stsave"){stSet(parseFloat(String(drafts.st_n||"").replace(/,/g,"")));return}
+  if(a==="stpaste"){
+    var ok=function(txt){var mm=String(txt||"").match(/\d[\d,]*(?:\.\d+)?/);if(!mm){toast("No number found. Run the shortcut first.");return}stSet(parseFloat(mm[0].replace(/,/g,"")))};
+    try{navigator.clipboard.readText().then(ok,function(){toast("Couldn’t read the clipboard. Type the number instead.")})}catch(e){toast("Couldn’t read the clipboard. Type the number instead.")}
+    return;
+  }
+  return _aw345(a,d);
 };
 
 
