@@ -1485,6 +1485,13 @@ html body .cardcyc .btn:not(.ghost){background:#d62f4b!important;color:#fff!impo
 .bstartrow{align-items:flex-end;gap:10px;flex-wrap:wrap}
 .bsl{display:flex;flex-direction:column;gap:3px;font-size:15px;color:var(--muted)}
 .bsl select{min-width:130px}
+/* v362 Settings page background: baby pink */
+html body[data-set]{background:linear-gradient(180deg,#ffc2d4 0%,#ffd6e2 55%,#ffe6ee 100%) fixed!important;background-image:linear-gradient(180deg,#ffc2d4 0%,#ffd6e2 55%,#ffe6ee 100%)!important}
+html body[data-set] h1.disp{color:#3a1a26!important;-webkit-text-fill-color:#3a1a26!important}
+html body[data-set]>*:not(nav) .row>.btn.ghost[data-act="hsetx"]{color:#8a2a4a!important;border-color:#8a2a4a!important;background:transparent!important}
+html body[data-set] .hint.foot,html body[data-set] [style*="Work. Play. Zen"]{color:#7a4a5c!important}
+html:has(body[data-set]){background:#ffe6ee!important}
+html body[data-set] .hint.foot{color:#7a4a5c!important}
 </style>
 
 <div id="app"></div>
@@ -7425,7 +7432,7 @@ act=function(a,d){
 };
 
 /* v341 backup: export / import your data */
-var WPZ_VER="v361";
+var WPZ_VER="v362";
 var _sv341=settingsView;
 settingsView=function(){
   var o=_sv341();
