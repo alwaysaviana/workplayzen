@@ -1367,6 +1367,22 @@ html body .mc .calbox.cD .mtrack i{background:#1a1417!important}
 html body .mc .calbox .btn.ghost{color:#ff9a3c!important}
 html body .mc .calbox.cD .btn.ghost{color:#b25a00!important;border-color:#b25a00!important}
 html body nav button{font-size:14.5px!important}
+
+/* v354 field styles + celebration checkbox */
+body{--fb:#efeaff;--ftx:#20143d;--fbd:#b9a6ff;--fph:#857aa6;--flb:#ddd3ff}
+body[data-fs="A"]{--fb:#fff6ec;--ftx:#1d1520;--fbd:#ffc2d4;--fph:#8a7580;--flb:#ffe9f0}
+html body input[type=text],html body input[type=number],html body input[type=search],html body input[type=email],html body input[type=time],html body input[type=date],html body input:not([type]),html body select,html body textarea,html body #qadd .fld input,html body #qadd.qtop .fld input,html body .cardsteps input{background:var(--fb)!important;color:var(--ftx)!important;border:1.5px solid var(--fbd)!important;padding:3px 12px!important;min-height:32px!important;font-size:16px!important;font-weight:600!important}
+html body .cardsteps input{border-color:#c6ff3d!important}
+html body input::placeholder,html body textarea::placeholder{color:var(--fph)!important;opacity:1}
+html body .card:not(.blush) .fld,html body .card:not(.blush) .fld>span,html body .card:not(.blush) .fld>label{color:var(--flb)!important;font-size:15px;gap:3px}
+html body .grid2{gap:8px}
+.celchk{display:inline-flex;align-items:center;gap:9px;margin-top:8px;padding:2px 0;background:none;border:0;color:inherit;font:inherit;font-size:15px;font-weight:600;cursor:pointer;text-align:left}
+.celchk .cbx{width:22px;height:22px;border:2px solid currentColor;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;line-height:1;flex:none}
+.celchk[aria-checked="true"] .cbx{background:#ff9a3c;border-color:#ff9a3c;color:#2a1200}
+html body .qbub.macbig{display:block;width:100%;box-sizing:border-box;font-size:20px!important;min-height:56px;padding:12px 16px!important;margin:0 0 10px;text-align:center}
+html body #qadd.qcmp input[type=text],html body #qadd.qtop .fld input,html body #qadd.qtop input[type=text],html body #qadd.qcmp .qnums input{background:var(--fb)!important;color:var(--ftx)!important;border:1.5px solid var(--fbd)!important;height:34px!important;min-height:32px!important;font-size:16px!important;font-weight:600!important}
+html body #qadd.qtop input::placeholder,html body #qadd.qcmp input::placeholder{color:var(--fph)!important;opacity:1}
+html body #qadd.qtop label,html body #qadd.qtop label>span,html body #qadd.qtop .fld,html body #qadd.qtop .fld *:not(input):not(button){color:var(--flb)!important}
 </style>
 
 <div id="app"></div>
@@ -7307,7 +7323,7 @@ act=function(a,d){
 };
 
 /* v341 backup: export / import your data */
-var WPZ_VER="v353";
+var WPZ_VER="v354";
 var _sv341=settingsView;
 settingsView=function(){
   var o=_sv341();
@@ -7360,38 +7376,37 @@ function ooWeek(){
   for(var i=0;i<7;i++){var es=dayEntries(dstr(d));if(es.length){t+=mTot(es).cal;n++}d.setDate(d.getDate()-1)}
   return n>=2?{avg:Math.round(t/n),n:n}:null;
 }
+var OO_IDEAS=["Ideas for the rest of today: a gentle walk after dinner, a lighter meal with veggies and lean protein, and a big glass of water.","Ideas for the rest of today: some water, a few minutes of stretching, and a simple plate with protein and greens.","Ideas for the rest of today: an easy evening stroll, a light dinner, and an early wind-down. Tomorrow is a fresh start."];
 mBar=function(label,val,tgt,col,big){
-  var fmtv=function(x){return k(x)},o=oo(),key=String(label).toLowerCase(),isP=key==="protein";
-  var bc=key==="calories"?"#ff9a3c":isP?"#ff86b8":key==="carbs"?"#c3dd7a":"#ffb066";var u=big?" kcal":"g",cel=!!(o.celeb&&S.celeb&&S.celeb[mDate()]);
-  var over=tgt&&val>tgt,real=over&&!(o.tol&&val<=tgt*1.1)&&!cel&&!(isP&&o.soft);
+  var fmtv=function(x){return k(x)},key=String(label).toLowerCase(),isP=key==="protein";
+  var bc=key==="calories"?"#ff9a3c":isP?"#ff86b8":key==="carbs"?"#c3dd7a":"#ffb066";var u=big?" kcal":"g",cel=!!(S.celeb&&S.celeb[mDate()]);
+  var over=tgt&&val>tgt,near=tgt&&val>0&&Math.abs(val-tgt)<=tgt*0.05,real=over&&!near&&!cel&&!isP;
   var pc=tgt?Math.min(100,val/tgt*100):0,fill;
-  if(over&&real&&o.look){var b=tgt/val*100;fill='<div style="display:flex;height:100%"><i style="width:'+b+'%;background:'+bc+';border-radius:999px 0 0 999px"></i><i style="width:'+(100-b)+'%;background:#ffd6a8;border-radius:0 999px 999px 0"></i></div>'}
+  if(real){var b=tgt/val*100;fill='<div style="display:flex;height:100%"><i style="width:'+b+'%;background:'+bc+';border-radius:999px 0 0 999px"></i><i style="width:'+(100-b)+'%;background:#ffd6a8;border-radius:0 999px 999px 0"></i></div>'}
   else fill='<i style="width:'+pc+'%;background:'+bc+'"></i>';
   var left="";
   if(tgt){
-    if(val<=tgt)left=fmtv(tgt-val)+u+" left";
-    else if(cel)left="Celebration day";
-    else if(isP&&o.soft)left="Strong protein day";
-    else if(o.tol&&val<=tgt*1.1)left="Right on track";
-    else left=o.soft?(big?fmtv(val-tgt)+" kcal beyond your target":fmtv(val-tgt)+"g extra"):fmtv(val-tgt)+u+" over";
+    if(near)left="You’re right on track";
+    else if(val<=tgt)left=fmtv(tgt-val)+u+" left";
+    else if(cel)left="Celebration day. Enjoy it.";
+    else if(isP)left="Strong protein day";
+    else left=big?fmtv(val-tgt)+" kcal beyond today’s target":fmtv(val-tgt)+"g extra";
   }
   var h='<div class="mrow"><div class="mbh"><span>'+label+'</span><b'+(big?' class="mbig"':"")+'>'+fmtv(val)+(tgt?' / '+fmtv(tgt):"")+(big?"":"g")+'</b></div><div class="mtrack" role="img" aria-label="'+label+' '+fmtv(val)+(tgt?" of "+fmtv(tgt):"")+'">'+fill+'</div>'+(tgt?'<span class="mleft">'+left+'</span>':"");
   if(tgt&&real){
-    if(big&&o.note)h+='<p class="hint" style="margin:6px 0 0">'+OO_NOTES[(new Date()).getDate()%OO_NOTES.length]+'</p>';
-    if(o.ideas){var id=key==="calories"?"A short walk, a lighter next meal, or simply reset tomorrow.":key==="fat"?"Lighter on fat for now: veggies, lean protein, fruit.":key==="carbs"?"For your next meal: protein and veggies.":"";if(id)h+='<p class="hint" style="margin:4px 0 0;font-size:15px">Idea: '+id+'</p>'}
+    if(big){var dd=(new Date()).getDate();h+='<p class="hint" style="margin:6px 0 0">'+OO_NOTES[dd%OO_NOTES.length]+'</p><p class="hint" style="margin:4px 0 0;font-size:15px">'+OO_IDEAS[dd%OO_IDEAS.length]+'</p>'}
+    else{var id=key==="fat"?"Lighter on fat for now: veggies, lean protein, fruit.":key==="carbs"?"For your next meal: protein and veggies.":"";if(id)h+='<p class="hint" style="margin:4px 0 0;font-size:15px">Idea: '+id+'</p>'}
   }
   if(big&&tgt){
-    if(o.week){var w=ooWeek();if(w)h+='<p class="hint" style="margin:6px 0 0;font-size:15px">7-day average: '+fmtv(w.avg)+' / '+fmtv(tgt)+' kcal</p>'}
-    if(o.celeb&&(over||cel))h+='<div class="row" style="margin-top:6px"><button type="button" class="btn ghost small" data-act="celeb" aria-pressed="'+cel+'">'+(cel?"Celebration day: on":"Mark as celebration day")+'</button></div>';
+    var w=ooWeek();if(w)h+='<p class="hint" style="margin:6px 0 0;font-size:15px">7-day average: '+fmtv(w.avg)+' / '+fmtv(tgt)+' kcal</p>';
+    h+='<button type="button" class="celchk" role="checkbox" aria-checked="'+cel+'" data-act="celeb"><span class="cbx" aria-hidden="true">'+(cel?"✓":"")+'</span>Celebration day / holiday</button>';
   }
   return h+'</div>';
 };
 var _sv343=settingsView;
 settingsView=function(){
-  var o=_sv343(),s=oo();
-  var c='<div class="card"><h2>When you go over target</h2><p class="hint">Try these on or off to see what feels right.</p><div class="row" style="flex-wrap:wrap;gap:8px">'+OO_LAB.map(function(x){return '<button type="button" class="btn small'+(s[x[0]]?'':' ghost')+'" data-act="oo_'+x[0]+'" aria-pressed="'+s[x[0]]+'">'+x[1]+'</button>'}).join("")+'</div></div>';
-  var i=o.indexOf('<div class="card"><h2>Back up your data</h2>');
-  return i<0?o+c:o.slice(0,i)+c+o.slice(i);
+  var o=_sv343(),i=o.indexOf('<div class="card"><h2>When you go over target</h2>');
+  return o;
 };
 var _aw343=act;
 act=function(a,d){
@@ -7630,6 +7645,44 @@ var _aw351=act;
 act=function(a,d){
   if(a.indexOf("calst_")===0){S.calStyle=a.slice(6);save();render();return}
   return _aw351(a,d);
+};
+
+/* v354 Home button goes to main page, profile info merged into Settings Profile, field styles (lilac / cream) */
+var FSTY=[["F","Lilac"],["A","Cream"]];
+function fStyle(){return S.fieldStyle==="A"?"A":"F"}
+var _r354=render;
+render=function(){try{document.body.dataset.fs=fStyle()}catch(e){}return _r354.apply(this,arguments)};
+var _sv354=settingsView;
+settingsView=function(){
+  var o=_sv354(),nm=fld("First name","set_name",'<input type="text" id="set_name" data-draft="set_name" maxlength="30" autocomplete="given-name" value="'+esc(drafts.set_name!==undefined?drafts.set_name:(S.name||""))+'">');
+  var ps=o.indexOf('<div class="card"><h2>Profile</h2>'),mk='data-act="setname">Save</button></div></div>',pe=o.indexOf(mk);
+  if(ps>=0&&pe>ps)o=o.slice(0,ps)+o.slice(pe+mk.length);
+  o=o.replace('<div class="card lpink mc"><h2>Your info</h2><div class="grid2">','<div class="card lpink mc"><h2>Profile</h2>'+nm+'<div class="grid2">');
+  o=o.replace('data-act="fcalc">Calculate</button>','data-act="fcalc">Save and calculate</button>');
+  var ps2=o.indexOf('<div class="card lpink mc"><h2>Profile</h2>'),ft=o.indexOf('<div class="card lpink mc" id="ftargets">'),hm='margin:4px 0">Settings</h1>',hi=o.indexOf(hm);
+  if(ps2>=0&&ft>ps2&&hi>=0&&hi<ps2){var en=o.indexOf('<div class="card',ft+10);if(en<0)en=o.length;var blk=o.slice(ps2,en);o=o.slice(0,ps2)+o.slice(en);hi=o.indexOf(hm)+hm.length;o=o.slice(0,hi)+blk+o.slice(hi)}
+  var s=fStyle(),c='<div class="card"><h2>Field style</h2><p class="hint">The look of the boxes you type in.</p><div class="row" style="flex-wrap:wrap;gap:8px">'+FSTY.map(function(x){return '<button type="button" class="btn small'+(s===x[0]?'':' ghost')+'" data-act="fsty_'+x[0]+'" aria-pressed="'+(s===x[0])+'">'+x[1]+'</button>'}).join("")+'</div></div>';
+  var i=o.indexOf('<div class="card"><h2>Back up your data</h2>');
+  return i<0?o+c:o.slice(0,i)+c+o.slice(i);
+};
+var _aw354=act;
+act=function(a,d){
+  if(a==="go")session.hset=false;
+  if(a.indexOf("fsty_")===0){S.fieldStyle=a.slice(5)==="A"?"A":"F";save();render();return}
+  if(a==="fcalc"&&drafts.set_name!==undefined){S.name=String(drafts.set_name).trim().split(/\s+/).slice(0,2).join(" ").slice(0,30);delete drafts.set_name;save()}
+  return _aw354(a,d);
+};
+function macMeal(){var h=(new Date()).getHours();return h<11?"breakfast":h<15?"lunch":h<20?"dinner":"snack"}
+var _wm354=wkMacroCard;
+wkMacroCard=function(){
+  var o=_wm354().replace(/<button type="button" class="btn small" data-act="wkv" data-v="macros">Open<\/button>/,"");
+  return '<button type="button" class="qbub qmac macbig" style="--c:#ff9a3c" data-act="qmacros">Add Macros</button>'+o;
+};
+var _ft354=fuelToday;
+fuelToday=function(){
+  var o=_ft354(),mk='<div class="card lpink mc"><div class="mcal">',i=o.indexOf(mk);
+  if(i<0)return o;
+  return o.slice(0,i)+'<button type="button" class="qbub qmac macbig" style="--c:#ff9a3c" data-act="fadd" data-m="'+macMeal()+'">Add Macros</button>'+o.slice(i);
 };
 
 
