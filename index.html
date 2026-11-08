@@ -1391,6 +1391,37 @@ html body .cardcyc h2,html body .cardcyc h1{color:#d62f4b!important}
 html body .cardcyc button:not(.btn){color:#3a1a26}
 html body .cardcyc .btn.ghost{color:#c0233f!important;background:#fff6ec!important}
 html body .cardcyc input[type=text],html body .cardcyc input[type=number],html body .cardcyc textarea{border-color:#ffc2d4!important}
+/* v356 cycle screen layout */
+.cyhero{border-radius:0 0 50% 50%/0 0 36px 36px;margin:10px -16px 0;padding:14px 16px 34px;text-align:center;color:#2a1019}
+.cystrip{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:18px}
+.cyw{display:flex;flex-direction:column;align-items:center;gap:4px}
+.cyw span{font-size:14px;font-weight:600;color:#6b4456}
+.cyd{width:38px;height:38px;border-radius:50%;border:2px solid transparent;background:transparent;color:#2a1019;font:inherit;font-size:17px;font-weight:600;padding:0;cursor:pointer}
+.cyd:disabled{opacity:.55}
+.cyd.lg{background:#c0475f;color:#fff;border-color:#c0475f}
+.cyd.pr{border:2px dashed #c0475f}
+.cyd.td{background:#fff;color:#c0475f;box-shadow:0 0 0 2px #fff}
+.cyd.td.lg{background:#c0475f;color:#fff;box-shadow:0 0 0 3px #fff}
+.cyhead{font-size:34px;font-weight:800;line-height:1.1;margin:6px 0 6px;color:#2a1019}
+.cysub{font-size:17px;color:#4a2a38;margin-bottom:12px}
+.cybtn{margin-top:10px;background:#fff;color:#c0475f;border:0;border-radius:999px;padding:12px 28px;font:inherit;font-size:18px;font-weight:800;min-height:48px;cursor:pointer;box-shadow:0 2px 8px rgba(120,30,60,.15)}
+.cyh3{margin:20px 0 8px;font-size:20px}
+.cycards{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 8px}
+.cycard{flex:0 0 118px;border:3px solid #ffc2d4;border-radius:16px;padding:12px 8px;text-align:center;color:#20143d;display:flex;flex-direction:column;gap:6px;min-height:104px;justify-content:center;box-sizing:border-box}
+.cycard span{font-size:15px;font-weight:600}
+.cybig{font-size:42px;line-height:1}
+.cyph{font-size:19px;line-height:1.15}
+.cygrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px 0;text-align:center}
+.cyl{font-size:14px;font-weight:600;color:#6b4456;padding-bottom:4px}
+.cyc{display:flex;flex-direction:column;align-items:center;gap:3px;min-height:58px}
+.cyn{font-size:16px;font-weight:600;color:#3a1a26;line-height:1.1;text-align:center}
+.cyn i{display:block;font-style:normal;font-size:11px;font-weight:800;letter-spacing:.04em}
+.cyc.lg .cyn{color:#e0546f}
+.cyc.fu .cyn{color:#a89aa2}
+.cyck{width:26px;height:26px;border-radius:50%;border:2.5px solid #b9b0b5;background:transparent;padding:0;color:#fff;font-size:14px;font-weight:800;line-height:1;cursor:pointer}
+.cyck.on{background:#c0475f;border-color:#c0475f}
+.cyck.pr{border:2.5px dashed #c0475f}
+html body .cardcyc .cyck{color:#fff}
 </style>
 
 <div id="app"></div>
@@ -7331,7 +7362,7 @@ act=function(a,d){
 };
 
 /* v341 backup: export / import your data */
-var WPZ_VER="v355";
+var WPZ_VER="v356";
 var _sv341=settingsView;
 settingsView=function(){
   var o=_sv341();
@@ -7691,6 +7722,56 @@ fuelToday=function(){
   var o=_ft354(),mk='<div class="card lpink mc"><div class="mcal">',i=o.indexOf(mk);
   if(i<0)return o;
   return o.slice(0,i)+'<button type="button" class="qbub qmac macbig" style="--c:#ff9a3c" data-act="fadd" data-m="'+macMeal()+'">Add Macros</button>'+o.slice(i);
+};
+
+/* v356 cycle layout inspired by the screenshots she shared: phase hero with week strip, big headline, pill button, insight cards, circle-check calendar */
+function cyPeriodDay(){var n=0,d=cyD(today());while(cy().days[dstr(d)]){n++;d=cyAdd(d,-1)}return n}
+function cycleView(){
+  var m=cyModel(),ph=cyPhase(m),tx=ph?CY_TXT[ph]:null,key=today(),on=!!cy().days[key],t=m.t;
+  var pred={};if(m.last){for(var j=1;j<=3;j++){var s0=cyAdd(m.last,m.len*j);for(var q=0;q<m.P;q++)pred[dstr(cyAdd(s0,q))]=1}}
+  var nx=m.last?cyAdd(m.last,m.len):null,dn=nx?cyDiff(nx,t):null,pd=cyPeriodDay();
+  var head,sub="",btn;
+  if(on){head="Period day "+pd;btn='<button type="button" class="cybtn" data-act="cycscroll">Edit period dates</button>'}
+  else{
+    btn='<button type="button" class="cybtn" data-act="cycd" data-d="'+key+'">Log period</button>';
+    if(!m.last)head="Start tracking";
+    else if(dn>0)head="Period in "+dn+" day"+(dn===1?"":"s");
+    else if(dn===0)head="Period may start today";
+    else head="Period is a little late";
+    if(m.last)sub=tx.n}
+  var hero=on?"linear-gradient(#ffe3ea,#f7a1b4 60%,#ee7f98)":"linear-gradient(#fff0f4,#ffc2d4 70%,#f9a8c0)";
+  var h='<div class="row"><button type="button" class="btn ghost small" data-act="cycx">← Home</button></div>';
+  h+='<div class="cyhero" style="background:'+hero+'"><div class="cystrip">';
+  var sw=cyAdd(t,-t.getDay());
+  for(var i=0;i<7;i++){
+    var d=cyAdd(sw,i),ds=dstr(d),fut=d>t,lg=!!cy().days[ds],pr=!lg&&pred[ds],td=ds===key;
+    h+='<div class="cyw"><span>'+"SMTWTFS".charAt(i)+'</span><button type="button" class="cyd'+(lg?' lg':'')+(pr?' pr':'')+(td?' td':'')+'" '+(fut?'disabled ':'data-act="cycd" data-d="'+ds+'" ')+'aria-label="'+cyFmt(d)+(lg?', period day':pr?', predicted':'')+'" aria-pressed="'+lg+'">'+d.getDate()+'</button></div>';
+  }
+  h+='</div><div class="cyhead">'+head+'</div>'+(sub?'<div class="cysub">'+sub+'</div>':'')+btn+'</div>';
+  /* insight cards */
+  var cards=[];
+  if(m.last)cards.push(['#c4b5f4','Cycle day','<b class="cybig">'+m.day+'</b>']);
+  if(tx)cards.push(['#a9dcd9','Phase','<b class="cyph">'+tx.n.replace(" phase","")+'</b>']);
+  if(nx&&dn>0)cards.push(['#ffd9a8','Next period','<b class="cyph">'+cyFmt(nx)+'</b>']);
+  if(cards.length)h+='<h3 class="cyh3">My cycle today</h3><div class="cycards">'+cards.map(function(c){return '<div class="cycard" style="background:'+c[0]+'"><span>'+c[1]+'</span>'+c[2]+'</div>'}).join("")+'</div>';
+  if(tx)h+='<div class="card cardcyc"><h2>'+tx.n+'</h2><p><b>Energy.</b> '+tx.e+'</p><p><b>Workouts.</b> '+tx.w+'</p><p style="margin-bottom:0"><b>Caring for yourself.</b> '+tx.c+'</p></div>';
+  else h+='<div class="card cardcyc"><h2>Start tracking</h2><p class="hint">Tap Log period when your period starts. After two cycles, predictions get personal.</p></div>';
+  /* calendar */
+  var st=cyAdd(t,-28);st=cyAdd(st,-st.getDay());
+  h+='<div class="card cardcyc" id="cycal"><h2>Your cycle calendar</h2><p class="hint">Tap a circle to check or uncheck a period day. Dashed circles are predicted.</p><div class="cygrid">';
+  "SMTWTFS".split("").forEach(function(x){h+='<span class="cyl">'+x+'</span>'});
+  for(var n=0;n<42;n++){
+    var d2=cyAdd(st,n),ds2=dstr(d2),fu=d2>t,lg2=!!cy().days[ds2],pr2=!lg2&&pred[ds2],td2=ds2===key;
+    h+='<div class="cyc'+(fu&&!pr2?' fu':'')+(lg2?' lg':'')+'"><span class="cyn">'+(td2?'<i>TODAY</i>':'')+(d2.getDate()===1?d2.toLocaleDateString(undefined,{month:"short"})+' ':'')+d2.getDate()+'</span>'+(fu&&!pr2?'':'<button type="button" class="cyck'+(lg2?' on':'')+(pr2?' pr':'')+'" '+(fu?'disabled ':'data-act="cycd" data-d="'+ds2+'" ')+'aria-label="'+cyFmt(d2)+(lg2?', period day':pr2?', predicted':'')+'" aria-pressed="'+lg2+'">'+(lg2?'✓':'')+'</button>')+'</div>';
+  }
+  h+='</div></div>';
+  h+='<p class="hint" style="font-size:15px">These are general patterns and estimates, not medical advice or birth control. Everyone is different. Talk with a clinician about very irregular cycles, severe pain or heavy bleeding. Your cycle data stays on this device.</p>';
+  return h;
+}
+var _aw356=act;
+act=function(a,d){
+  if(a==="cycscroll"){var el=document.getElementById("cycal");if(el&&el.scrollIntoView)el.scrollIntoView({behavior:"smooth",block:"start"});return}
+  return _aw356(a,d);
 };
 
 
