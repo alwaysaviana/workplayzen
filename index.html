@@ -14654,8 +14654,8 @@ fix267=function(){var r=_fz1014.apply(this,arguments);
   function sp(el,o){if(!el)return;for(var k in o)el.style.setProperty(k,o[k],"important")}
   var RED="#ff4d6d";
   sp(hero,{"border":"2px solid "+RED,"border-radius":"26px","box-shadow":"0 0 16px rgba(255,77,109,.45), inset 0 0 18px rgba(255,77,109,.12)"});
-  var dayb=hero.querySelector(".cyx-day b:not(.sm)");sp(dayb,{"font-size":"54px","font-weight":"800","line-height":"1.05","color":"#fff","text-shadow":"0 0 14px rgba(255,255,255,.55)"});
-  var ph=hero.querySelector(".cyx-ph");sp(ph,{"display":"inline-flex","align-items":"center","justify-content":"center","border":"2px solid "+RED,"border-radius":"999px","padding":"6px 26px","font-size":"20px","font-weight":"700","background":"rgba(255,77,109,.14)","margin":"6px auto"});
+  var dayb=hero.querySelector(".cyx-day b:not(.sm)");sp(dayb,{"font-size":"40px","font-weight":"800","line-height":"1.05","color":"#fff","text-shadow":"0 0 14px rgba(255,255,255,.55)"});
+  var ph=hero.querySelector(".cyx-ph");sp(ph,{"display":"inline-flex","align-items":"center","justify-content":"center","border":"2px solid "+RED,"border-radius":"999px","padding":"6px 26px","font-size":"20px","font-weight":"700","background":"none","margin":"6px auto"});
   var mean=hero.querySelector(".cyx-mean");sp(mean,{"font-style":"italic","color":"#d9cdd6","font-size":"15px","font-weight":"400"});
   var sub=hero.querySelector(".cyx-sub"),line=hero.querySelector(".cyx-line");
   var m=cyModel();
@@ -14664,9 +14664,9 @@ fix267=function(){var r=_fz1014.apply(this,arguments);
     var nx,sm="";
     if(I.start&&I.dn!==null&&I.ph!=="late"){nx=cyFmt(cyAdd(I.start,m.len));sm=I.dn>1?"In "+I.dn+" days":I.dn===1?"Tomorrow":"Today"}
     else{nx="Any day now";sm="Period is due"}
-    var pg=(I.preg||"").replace(/<[^>]+>/g,"").replace("of getting pregnant","of pregnancy");
+    var pg=/Higher/.test(I.preg||"")?"Higher today":/Lower/.test(I.preg||"")?"Lower today":"";
     var tiles=document.createElement("div");tiles.className="cyx-tiles";
-    function tile(a,b,c){return '<div style="border:1.5px solid '+RED+';border-radius:20px;padding:10px 6px;text-align:center;min-width:0"><div style="font-size:15px;color:#ffb3c1">'+a+'</div><div style="font-size:'+(c===undefined?'18px':'20px')+';font-weight:700;color:#f7eff2;margin:2px 0;line-height:1.15">'+b+'</div>'+(c?'<div style="font-size:15px;font-style:italic;color:#bdb2bb">'+c+'</div>':'')+'</div>'}
+    function tile(a,b,c){return '<div style="border:1.5px solid '+RED+';border-radius:20px;padding:10px 6px;text-align:center;min-width:0"><div style="font-size:15px;color:'+(a==="Fertility"?"#8adfe2":"#ffb3c1")+'">'+a+'</div><div style="font-size:16px;font-weight:700;color:#f7eff2;margin:2px 0;line-height:1.15">'+b+'</div>'+(c?'<div style="font-size:15px;font-style:italic;color:#bdb2bb">'+c+'</div>':'')+'</div>'}
     tiles.innerHTML=tile("Next Period",nx,sm)+(pg?tile("Fertility",pg):"");
     tiles.style.cssText="display:grid;grid-template-columns:"+(pg?"1fr 1fr":"1fr")+";gap:10px;margin:12px 0 10px";
     var anchor=mean||ph||hero.querySelector(".cyx-day");anchor.insertAdjacentElement("afterend",tiles);
