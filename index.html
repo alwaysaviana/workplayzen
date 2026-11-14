@@ -13418,7 +13418,7 @@ balWeekRows=function(){
   var ws=weekStartSun(new Date()),t=today(),L="SMTWTFS",cells="",n=0;
   for(var i=0;i<7;i++){var ds=dstr(cyAdd(ws,i)),on=!!(S.sun&&S.sun[ds]),fut=ds>t;if(on)n++;
     cells+='<button type="button" class="bwc sunc'+(on?" on":"")+'" data-act="sunday" data-d="'+ds+'"'+(fut?' disabled':'')+' aria-pressed="'+on+'" aria-label="'+(on?"Sunshine logged for ":"Log sunshine for ")+ds+'">'+(on?"🌴":"")+'</button>'}
-  var row='<div class="bwl" style="color:#7ad65a;font-weight:700;text-transform:capitalize">Logged being outside'+(n?' <span style="font-weight:500;text-transform:none">· '+n+(n===1?" day":" days")+'</span>':'')+'</div><div class="bwr">'+cells+'</div>';
+  var row='<div class="bwl" style="color:#7ad65a;font-weight:700;text-transform:capitalize">Outdoor Activity'+(n?' <span style="font-weight:500;text-transform:none">· '+n+(n===1?" day":" days")+'</span>':'')+'</div><div class="bwr">'+cells+'</div>';
   return o.slice(0,e).replace('<div class="bwk" role="img"','<div class="bwk"')+row+o.slice(e);
 };
 var _a775=act;
@@ -13437,7 +13437,7 @@ act=function(a,d){
     if(m<0||m>900)m=0;
     var nm=w||"Time outside";
     S.activities.push({id:uid(),ts:Date.now(),date:today(),text:"Outside: "+nm+(m?" · "+m+" min":""),what:nm,mins:m,p:"zen",kind:"outside",key:""});
-    S.sun=S.sun||{};S.sun[today()]=1;session.outOpen=false;save();render();toast("Logged. Sunshine added \uD83C\uDF34");return}
+    S.sun=S.sun||{};S.sun[today()]=1;session.outOpen=false;save();render();toast("Logged. Outdoor activity added \uD83C\uDF34");return}
   return _a776(a,d);
 };
 var _f776=fix267;
@@ -13593,7 +13593,7 @@ function ytotCard(){
   var mm=moments(),hl=heatList(HEAT_RE),cl=heatList(COLD_RE);
   function cnt(a,r){return a.filter(function(x){return x.ts>=r[0]&&x.ts<r[1]}).length}
   function sun(r){return Object.keys(S.sun||{}).filter(function(d){return d>=r[2]&&d<=r[3]}).length}
-  var rows=[["Work.","#ffe047",function(r){return cnt(mm.filter(function(x){return x.p==="work"}),r)}],["Play.","#ff4fa3",function(r){return cnt(mm.filter(function(x){return x.p==="play"}),r)}],["Zen.","#8adfe2",function(r){return cnt(mm.filter(function(x){return x.p==="zen"}),r)}],["Sauna 🥵","#d95f0e",function(r){return cnt(hl,r)}],["Cold plunge 🧊","#ffffff",function(r){return cnt(cl,r)}],["Sunny days 🌴","#ffd23f",sun]];
+  var rows=[["Work.","#ffe047",function(r){return cnt(mm.filter(function(x){return x.p==="work"}),r)}],["Play.","#ff4fa3",function(r){return cnt(mm.filter(function(x){return x.p==="play"}),r)}],["Zen.","#8adfe2",function(r){return cnt(mm.filter(function(x){return x.p==="zen"}),r)}],["Sauna 🥵","#d95f0e",function(r){return cnt(hl,r)}],["Cold plunge 🧊","#ffffff",function(r){return cnt(cl,r)}],["Outdoor Activity 🌴","#ffd23f",sun]];
   var h='<div class="card ytot"><h2>Your totals</h2><div class="ytg"><span></span><b>Last week</b><b>Last month</b><b>This year</b>';
   rows.forEach(function(q){h+='<span style="color:'+q[1]+';font-weight:700">'+q[0]+'</span>'+R.map(function(r){return '<span class="ytn">'+q[2](r)+'</span>'}).join("")});
   return h+'</div><p class="hint" style="margin:8px 0 0">Everything you have logged. Sauna and cold plunge also count as Zen.</p></div>';
@@ -13625,7 +13625,7 @@ sharedCal=function(off,y,m,base){
   var hotD={},coldD={};(S.activities||[]).forEach(function(a){var t=(a.text||"")+" "+(a.what||"");if(!a.date||a.p==="fit")return;if(/sauna/i.test(t))hotD[a.date]=1;if(/cold\s*plunge|ice\s*bath|\bice\b(?![\s-]*cream)|cryo/i.test(t))coldD[a.date]=1});
   o=o.replace(/(<button type="button" data-act="ccday" data-d="(\d{4}-\d\d-\d\d)"[^>]*>)([\s\S]*?)<\/button>/g,function(m0,a,d,inner){var HD=calHideEff();var ex=(!HD.sun&&S.sun&&S.sun[d]?"\uD83C\uDF34":"")+(!HD.sauna&&hotD[d]?"\uD83E\uDD75":"")+(!HD.ice&&coldD[d]?"\uD83E\uDDCA":"")+(!HD.steps&&(+stN()[d]||0)>=10000?"\uD83D\uDC5F":"")+"";if(!HD.food&&stkD[d])inner=inner.replace(/<\/span>\s*$/,' <span class="cchs" aria-label="hit protein goal" style="font-size:11px;line-height:1">\uD83E\uDD69</span></span>');return (ex||(!HD.food&&stkD[d]))?a+inner+(ex?'<span class="cysun" aria-label="sun, sauna or cold plunge logged">'+ex+'</span>':'')+'</button>':m0});
   o=o.replace(/<span style="font-weight:600">(\d+)((?: ?<span class="cchs"[^>]*>(?:(?!<\/span>)[\s\S])*<\/span>)+)<\/span>/g,'<span style="font-weight:600">$1</span><span class="cdck">$2</span>');
-  o=o.replace(' Food</span>',' Logged food</span><span><span aria-hidden="true">\uD83C\uDF34</span> Sun</span><span><span aria-hidden="true">\uD83E\uDD75</span> Sauna</span><span><span aria-hidden="true">\uD83E\uDDCA</span> Ice</span><span><span aria-hidden="true">\uD83D\uDC5F</span> 10k steps</span><span><span aria-hidden="true">\uD83E\uDD69</span> Protein goal</span>');
+  o=o.replace(' Food</span>',' Logged food</span><span><span aria-hidden="true">\uD83C\uDF34</span> Outdoor Activity</span><span><span aria-hidden="true">\uD83E\uDD75</span> Sauna</span><span><span aria-hidden="true">\uD83E\uDDCA</span> Ice</span><span><span aria-hidden="true">\uD83D\uDC5F</span> 10k steps</span><span><span aria-hidden="true">\uD83E\uDD69</span> Protein goal</span>');
   return o;
 };
 
@@ -13761,7 +13761,7 @@ act=function(a,d){
 };
 
 /* v818: calendar legend: tap a marker to hide or show it (Work, Play and Zen always stay) */
-var CALOPT=[["food","Hit protein"],["sun","🌴 Sun"],["sauna","🥵 Sauna"],["ice","🧊 Ice"],["steps","👟 10k steps"]];
+var CALOPT=[["food","Hit protein"],["sun","🌴 Outdoor Activity"],["sauna","🥵 Sauna"],["ice","🧊 Ice"],["steps","👟 10k steps"]];
 var _sc818=sharedCal;
 sharedCal=function(off,y,m,base){
   var o=_sc818(off,y,m,base),HD=calHideEff();
@@ -14568,7 +14568,7 @@ var _a1009=act;
 act=function(a,d){
   if(a==="qsave"){var sl=document.getElementById("ql_loc"),loc=sl?sl.value:"",tx=(drafts.ql_t||"").trim();
     var res=_a1009(a,d);
-    if(sl&&session.qlOut&&tx){S.sun=S.sun||{};S.sun[today()]=1;save();toast("Logged. Sunshine added")}
+    if(sl&&session.qlOut&&tx){S.sun=S.sun||{};S.sun[today()]=1;save();toast("Logged. Outdoor activity added")}
     if(tx){session.qlLoc="";session.qlOut=false}
     return res}
   return _a1009(a,d);
