@@ -3028,7 +3028,7 @@ function fmt(ts){return new Date(ts).toLocaleDateString(undefined,{weekday:"shor
 function rnd(n){return Math.floor(Math.random()*n)}
 
 function defaults(){
-  var h=["Move my body","Drink water","Read","Stretch","Practice something new"].map(function(n){return {id:uid(),name:n}});
+  var h=[];
   var j=["Dance in the kitchen","Iced coffee on a sunny patio","Sunset walk","Paint something messy"].map(function(n){return {id:uid(),text:n,n:0}});
   return {name:"",lastVisit:"",checkin:null,checkins:[],habits:h,habitLog:[],joy:j,tnt:[],sleep:[],gl:[],activities:[],journal:[],reflections:[],moods:{},breaths:[],weekDone:{},playOffset:{},plr:{skip:[],pos:{},neg:{}},experiences:[],targets:null,macroLog:[],joyReflections:[],signals:[],hc:{items:[],dismissed:[]},saveMoods:true,moodLog:[],hcAnswers:{},moodPrefSet:false};
 }
@@ -14335,11 +14335,11 @@ fix267=function(){
 function habEditPage(){
   var h='<div class="row"><button type="button" class="btn ghost small" data-act="wkv" data-v="">← Work</button></div>';
   var c=habitsCard();
-  c=c.replace('<h2>My habits list</h2>','<h2>Update habits list</h2>');
+  c=c.replace('<h2>My habits list</h2>','<h2>'+(S.habits.length?'Update habits list':'Set my habits')+'</h2>');c=c.replace('</form></div>','</form><p style="font-size:14px;line-height:1.25;color:#bdb2bb;opacity:.85;margin:8px 8px 0">Drink water, stretch, read, take a walk\u2026</p></div>');
   c=c.replace(/<button type="button" class="check"[^>]*>[^<]*<\/button>/g,'');
   c=c.replace(/<button type="button" class="iconbtn"[^>]*data-act="helps"[^>]*>[^<]*<\/button>/g,'');
   c=c.replace(/<br><span class="hint">Helps me[\s\S]*?<\/span>/g,'');
-  c=c.replace(/<p class="hint">\d+ of \d+ practiced today\. Resets each day, with no pressure\.<\/p>/,'<p class="hint">These are the habits you want to start putting into your day-to-day. Start with just one, then add more gradually as each one becomes part of your routine.</p>');
+  c=c.replace(/<p class="hint">\d+ of \d+ practiced today\. Resets each day, with no pressure\.<\/p>/,'<p class="hint">Choose 3 to 5 daily habits you want to put into your day-to-day. You can start with one and add more as each becomes part of your routine.</p>');
   return h+c;
 }
 var _a1000=act;
@@ -14433,7 +14433,7 @@ wkMomentsCard=function(){
   var rows=S.habits.map(function(x){
     var d=habitDone(x.id),c=cnt[x.id]?Object.keys(cnt[x.id]).length:0;
     return '<li style="display:flex;align-items:center;gap:8px;list-style:none;margin:0 0 6px"><button type="button" data-act="habit" data-id="'+x.id+'" role="checkbox" aria-checked="'+d+'" aria-label="Mark '+esc(x.name)+' completed today" style="flex:none;width:22px;height:22px;box-sizing:border-box;border-radius:50%;border:1.5px solid #ffe047;background:'+(d?'#ffe047':'transparent')+';color:#1a1200;font-size:13px;line-height:1;padding:0;display:grid;place-items:center;cursor:pointer">'+(d?'✓':'')+'</button><span style="flex:1;min-width:0;font-size:15px;line-height:1.2">'+esc(x.name)+'</span><b style="flex:none;font-size:15px;color:#ffe047">x'+c+'</b></li>'}).join("");
-  return '<div class="card wkprog lpink wkhabs"><span class="tag">Habits completed this week</span>'+(rows?'<ul style="margin:6px 0 0;padding:0">'+rows+'</ul>':'<span class="hint">Add habits on the Update habits list page and they will show up here.</span>')+'</div>';
+  return '<div class="card wkprog lpink wkhabs"><span class="tag">Habits completed this week</span>'+(rows?'<ul style="margin:6px 0 0;padding:0">'+rows+'</ul>':'<span class="hint">Check off a habit and it will show here.</span><button type="button" class="btn small wkdet" data-act="habedit" style="margin-top:12px">Set my habits</button>')+'</div>';
 };
 var _fz1006=fix267;
 fix267=function(){var r=_fz1006.apply(this,arguments);
