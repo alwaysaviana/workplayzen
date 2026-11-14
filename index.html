@@ -4128,7 +4128,7 @@ function balExtras(mm,cut){
   var ws=weekStartSun(new Date()),days=[],mx=1,i;
   for(i=0;i<7;i++){var s0=new Date(ws);s0.setDate(ws.getDate()+i);var e0=new Date(s0);e0.setDate(s0.getDate()+1);var c={work:0,play:0,zen:0},bf=session.balF||"";mm.forEach(function(x){if(x.ts>=s0.getTime()&&x.ts<e0.getTime()&&(!bf||x.p===bf))c[x.p]++});var t=c.work+c.play+c.zen;if(t>mx)mx=t;days.push({l:"SMTWTFS".charAt(i),c:c,t:t,today:dstr(s0)===today()})}
   var u=66/mx;
-  h+='<h3 style="margin-top:10px;font-size:15px">This week by day</h3><div style="display:flex;gap:8px;align-items:flex-end;height:96px;margin-top:4px" role="img" aria-label="Moments each day this week: '+days.map(function(d){return d.l+" "+d.t}).join(", ")+'">'+days.map(function(d){
+  h+='<h3 style="margin-top:10px;font-size:15px">This week by day</h3><p class="hint" style="margin:2px 0 6px">There\'s no perfect mix, and it can look different every week.</p><div style="display:flex;gap:8px;align-items:flex-end;height:96px;margin-top:4px" role="img" aria-label="Moments each day this week: '+days.map(function(d){return d.l+" "+d.t}).join(", ")+'">'+days.map(function(d){
     return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;min-width:0"><span style="font-size:15px;color:var(--muted);min-height:16px">'+(d.t||"")+'</span><div style="width:100%;max-width:34px;display:flex;flex-direction:column-reverse;border-radius:8px;overflow:hidden;background:'+(d.t?"transparent":"var(--card2)")+';min-height:'+(d.t?0:4)+'px">'+["work","play","zen"].map(function(k){return d.c[k]?'<i style="display:block;height:'+Math.round(d.c[k]*u)+'px;background:'+P[k].c+'"></i>':""}).join("")+'</div><span style="font-size:15px;'+(d.today?"font-weight:800;color:var(--text)":"color:var(--muted)")+'">'+d.l+'</span></div>'}).join("")+'</div>';
   h+=balWeekRows();
   return h;
@@ -13581,7 +13581,7 @@ fix267=function(){
     var nowD=new Date(),hr=nowD.getHours()*60+nowD.getMinutes(),q=app.querySelector(".qlog:not(.qlogpop)");
     if(false&&q&&hr>=750&&hr<=1260&&!moodToday("midday"))q.insertAdjacentHTML("beforebegin",moodQuick("midday","Midday check-in: How are you feeling?"));
     var bal=app.querySelector(".bal"),card=bal&&bal.closest(".card");
-    var bwk=app.querySelector(".bwk");if(bwk&&!app.querySelector(".energynote"))bwk.insertAdjacentHTML("beforebegin",'<p class="hint energynote" style="margin:12px 0 8px">This just shows where your energy has gone. There\'s no perfect mix, and it can look different every week.</p>');
+    var bwk=app.querySelector(".bwk");
     if(card){var hints=card.querySelectorAll("p.hint"),last=hints[hints.length-1];if(last)last.insertAdjacentHTML("afterend",moodChart());else card.insertAdjacentHTML("beforeend",moodChart())}
   }
 };
