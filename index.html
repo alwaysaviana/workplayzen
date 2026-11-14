@@ -14686,6 +14686,17 @@ fix267=function(){var r=_fz1014.apply(this,arguments);
   if(!hero.querySelector(".cyx-fine")){var fn=document.createElement("p");fn.className="cyx-fine";fn.textContent="*Predictions are estimates, not a form of contraception.";fn.style.cssText="font-style:italic;color:#bdb2bb;font-size:15px;margin:12px 0 0;text-align:center";hero.appendChild(fn)}
   }catch(e){}
   return r};
+var _fz1015=fix267;
+fix267=function(){var r=_fz1015.apply(this,arguments);
+  try{
+  if(view!=="home"||!session.cycv||!session.cyxLog)return r;
+  [].forEach.call(document.querySelectorAll("#app .cymonth .cyx-lc .cyd"),function(b){
+    var o={"border":"0","box-shadow":"none","background":"none","outline":"none","pointer-events":"none","animation":"none","text-shadow":"none"};
+    for(var k in o)b.style.setProperty(k,o[k],"important");
+    b.removeAttribute("data-act");b.setAttribute("tabindex","-1");b.setAttribute("aria-hidden","true");
+  });
+  }catch(e){}
+  return r};
 var _fz910=fix267;
 fix267=function(){
   var r=_fz910.apply(this,arguments);
