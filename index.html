@@ -13493,7 +13493,7 @@ fix267=function(){
   [].forEach.call(document.querySelectorAll(".logfoodtxt"),function(x){x.remove()});
   if(view!=="home")return;
   var dm=document.querySelector('.subbtn[data-act="dm"]');
-  if(dm&&!session.hset)dm.insertAdjacentHTML("afterend",'<button type="button" class="subbtn logfoodtxt" data-act="qmpop">\ud83e\udd57 Log food</button>'+(fon("water")?'<button type="button" class="subbtn logfoodtxt hydbtn" data-act="hydpop" style="margin-left:-8px!important;margin-right:14px!important">\ud83d\udca7 Hydration</button>':""));
+  if(dm&&!session.hset&&!session.cycv)dm.insertAdjacentHTML("afterend",'<button type="button" class="subbtn logfoodtxt" data-act="qmpop">\ud83e\udd57 Log food</button>'+(fon("water")?'<button type="button" class="subbtn logfoodtxt hydbtn" data-act="hydpop" style="margin-left:-8px!important;margin-right:14px!important">\ud83d\udca7 Hydration</button>':""));
   var st=app.querySelector(".qlog:not(.qlogpop) .qstk");
   if(st)st.remove();[].forEach.call(app.querySelectorAll(".qlog:not(.qlogpop) .qmac,.qlog:not(.qlogpop) .qout"),function(x){x.remove()});
 };
