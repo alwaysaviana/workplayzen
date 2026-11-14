@@ -14666,7 +14666,7 @@ fix267=function(){var r=_fz1014.apply(this,arguments);
     else{nx="Any day now";sm="Period is due"}
     var pg=/Higher/.test(I.preg||"")?"Higher today":/Lower/.test(I.preg||"")?"Lower today":"";
     var tiles=document.createElement("div");tiles.className="cyx-tiles";
-    function tile(a,b,c){return '<div style="border:1.5px solid '+RED+';border-radius:20px;padding:10px 6px;text-align:center;min-width:0"><div style="font-size:15px;color:'+(a==="Fertility"?"#8adfe2":"#ffb3c1")+'">'+a+'</div><div style="font-size:16px;font-weight:700;color:#f7eff2;margin:2px 0;line-height:1.15">'+b+'</div>'+(c?'<div style="font-size:15px;font-style:italic;color:#bdb2bb">'+c+'</div>':'')+'</div>'}
+    function tile(a,b,c){return '<div style="border:1.5px solid '+RED+';border-radius:20px;padding:10px 6px;text-align:center;min-width:0"><div style="font-size:15px;font-weight:800;color:'+(a==="Fertility"?"#8adfe2":"#ffb3c1")+'">'+a+'</div><div style="font-size:'+(c===undefined?'18px':'20px')+';font-weight:700;color:#f7eff2;margin:2px 0;line-height:1.15">'+b+'</div>'+(c?'<div style="font-size:15px;font-style:italic;color:#bdb2bb">'+c+'</div>':'')+'</div>'}
     tiles.innerHTML=tile("Next Period",nx,sm)+(pg?tile("Fertility",pg):"");
     tiles.style.cssText="display:grid;grid-template-columns:"+(pg?"1fr 1fr":"1fr")+";gap:10px;margin:12px 0 10px";
     var anchor=mean||ph||hero.querySelector(".cyx-day");anchor.insertAdjacentElement("afterend",tiles);
