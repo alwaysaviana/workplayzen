@@ -14690,6 +14690,7 @@ var _fz1015=fix267;
 fix267=function(){var r=_fz1015.apply(this,arguments);
   try{
   if(view!=="home"||!session.cycv||!session.cyxLog)return r;
+  var gh=document.querySelector("#app .cyx-lghide");if(gh)gh.style.setProperty("display","none","important");
   [].forEach.call(document.querySelectorAll("#app .cymonth .cyx-lc .cyd"),function(b){
     var o={"border":"0","box-shadow":"none","background":"none","outline":"none","pointer-events":"none","animation":"none","text-shadow":"none"};
     for(var k in o)b.style.setProperty(k,o[k],"important");
