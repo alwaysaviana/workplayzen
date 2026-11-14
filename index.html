@@ -6473,7 +6473,7 @@ function weekHabitCounts(){
 }
 wkMomentsCard=function(){
   var L=weekHabitCounts();
-  return '<div class="card wkprog lpink"><span class="tag">Habits completed this week</span>'+(L.length?'<ul class="hcl">'+L.map(function(x){return '<li>'+esc(x.n)+' <b>x'+x.c+'</b></li>'}).join("")+'</ul>':'<span class="hint">Check off a habit and it will show up here.</span>')+'</div>';
+  return '<div class="card wkprog lpink"><span class="tag">Daily habits completed this week</span>'+(L.length?'<ul class="hcl">'+L.map(function(x){return '<li>'+esc(x.n)+' <b>x'+x.c+'</b></li>'}).join("")+'</ul>':'<span class="hint">Check off a habit and it will show up here.</span>')+'</div>';
 };
 lwFollow=function(id){
   var w=fFind(id),L=LW();if(!w)return;
@@ -9956,10 +9956,10 @@ act=function(a,d){
   return _a405(a,d);
 };
 
-/* v408: tapping "Habits completed this week" scrolls to Daily habits */
+/* v408: tapping "Daily habits completed this week" scrolls to Daily habits */
 document.addEventListener("click",function(e){
   var c=e.target&&e.target.closest&&e.target.closest(".wkprog");
-  if(!c||!/Habits completed this week/i.test((c.querySelector(".tag")||{}).textContent||""))return;
+  if(!c||!/Daily habits completed this week/i.test((c.querySelector(".tag")||{}).textContent||""))return;
   var hs=[].slice.call(document.querySelectorAll("#app .card h2")).filter(function(h){return /daily habits|habits i want to implement|my habits list/i.test(h.textContent)})[0];
   var t=hs&&hs.closest(".card");if(!t)return;
   var rm=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -14433,7 +14433,7 @@ wkMomentsCard=function(){
   var rows=S.habits.map(function(x){
     var d=habitDone(x.id),c=cnt[x.id]?Object.keys(cnt[x.id]).length:0;
     return '<li style="display:flex;align-items:center;gap:8px;list-style:none;margin:0 0 6px"><button type="button" data-act="habit" data-id="'+x.id+'" role="checkbox" aria-checked="'+d+'" aria-label="Mark '+esc(x.name)+' completed today" style="flex:none;width:22px;height:22px;box-sizing:border-box;border-radius:50%;border:1.5px solid #ffe047;background:'+(d?'#ffe047':'transparent')+';color:#1a1200;font-size:13px;line-height:1;padding:0;display:grid;place-items:center;cursor:pointer">'+(d?'✓':'')+'</button><span style="flex:1;min-width:0;font-size:15px;line-height:1.2">'+esc(x.name)+'</span><b style="flex:none;font-size:15px;color:#ffe047">x'+c+'</b></li>'}).join("");
-  return '<div class="card wkprog lpink wkhabs"><span class="tag">Habits completed this week</span>'+(rows?'<ul style="margin:6px 0 0;padding:0">'+rows+'</ul>':'<span class="hint">Check off a habit and it will show here.</span><button type="button" class="btn small wkdet" data-act="habedit" style="margin-top:12px">Set my habits</button>')+'</div>';
+  return '<div class="card wkprog lpink wkhabs"><span class="tag">Daily habits completed this week</span>'+(rows?'<ul style="margin:6px 0 0;padding:0">'+rows+'</ul>':'<span class="hint">Check off a habit and it will show here.</span><button type="button" class="btn small wkdet" data-act="habedit" style="margin-top:12px">Set my habits</button>')+'</div>';
 };
 var _fz1006=fix267;
 fix267=function(){var r=_fz1006.apply(this,arguments);
