@@ -14765,6 +14765,25 @@ fix267=function(){var r=_fz1017.apply(this,arguments);
     inp.style.setProperty("background",bg,"important");inp.style.setProperty("color","#f7eff2","important");inp.style.setProperty("border","1.5px solid #ffc2d4","important");inp.style.setProperty("-webkit-text-fill-color","#f7eff2","important")}
   }catch(e){}
   return r};
+var _fz1019=fix267;
+fix267=function(){var r=_fz1019.apply(this,arguments);
+  try{
+  if(view!=="healthcode"||session.hcq)return r;
+  var app=document.getElementById("app");if(!app)return r;
+  var card=[].filter.call(app.querySelectorAll("details.acc"),function(d){var sm=d.querySelector("summary");return sm&&/What.s a Health Code/.test(sm.textContent)})[0];
+  var br=app.querySelector(".backrow");
+  if(card){if(session.hcWhat){card.open=true;var sm=card.querySelector("summary");if(sm)sm.style.setProperty("display","none","important")}else card.remove()}
+  if(br&&!br.querySelector(".hcwhatbtn")){
+    br.insertAdjacentHTML("beforeend",'<button type="button" class="subbtn hcwhatbtn" data-act="hcwhat" aria-expanded="'+(!!session.hcWhat)+'">What is a Health Code?</button>');
+    var b=br.querySelector(".hcwhatbtn");
+    [["background","none"],["border","0"],["box-shadow","none"],["margin-left","auto"],["font-size","15px"],["font-weight","600"],["color","#ffb3c7"],["width","auto"],["padding","0 4px"],["min-height","0"]].forEach(function(x){b.style.setProperty(x[0],x[1],"important")});
+  }
+  }catch(e){}
+  return r};
+var _a1019=act;
+act=function(a,d){
+  if(a==="hcwhat"){session.hcWhat=!session.hcWhat;var y=window.scrollY;render();window.scrollTo(0,y);return}
+  return _a1019(a,d)};
 var _fz910=fix267;
 fix267=function(){
   var r=_fz910.apply(this,arguments);
