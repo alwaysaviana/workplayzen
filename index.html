@@ -13588,13 +13588,14 @@ fix267=function(){
 
 /* v785: My Year totals (last week, last month, this year) */
 function ytotCard(){
-  var now=new Date(),y=now.getFullYear(),ws=weekStartSun(now),lw0=cyAdd(ws,-7),lm0=new Date(y,now.getMonth()-1,1),m0=new Date(y,now.getMonth(),1);
-  var R=[[lw0.getTime(),ws.getTime(),dstr(lw0),dstr(cyAdd(ws,-1))],[lm0.getTime(),m0.getTime(),dstr(lm0),dstr(new Date(y,now.getMonth(),0))],[new Date(y,0,1).getTime(),new Date(y+1,0,1).getTime(),y+"-01-01",y+"-12-31"]];
+  var now=new Date(),y0=now.getFullYear(),y=y0,ws=weekStartSun(now),lw0=cyAdd(ws,-7),lm0=new Date(y,now.getMonth()-1,1),m0=new Date(y,now.getMonth(),1);
+  var yl=session.ytL?1:0,yy=y0-yl;
+  var R=[[lw0.getTime(),ws.getTime(),dstr(lw0),dstr(cyAdd(ws,-1))],[lm0.getTime(),m0.getTime(),dstr(lm0),dstr(new Date(y,now.getMonth(),0))],[new Date(yy,0,1).getTime(),new Date(yy+1,0,1).getTime(),yy+"-01-01",yy+"-12-31"]];
   var mm=moments(),hl=heatList(HEAT_RE),cl=heatList(COLD_RE);
   function cnt(a,r){return a.filter(function(x){return x.ts>=r[0]&&x.ts<r[1]}).length}
   function sun(r){return Object.keys(S.sun||{}).filter(function(d){return d>=r[2]&&d<=r[3]}).length}
   var rows=[["Work.","#ffe047",function(r){return cnt(mm.filter(function(x){return x.p==="work"}),r)}],["Play.","#ff4fa3",function(r){return cnt(mm.filter(function(x){return x.p==="play"}),r)}],["Zen.","#8adfe2",function(r){return cnt(mm.filter(function(x){return x.p==="zen"}),r)}],["Sauna 🥵","#d95f0e",function(r){return cnt(hl,r)}],["Cold plunge 🧊","#ffffff",function(r){return cnt(cl,r)}],["Outdoors 🌴","#ffd23f",sun]];
-  var h='<div class="card ytot"><h2>Your totals</h2><div class="ytg"><span></span><b>Last week</b><b>Last month</b><b>This year</b>';
+  var h='<div class="card ytot"><h2>My Year at a Glance '+yy+'</h2><div class="ytg"><span></span><b>Last week</b><b>Last month</b><b><button type="button" data-act="ytog" aria-label="Switch between this year and last year" style="background:none;border:0;border-bottom:1.5px dashed #ffc2d4;color:inherit;font:inherit;font-weight:700;padding:0 0 1px;cursor:pointer">'+(yl?"Last year":"This year")+'</button></b>';
   rows.forEach(function(q){h+='<span style="color:'+q[1]+';font-weight:700">'+q[0]+'</span>'+R.map(function(r){return '<span class="ytn">'+q[2](r)+'</span>'}).join("")});
   return h+'</div><p class="hint" style="margin:8px 0 0">Everything you have logged. Sauna and cold plunge also count as Zen.</p></div>';
 }
@@ -13607,6 +13608,11 @@ fix267=function(){
   var wc=[].filter.call(app.querySelectorAll("h2"),function(x){return /^Weekly challenges/i.test(x.textContent)})[0],c=wc&&wc.closest(".card");
   if(c)c.insertAdjacentHTML("beforebegin",ytotCard());
 };
+
+var _a1018=act;
+act=function(a,d){
+  if(a==="ytog"){session.ytL=!session.ytL;var y=window.scrollY;render();window.scrollTo(0,y);return}
+  return _a1018(a,d)};
 
 /* v786: Frustrated and Angry flows */
 var _mf786=moodFlow;
@@ -13898,7 +13904,7 @@ function featHide(){
     all("p.hint").forEach(function(p){if(/^Weekly challenges:|^New challenges can be added/.test(p.textContent))rm(p)});
     sel("ul.chl");card(/^Weekly challenges/);
   }
-  if(off("myyear")){card(/^Goals by month|^Accomplishments|^Your totals|^Wealth Code|^Things I'm doing/)}
+  if(off("myyear")){card(/^Goals by month|^Accomplishments|^Your totals|^My Year at a Glance|^Wealth Code|^Things I'm doing/)}
   if(off("sauna")&&off("cold")){}
   all(".choices,.pair,.zpair,.qlog").forEach(function(c){if(!c.querySelector("button"))rm(c)});
 }
