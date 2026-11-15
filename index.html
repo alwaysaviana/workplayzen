@@ -13606,7 +13606,8 @@ fix267=function(){
   [].forEach.call(app.querySelectorAll(".ytot"),function(x){x.remove()});
   var h1=[].filter.call(app.querySelectorAll("h1"),function(x){return /^\s*My Year\s*$/i.test(x.textContent)})[0];if(!h1)return;
   var wc=[].filter.call(app.querySelectorAll("h2"),function(x){return /^Weekly challenges/i.test(x.textContent)})[0],c=wc&&wc.closest(".card");
-  if(c)c.insertAdjacentHTML("beforebegin",ytotCard());
+  var fc=[].filter.call(app.querySelectorAll(".card"),function(x){return h1.compareDocumentPosition(x)&Node.DOCUMENT_POSITION_FOLLOWING})[0];
+  if(fc)fc.insertAdjacentHTML("beforebegin",ytotCard());else if(c)c.insertAdjacentHTML("beforebegin",ytotCard());
 };
 
 var _a1018=act;
