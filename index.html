@@ -3961,17 +3961,11 @@ function glCards(){
 }
 function glHC(){
   var h='<div class="card lpink"><h2>Things that....🔑</h2>';
-  if(S.gl.length){
-    if(session.glr===undefined)session.glr=rnd(S.gl.length);
-    var rm=S.gl[session.glr%S.gl.length];
-    h+='<div class="item" style="flex-direction:column;align-items:stretch"><span class="tag">A reminder for today</span><p style="font-size:18px;margin:0">'+esc(glSay(rm))+'</p><button type="button" class="btn ghost small" style="align-self:flex-start" data-act="glnext">Show another</button></div>';
-  }
   GL.forEach(function(g){
     var items=S.gl.filter(function(x){return x.kind===g[0]}).reverse();
-    h+='<details class="acc"'+(items.length&&items.length<=5?' open':'')+'><summary>'+g[1]+' '+g[4]+' ('+items.length+')</summary><div class="body">';
-    if(!items.length)h+='<p class="hint">Nothing here yet. You can add these from the ZEN section.</p>';
-    else{h+='<ul class="list">';items.forEach(function(x){h+='<li class="item"><span class="tx">'+esc(x.text)+'<br><span class="hint">'+fmt(x.ts)+'</span></span><button type="button" class="iconbtn" aria-label="Remove '+esc(x.text)+'" data-act="delgl" data-id="'+x.id+'">\u2715</button></li>'});h+='</ul>'}
-    h+='</div></details>';
+    h+='<div style="color:#ffb3c7;font-weight:700;font-size:16px;margin:14px 0 8px">'+g[1]+' '+g[4]+'</div>';
+    if(!items.length)h+='<p style="margin:0;color:#8f8896;font-style:italic;font-size:15px">Nothing yet. You can add these from the ZEN section.</p>';
+    else{h+='<div style="display:flex;flex-wrap:wrap;gap:8px">';items.forEach(function(x){h+='<span style="display:inline-flex;align-items:center;gap:8px;border:1.5px solid #4a3a48;border-radius:999px;padding:6px 8px 6px 14px;font-size:16px">'+esc(x.text)+'<button type="button" class="iconbtn" style="min-height:0;min-width:0;padding:0 4px;background:none;border:0;color:#8f8896" aria-label="Remove '+esc(x.text)+'" data-act="delgl" data-id="'+x.id+'">✕</button></span>'});h+='</div>'}
   });
   return h+'</div>';
 }
