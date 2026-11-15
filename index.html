@@ -3965,7 +3965,7 @@ function glHC(){
     var items=S.gl.filter(function(x){return x.kind===g[0]}).reverse();
     h+='<div style="color:#ffb3c7;font-weight:700;font-size:16px;margin:14px 0 8px">'+g[1]+' '+g[4]+'</div>';
     if(!items.length)h+='<p style="margin:0;color:#8f8896;font-style:italic;font-size:15px">Nothing yet. You can add these from the ZEN section.</p>';
-    else{h+='<div style="display:flex;flex-wrap:wrap;gap:8px">';items.forEach(function(x){h+='<span style="display:inline-flex;align-items:center;gap:8px;border:1.5px solid #4a3a48;border-radius:999px;padding:6px 8px 6px 14px;font-size:16px">'+esc(x.text)+'<button type="button" class="iconbtn" style="min-height:0;min-width:0;padding:0 4px;background:none;border:0;color:#8f8896" aria-label="Remove '+esc(x.text)+'" data-act="delgl" data-id="'+x.id+'">✕</button></span>'});h+='</div>'}
+    else{h+='<ul style="margin:0;padding:0 0 0 4px;list-style:none">';items.forEach(function(x){h+='<li style="display:flex;align-items:center;gap:10px;font-size:15px;color:#e8dde4;padding:3px 0"><span style="flex:none;width:6px;height:6px;border-radius:50%;background:#ffb3c7"></span><span style="flex:1;min-width:0">'+esc(x.text)+'</span><button type="button" class="iconbtn" style="min-height:0;min-width:0;padding:0 6px;background:none;border:0;color:#8f8896;font-size:15px" aria-label="Remove '+esc(x.text)+'" data-act="delgl" data-id="'+x.id+'">\u2715</button></li>'});h+='</ul>'}
   });
   return h+'</div>';
 }
@@ -7250,7 +7250,7 @@ document.addEventListener("input",function(e){
 
 /* ===== v257: in-row rest countdown (1 min) replaces the set check mark ===== */
 var FS_REST=60;
-function fsPink(){return '<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#ffc2d4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>'}
+function fsPink(){return '<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#ffe047" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>'}
 function fsElapsed(s,A){var ref=(A&&!A.seg&&A.pAt)?A.pAt:Date.now();return Math.max(0,(ref-s.at)/1000)}
 function fsActive(s){return s&&s.done&&s.at&&(s.rt===undefined||s.rt===null)}
 function fsInner(s,A){
@@ -7584,7 +7584,7 @@ viewMyYear=function(){var o=_vmy261(),i=o.indexOf('<div class="card yog">'),c=ch
 /* ===== v263: inline rest-seconds edit, up/down reorder, keep editing returns to the one-page view ===== */
 function fsText(s,A){
   if(fsActive(s)){var left=FS_REST-fsElapsed(s,A);if(left>0)return '<b class="frt">'+fMin(Math.ceil(left)*1000)+'</b>';s.rt=FS_REST}
-  return (s.rt>=FS_REST&&!s.rtm)?'All set!':'Rested '+s.rt+'s';
+  return 'All set!';
 }
 function fsInner(s,A){return s.at?fsText(s,A):""}
 function fsCheck(s,i){
@@ -13279,7 +13279,7 @@ act=function(a,d){
     if(e){
       if(a==="ssadd"){e.ss={n:"",sets:e.sets.map(function(q){return {w:"",r:"",done:false}})};save();render();return}
       if(a==="ssrm"){delete e.ss;save();render();return}
-      if(a==="sscheck"){var st=e.ss&&e.ss.sets[+d.i];if(st){st.done=!st.done;save();render()}return}
+      if(a==="sscheck"){var st=e.ss&&e.ss.sets[+d.i];if(st){st.done=!st.done;if(st.done){ssFinalize(e,+d.i);st.at=Date.now();delete st.rt}else{delete st.at;delete st.rt}save();render()}return}
       if(a==="fsetadd"&&e.ss){var l=e.ss.sets[e.ss.sets.length-1];e.ss.sets.push({w:l?l.w:"",r:"",done:false})}
       if(a==="fsetrm"&&e.ss&&e.sets.length>1)e.ss.sets.pop();
     }
@@ -13297,6 +13297,15 @@ fFinish=function(){
   }
   return r;
 };
+function ssActive(st){return st&&st.done&&st.at&&(st.rt===undefined||st.rt===null)}
+function ssFinalize(e,j){var ch=false;if(e&&e.ss)e.ss.sets.forEach(function(q,k){if(k<j&&ssActive(q)){q.rt=FS_REST;ch=true}});return ch}
+function ssCheck(st,i,A){
+  if(!st.done)return '<button type="button" class="fchk" data-act="sscheck" data-i="'+i+'" aria-pressed="false" aria-label="Mark superset set '+(i+1)+' complete">\u2713</button>';
+  if(!st.at)return '<button type="button" class="fchk frs fin" data-act="sscheck" data-i="'+i+'" data-ssi="'+i+'" aria-pressed="true" aria-label="Superset set '+(i+1)+' complete. Tap to undo.">'+fsPink()+'</button>';
+  var act=ssActive(st),left=FS_REST-fsElapsed(st,A);
+  if(act&&left<=0){st.rt=FS_REST;act=false}
+  return '<span class="frs'+(act?'':' fin')+'" data-ssi="'+i+'"><button type="button" class="frtx" data-act="sscheck" data-i="'+i+'" aria-label="Superset set '+(i+1)+' complete. Tap to undo.">'+(act?'<b class="frt">'+fMin(Math.ceil(left)*1000)+'</b>':'All set!')+'</button>'+(act?'':'<button type="button" class="frck" data-act="sscheck" data-i="'+i+'" aria-label="Undo superset set '+(i+1)+'">'+fsPink()+'</button>')+'</span>';
+}
 var _f773=fix267;
 fix267=function(){
   _f773.apply(this,arguments);
@@ -13310,9 +13319,9 @@ fix267=function(){
     row.insertAdjacentHTML("beforeend",e.ss?'<button type="button" class="btn ghost small" data-act="ssrm">Remove superset</button>':'<button type="button" class="btn ghost small" data-act="ssadd">Add superset</button>');
     if(!e.ss)return;
     var fs=c.querySelector(".fsets"),ld=!!c.querySelector('[data-fs="0|w"]'),sec=/sec/.test((c.querySelector(".fset .lwf em")||{}).textContent||"");
-    var h='<div class="ssblk"><span class="tag">Superset</span><input type="text" class="ssname" data-ssn="1" maxlength="60" placeholder="Superset exercise name" aria-label="Superset exercise name" value="'+esc(e.ss.n||"")+'"><div class="fsets"><div class="fset fsh"><span></span><span>'+(sec?"Seconds":"Reps")+'</span><span>'+(ld?"Weight":"")+'</span><span></span></div>';
+    var h='<div class="ssblk"><span class="tag">Superset</span><h2 class="rnx ssx" contenteditable="true" spellcheck="false" data-ssx="1" data-ph="Name this exercise" aria-label="Superset exercise name. Tap to edit.">'+esc(e.ss.n||"")+'</h2><div class="fsets"><div class="fset fsh"><span></span><span>'+(sec?"Seconds":"Reps")+'</span><span>'+(ld?"Weight":"")+'</span><span></span></div>';
     e.ss.sets.forEach(function(x,i){
-      h+='<div class="fset"><b>Set '+(i+1)+'</b><span class="lwf"><input type="text" inputmode="numeric" data-ss="'+i+'|r" aria-label="Superset reps for set '+(i+1)+'" value="'+esc(x.r)+'"><em>'+(sec?"sec":"reps")+'</em></span>'+(ld?'<span class="lwf"><input type="text" inputmode="decimal" data-ss="'+i+'|w" aria-label="Superset weight for set '+(i+1)+'" value="'+esc(x.w)+'"><em>lb</em></span>':'<span class="hint">—</span>')+(x.done?'<button type="button" class="fchk frs fin" data-act="sscheck" data-i="'+i+'" aria-pressed="true" aria-label="Superset set '+(i+1)+' complete. Tap to undo.">'+fsPink()+'</button>':'<button type="button" class="fchk" data-act="sscheck" data-i="'+i+'" aria-pressed="false" aria-label="Mark superset set '+(i+1)+' complete">✓</button>')+'</div>'});
+      h+='<div class="fset"><b>Set '+(i+1)+'</b><span class="lwf"><input type="text" inputmode="numeric" data-ss="'+i+'|r" aria-label="Superset reps for set '+(i+1)+'" value="'+esc(x.r)+'"><em>'+(sec?"sec":"reps")+'</em></span>'+(ld?'<span class="lwf"><input type="text" inputmode="decimal" data-ss="'+i+'|w" aria-label="Superset weight for set '+(i+1)+'" value="'+esc(x.w)+'"><em>lb</em></span>':'<span class="hint">—</span>')+ssCheck(x,i,A)+'</div>'});
     h+='</div></div>';
     fs.insertAdjacentHTML("afterend",h);
   });
@@ -13321,13 +13330,20 @@ document.addEventListener("input",function(ev){
   var t=ev.target,A=S.fit&&S.fit.active;if(!A||!t||!t.closest)return;
   var c=t.closest("[data-exi]");if(!c)return;
   var e=A.ex[parseInt(c.getAttribute("data-exi"),10)];if(!e||!e.ss)return;
-  if(t.hasAttribute("data-ssn")){e.ss.n=t.value;save();return}
+  if(t.hasAttribute("data-ssx"))return;
   if(t.dataset&&t.dataset.ss){var q=t.dataset.ss.split("|"),st=e.ss.sets[+q[0]];if(st){st[q[1]]=t.value;save()}}
 });
 document.addEventListener("focusin",function(ev){
   var t=ev.target;if(!t||!t.classList||!t.classList.contains("rnx"))return;
   setTimeout(function(){try{var r=document.createRange();r.selectNodeContents(t);var s=window.getSelection();s.removeAllRanges();s.addRange(r)}catch(x){}},30);
 });
+function ssxCommit(t){
+  var A=S.fit&&S.fit.active;if(!A||!t)return;var c=t.closest("[data-exi]");if(!c)return;
+  var e=A.ex[parseInt(c.getAttribute("data-exi"),10)];if(!e||!e.ss)return;
+  var v=(t.textContent||"").replace(/\s+/g," ").trim().slice(0,60);e.ss.n=v;t.textContent=v;save();
+}
+document.addEventListener("focusout",function(ev){var t=ev.target;if(t&&t.hasAttribute&&t.hasAttribute("data-ssx"))ssxCommit(t)});
+document.addEventListener("keydown",function(ev){var t=ev.target;if(t&&t.hasAttribute&&t.hasAttribute("data-ssx")&&ev.key==="Enter"){ev.preventDefault();t.blur()}});
 function rnCommit(t){
   var A=S.fit&&S.fit.active;if(!A||!t)return;var ei=parseInt(t.getAttribute("data-rn"),10),e=A.ex[ei];if(!e)return;
   var v=(t.textContent||"").replace(/\s+/g," ").trim().slice(0,60);
@@ -13368,9 +13384,9 @@ balWeekRows=function(){
   var h='<p class="hint" style="margin:8px 0 0">Weekly challenges: <b style="color:#ffc2d4">'+n+' of '+L.length+'</b>'+(dow===0?' <span>(starts tomorrow)</span>':'')+'</p>';
   h+='<ul class="chl chr3">'+(L.length?L.map(function(c){
     var d=ccDone(c),pc=CHP[c.p]||CHP.work;
-    return '<li class="chr chx'+(d?' on':'')+'" style="--pc:'+pc.c+'"><div class="ccrow"><button type="button" class="chxb" data-act="cct" data-id="'+c.id+'" aria-pressed="'+d+'" aria-label="'+esc(c.text)+(d?'. Completed. Tap to undo.':'. Tap when completed.')+'"><span class="chxc" aria-hidden="true">'+(d?neonCheck("#ffc2d4","#ffe3ec","rgba(255,194,212,.85)"):"")+'</span><span class="chxm"><span class="chxn">'+pc.n+'.</span><span class="chxd">'+esc(c.text)+'</span></span></button>'+(addOK?'<button type="button" class="iconbtn" aria-label="Delete this challenge" data-act="ccdel" data-id="'+c.id+'">✕</button>':'')+'</div></li>'}).join(""):'<li class="chr chx"><span class="chxd">No challenge yet for this week.</span></li>')+'</ul>';
+    return '<li class="chr chx'+(d?' on':'')+'" style="--pc:'+pc.c+'"><div class="ccrow"><button type="button" class="chxb" data-act="cct" data-id="'+c.id+'" aria-pressed="'+d+'" aria-label="'+esc(c.text)+(d?'. Completed. Tap to undo.':'. Tap when completed.')+'"><span class="chxc" aria-hidden="true">'+(d?neonCheck("#ffc2d4","#ffe3ec","rgba(255,194,212,.85)"):"")+'</span><span class="chxm"><span class="chxn" style="display:none">'+pc.n+'.</span><span class="chxd">'+esc(c.text)+'</span></span></button>'+(addOK?'<button type="button" class="iconbtn" aria-label="Delete this challenge" data-act="ccdel" data-id="'+c.id+'">✕</button>':'')+'</div></li>'}).join(""):'<li class="chr chx"><span class="chxd">Create 1-3 challenges for yourself this week. Challenges can only be entered on Sundays and Mondays of each week.</span></li>')+'</ul>';
   if(addOK){
-    h+='<div class="ccadd"><input type="text" id="cc_in" data-draft="cc_text" maxlength="100" placeholder="Add your own weekly challenge" aria-label="Your weekly challenge" value="'+esc(drafts.cc_text||"")+'"><div class="chips" role="group" aria-label="Pillar">'+["work","play","zen"].map(function(k){return '<button type="button" class="chip" aria-pressed="'+(sel===k)+'" data-act="ccp" data-p="'+k+'" style="--c:'+CHP[k].c+'">'+CHP[k].n+'.</button>'}).join("")+'</div><button type="button" class="btn small" data-act="ccadd">Add challenge</button></div>';
+    h+='<div class="ccadd"><input type="text" id="cc_in" data-draft="cc_text" maxlength="100" placeholder="Add your own weekly challenge" aria-label="Your weekly challenge" value="'+esc(drafts.cc_text||"")+'"><div style="text-align:right;margin-top:8px"><button type="button" data-act="ccadd" style="background:none;border:0;color:#fff;font:inherit;font-size:15px;font-weight:600;padding:6px 4px;cursor:pointer;text-decoration:underline;text-underline-offset:3px">Create challenge</button></div></div>';
   }else h+='<p class="hint" style="margin:8px 0 0">New challenges can be added on Sunday or Monday. You have Monday through Saturday to complete them.</p>';
   return o.slice(0,ps)+h+o.slice(ue);
 };
@@ -13381,8 +13397,7 @@ act=function(a,d){
     var dow=new Date().getDay();if(dow>1){toast("Challenges can be added on Sunday or Monday");return}
     var t=((document.getElementById("cc_in")||{}).value||drafts.cc_text||"").trim();
     if(!t){toast("Type your challenge first");return}
-    if(!session.ccP){toast("Pick Work, Play or Zen");return}
-    (S.myChall=S.myChall||[]).push({id:uid(),wk:ccWk(),text:t.slice(0,100),p:session.ccP});
+    (S.myChall=S.myChall||[]).push({id:uid(),wk:ccWk(),text:t.slice(0,100),p:"zen"});
     drafts.cc_text="";session.ccP="";save();render();toast("Challenge added");return}
   if(a==="cct"){
     var c=(S.myChall||[]).filter(function(x){return x.id===d.id})[0];if(!c)return;
@@ -14789,6 +14804,63 @@ window.addEventListener("click",function(e){
   var t=e.target&&e.target.closest&&e.target.closest('[data-act="iback"]');
   if(t&&session.hcWhat){e.stopImmediatePropagation();e.preventDefault();session.hcWhat=false;render();window.scrollTo(0,0)}
 },true);
+var _a1020=act;
+act=function(a,d){
+  var A=S.fit&&S.fit.active;
+  if(A&&a==="frtedit")a="fset";
+  if(A&&a==="fpause"){
+    var wasP=!A.seg,pAt=A.pAt,rr=_a1020(a,d);
+    if(wasP&&pAt&&A.seg){var sh=Date.now()-pAt;A.ex.forEach(function(x){if(x.ss)x.ss.sets.forEach(function(q){if(ssActive(q))q.at+=sh})});save()}
+    return rr;
+  }
+  if(A&&a==="fset"){
+    var ex=A.ex[A.cur],st=ex&&ex.sets[+d.i],was=st&&st.done,rr2=_a1020(a,d);
+    if(ex&&ex.ss&&st&&!was&&st.done){delete st.at;delete st.rt;save();render()}
+    return rr2;
+  }
+  return _a1020(a,d)};
+document.addEventListener("focusin",function(e){
+  var t=e.target,A=S.fit&&S.fit.active;if(!A||!t||!t.dataset)return;
+  var c=t.closest&&t.closest("[data-exi]");if(!c)return;var x=A.ex[parseInt(c.getAttribute("data-exi"),10)];if(!x||!x.ss)return;
+  var v=t.dataset.fs||t.dataset.ss;if(!v)return;
+  var j=parseInt(String(v).split("|")[0],10);
+  if(t.dataset.ss){if(j>0&&ssFinalize(x,j)){save();ssRepaint(A)}}
+  else if(ssFinalize(x,j+1)){save();ssRepaint(A)}
+},true);
+function ssRepaint(A){
+  A.ex.forEach(function(x,xi){if(!x.ss)return;x.ss.sets.forEach(function(q,k){
+    var el=document.querySelector('.fgv [data-exi="'+xi+'"] .ssblk [data-ssi="'+k+'"]');if(!el)return;
+    el.outerHTML=ssCheck(q,k,A)})});
+}
+(function(){
+  var iv=setInterval(function(){
+    var A=S.fit&&S.fit.active;if(!A||!A.seg)return;
+    A.ex.forEach(function(x,xi){if(!x.ss)return;x.ss.sets.forEach(function(q,k){
+      if(!ssActive(q))return;
+      var left=FS_REST-fsElapsed(q,A);
+      if(left<=0){q.rt=FS_REST;save();ssRepaint(A);try{if(navigator.vibrate)navigator.vibrate(150)}catch(e){}}
+      else{var b=document.querySelector('.fgv [data-exi="'+xi+'"] .ssblk [data-ssi="'+k+'"] .frt');if(b)b.textContent=fMin(Math.ceil(left)*1000)}
+    })});
+  },1000);
+  if(iv&&iv.unref)iv.unref();
+})();
+var _ff1020=fFinish;
+fFinish=function(){
+  var A=FS().active,T=session.fTpl,tn=(T&&T.on)?((T.name||"").trim()||(A&&A.scratch&&A.name!=="Workout"?A.name:"")):"";
+  var r=_ff1020.apply(this,arguments);
+  if(r&&tn){r.tpl=tn;save()}
+  return r};
+var _fc1020=fContinue;
+fContinue=function(id){
+  var s0=sessById(id),r=_fc1020.apply(this,arguments),A=FS().active;
+  if(s0&&s0.tpl&&A&&A.id===id){session.fTpl={on:false,name:s0.tpl};render()}
+  return r};
+(function(){
+  if(document.getElementById("wpzfs"))return;
+  var st=document.createElement("style");st.id="wpzfs";
+  st.textContent='.fgv .fchk.frs,.fgv .fchk.frs[aria-pressed="true"],.frs .frtx{border-color:#ffe047!important;color:#ffe047!important}.fgv .fchk.frs.fin,.frs.fin .frtx{border-color:transparent!important}.fgv .frs .frt{color:#ffe047}.fgv .ssx:empty:before{content:attr(data-ph);color:#8f8896;font-style:italic;font-weight:400}.fgv .ssx{min-height:1.2em}';
+  document.head.appendChild(st);
+})();
 var _fz910=fix267;
 fix267=function(){
   var r=_fz910.apply(this,arguments);
