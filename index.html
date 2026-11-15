@@ -14743,6 +14743,21 @@ act=function(a,d){
     if(pk3.out){S.sun=S.sun||{};S.sun[cd]=1}
     drafts.cc_what="";drafts.cc_mins="";session.ccOpen=false;session.ccPk={p:"",out:false};save();toast("Added to your calendar");render();return}
   return _a1016(a,d)};
+var _fz1017=fix267;
+fix267=function(){var r=_fz1017.apply(this,arguments);
+  try{
+  if(view!=="home"||session.hset||session.cycv)return r;
+  var app=document.getElementById("app");if(!app)return r;
+  var mc=app.querySelector(".moodch");
+  var ad=app.querySelector(".ccadd"),ul=app.querySelector("ul.chl"),nt=[].filter.call(app.querySelectorAll("p.hint"),function(x){return /^New challenges can be added/.test(x.textContent)})[0];
+  var last=ad||nt||ul;
+  if(mc&&last&&mc.parentNode===last.parentNode&&mc.compareDocumentPosition(last)&Node.DOCUMENT_POSITION_FOLLOWING)last.insertAdjacentElement("afterend",mc);
+  if(!document.getElementById("wpzph2")){var st=document.createElement("style");st.id="wpzph2";st.textContent="#cc_in::placeholder{color:#8f8896!important;opacity:1!important;-webkit-text-fill-color:#8f8896!important}";document.head.appendChild(st)}
+  var inp=document.getElementById("cc_in");
+  if(inp){var card=inp.closest(".card"),bg=card?getComputedStyle(card).backgroundColor:"#1c1822";
+    inp.style.setProperty("background",bg,"important");inp.style.setProperty("color","#f7eff2","important");inp.style.setProperty("border","1.5px solid #ffc2d4","important");inp.style.setProperty("-webkit-text-fill-color","#f7eff2","important")}
+  }catch(e){}
+  return r};
 var _fz910=fix267;
 fix267=function(){
   var r=_fz910.apply(this,arguments);
