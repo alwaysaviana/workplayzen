@@ -14503,7 +14503,7 @@ funListCard=function(){
     var D=S.hcDisc;
     if(!D)return card('<h2>Discover My Health Code</h2><p class="hint">Optional. Pick what helps you feel your best.</p><div class="row"><button type="button" class="btn small" data-act="hcqopen">Start</button></div>');
     var L=(D.cats||[]).map(qLabel).concat(D.custom||[]);
-    return card('<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h2 style="margin:0">What helps me feel my best</h2><button type="button" class="btn ghost small" data-act="hcqopen">Edit</button></div>'+(L.length?'<ul style="margin:8px 0 0;padding:0;list-style:none">'+L.map(function(x){return '<li style="display:flex;align-items:center;gap:10px;min-height:28px;font-size:15px"><span style="width:7px;height:7px;border-radius:50%;background:#ffc2d4;flex:none"></span>'+esc(x)+'</li>'}).join("")+'</ul>':'<p class="hint">Nothing picked yet.</p>'));
+    return card('<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h2 style="margin:0">What helps me feel my best</h2><button type="button" class="btn ghost small" data-act="hcqopen">Edit</button></div>'+(L.length?'<p style="margin:10px 0 0;color:#d9cdd6;font-size:15px;line-height:1.35">Look back at these anytime you\'re feeling lost and practice them.</p>':'')+(L.length?'<ul style="margin:8px 0 0;padding:0;list-style:none">'+L.map(function(x){return '<li style="display:flex;align-items:center;gap:10px;min-height:28px;font-size:15px"><span style="width:7px;height:7px;border-radius:50%;background:#ffc2d4;flex:none"></span>'+esc(x)+'</li>'}).join("")+'</ul>':'<p class="hint">Nothing picked yet.</p>'));
   }
   function qPage(){
     var sel=session.hcqSel||[],cus=session.hcqCus||[];
