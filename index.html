@@ -14750,8 +14750,8 @@ fix267=function(){var r=_fz1017.apply(this,arguments);
   var app=document.getElementById("app");if(!app)return r;
   var mc=app.querySelector(".moodch");
   var ad=app.querySelector(".ccadd"),ul=app.querySelector("ul.chl"),nt=[].filter.call(app.querySelectorAll("p.hint"),function(x){return /^New challenges can be added/.test(x.textContent)})[0];
-  var last=ad||nt||ul;
-  if(mc&&last&&mc.parentNode===last.parentNode&&mc.compareDocumentPosition(last)&Node.DOCUMENT_POSITION_FOLLOWING)last.insertAdjacentElement("afterend",mc);
+  var cnt=[].filter.call(app.querySelectorAll("p.hint"),function(x){return /^Weekly challenges:/.test(x.textContent)})[0];
+  if(mc&&cnt&&mc.parentNode===cnt.parentNode&&mc.nextElementSibling!==cnt)cnt.insertAdjacentElement("beforebegin",mc);
   if(!document.getElementById("wpzph2")){var st=document.createElement("style");st.id="wpzph2";st.textContent="#cc_in::placeholder{color:#8f8896!important;opacity:1!important;-webkit-text-fill-color:#8f8896!important}";document.head.appendChild(st)}
   var inp=document.getElementById("cc_in");
   if(inp){var card=inp.closest(".card"),bg=card?getComputedStyle(card).backgroundColor:"#1c1822";
