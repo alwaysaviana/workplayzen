@@ -14890,7 +14890,7 @@ act=function(a,d){
       if(ne){if(old&&old.mood===ne.mood){if(old.proud)ne.proud=old.proud;if(old.need)ne.need=old.need;save()}
         session.mnext={id:ne.id,txt:ne.proud||""};var y=window.scrollY;render();window.scrollTo(0,y)}}
     return res}
-  if(a==="mnpick"){var e=mnEntry();if(e){mnKeep();e.need=d.p;save()}session.mnext=null;go(d.p);return}
+  if(a==="mnpick"){var e=mnEntry();if(e){mnKeep();e.need=d.p;save()}session.mnext=null;var y1=window.scrollY;render();window.scrollTo(0,y1);toast("Check-in saved");return}
   if(a==="mndone"){var e2=mnEntry();if(e2){mnKeep();save()}session.mnext=null;var y2=window.scrollY;render();window.scrollTo(0,y2);toast("Check-in saved");return}
   if(a==="mpopen"||a==="mpclose"){session.mpl=a==="mpopen";var y3=window.scrollY;render();window.scrollTo(0,y3);return}
   return _a1022(a,d)};
