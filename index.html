@@ -14954,6 +14954,37 @@ fix267=function(){
     w.style.setProperty("border","2px solid #e6c88c","important");w.style.setProperty("box-shadow","0 0 18px rgba(230,200,140,.55), inset 0 0 14px rgba(230,200,140,.12)","important");
     [].forEach.call(w.querySelectorAll(".ytc > b"),function(b){b.style.setProperty("color","#e6c88c","important")})}}catch(e){}
   return r};
+/* Log a workout chooser: Follow / Continue program; My Year: Goals by month under Wealth card */
+var _a1025=act;
+act=function(a,d){
+  if(a==="lgprog"){session.qlog="";session.wkLogOpen=false;session.qFromWork=false;session.wkPop=false;if(view!=="work")go("work");return _a1025("fopen",{v:"progs"})}
+  return _a1025(a,d)};
+function lgProgOn(){try{var f=FS(),dn=f.progDone||[];if(f.active&&f.active.pid)return true;return Object.keys(f.prog||{}).some(function(id){var P=f.prog[id];return P&&P.done&&Object.keys(P.done).length&&!dn.some(function(x){return x.id===id})})}catch(e){return false}}
+var _fz1025=fix267;
+fix267=function(){
+  var r=_fz1025.apply(this,arguments);
+  try{
+    var ch=document.querySelector(".qlpop .lgchooser");
+    if(ch&&!ch.querySelector('[data-act="lgprog"]')){
+      var a=ch.querySelector('[data-act="lgscratch"]'),b=ch.querySelector('[data-act="lgchoosego"]');
+      if(a&&b){
+        var p=document.createElement("button");p.type="button";p.className=b.className;p.setAttribute("data-act","lgprog");p.textContent=lgProgOn()?"Continue program":"Follow a program";
+        p.style.cssText="background:#000!important;color:#fff!important;border:1.5px solid #ffe047!important";
+        ch.appendChild(p);
+        var sp=function(el,o){for(var k in o)el.style.setProperty(k,o[k],"important")};
+        sp(ch,{"display":"grid","grid-template-columns":"1fr 1fr","grid-template-rows":"auto auto","gap":"8px"});
+        sp(a,{"grid-column":"1","grid-row":"1 / span 2","height":"100%","margin":"0","width":"100%"});
+        sp(b,{"grid-column":"2","grid-row":"1","margin":"0","width":"100%"});
+        sp(p,{"grid-column":"2","grid-row":"2","margin":"0","width":"100%"});
+      }
+    }
+    var w=document.querySelector("#app .ytwg"),y=document.querySelector("#app .card.yog");
+    if(w&&y){
+      if(w.nextElementSibling!==y)w.insertAdjacentElement("afterend",y);
+      y.style.setProperty("border","2px solid #e6c88c","important");y.style.setProperty("box-shadow","0 0 18px rgba(230,200,140,.55), inset 0 0 14px rgba(230,200,140,.12)","important");
+    }
+  }catch(e){}
+  return r};
 var _fz910=fix267;
 fix267=function(){
   var r=_fz910.apply(this,arguments);
