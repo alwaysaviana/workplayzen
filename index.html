@@ -7926,7 +7926,7 @@ document.addEventListener("click",function(e){
 /* ===== v271: Home "Log workout" asks start new / choose right on Home ===== */
 var _qb271=qBox;
 qBox=function(){
-  if(session.qlog==="work")return '<div class="lgchooser lgbare">'+fbtn("btn small pinkfill","lgscratch",{},"Log my gym workout")+fbtn("btn small ghost","lgchoosego",{},"Log existing workout")+'</div>';
+  if(session.qlog==="work")return '<div class="lgchooser lgbare">'+fbtn("btn small pinkfill","lgscratch",{},"Log a gym workout")+fbtn("btn small ghost","lgchoosego",{},"Log an existing workout")+'</div>';
   return _qb271();
 };
 var _a271=act;
@@ -7939,7 +7939,7 @@ var _qlr271=quickLogRow;
 quickLogRow=function(){
   var h=_qlr271();
   if(session.qlog!=="work")return h;
-  var card='<div class="lgchooser lgbare">'+fbtn("btn small pinkfill","lgscratch",{},"Log my gym workout")+fbtn("btn small ghost","lgchoosego",{},"Log existing workout")+'</div>';
+  var card='<div class="lgchooser lgbare">'+fbtn("btn small pinkfill","lgscratch",{},"Log a gym workout")+fbtn("btn small ghost","lgchoosego",{},"Log an existing workout")+'</div>';
   return h.replace(/<div class="qbox"[^>]*><input[\s\S]*?data-act="qsave">[^<]*<\/button><\/div>/,card);
 };
 var _fx271=fix267;
@@ -8116,7 +8116,7 @@ fuelToday=function(){
   return k<0?o+pie:o.slice(0,k)+pie+head+o.slice(k);
 };
 /* suggestion chips */
-var SUG_Z=["Meditation","Stretching","Prayer","Mindfulness","Journaling"],SUG_P=["Dancing","Drawing","Creativity","Shuffling","Country swing"];
+var SUG_Z=["Meditation","Stretching","Church","Mindfulness","Journaling","Breathwork"],SUG_P=["Dancing","Drawing","Creativity","Shuffling","Country swing","Snowboarding"];
 function sugChips(list,key,cls){
   var cur=(drafts[key]||"").trim().toLowerCase();
   return '<div class="chips sugc '+cls+'" role="group" aria-label="Ideas">'+list.map(function(x){return fbtn("chip","sugfill",{k:key,t:x},x,' aria-pressed="'+(cur===x.toLowerCase())+'"')}).join("")+'</div>';
@@ -8894,7 +8894,7 @@ quickLogRow=function(){return qwFix(_qlr332())};
 
 
 /* v335 home Log Workout: same text box as the Play and Zen seshes, with suggestions */
-var WKSUG=["Running","Biking","Walking","Weightlifting","Swimming","HIIT","Pilates","Hiking"];
+var WKSUG=["1 mile run","Bike ride","Walking","HIIT class","Pilates","Hiking"];
 var _qlr335=quickLogRow;
 quickLogRow=function(){
   var h=_qlr335();
@@ -14463,13 +14463,13 @@ var _fz1007=fix267;
 fix267=function(){var r=_fz1007.apply(this,arguments);
   if(view!=="home")return r;
   var q=document.querySelector("#app .qlog:not(.qlogpop)");if(!q)return r;
-  var T={work:["Work.","Log a workout"],play:["Play.","Log a fun activity or hobby"],zen:["Zen.","Log a mindful moment"]};
+  var T={work:["Log a workout","Log a workout"],play:["Log a fun activity/hobby","Log a fun activity or hobby"],zen:["Log a mindful moment","Log a mindful moment"]};
   var ch=q.querySelector(".chips");if(!ch)return r;
   [].forEach.call(ch.querySelectorAll(".qbub"),function(b){
     var t=(b.getAttribute("aria-label")||b.textContent||"").toLowerCase(),k=/work/.test(t)?"work":/play/.test(t)?"play":/zen/.test(t)?"zen":"";
     if(!k)return;
     b.setAttribute("aria-label",T[k][1]);
-    b.innerHTML='<span style="display:block;font-size:16px;font-weight:700;line-height:1.2">'+T[k][0]+'</span><span style="display:block;font-size:12px;font-weight:400;line-height:1.2;margin-top:3px;color:#bdb2bb">'+T[k][1]+'</span>';
+    b.innerHTML='<span style="display:block;font-size:15px;font-weight:700;line-height:1.2">'+T[k][0]+'</span>';
     b.style.setProperty("display","flex","important");b.style.setProperty("flex-direction","column","important");b.style.setProperty("align-items","center","important");b.style.setProperty("justify-content","center","important");b.style.setProperty("min-height","64px","important");b.style.setProperty("padding","10px 6px","important");b.style.setProperty("text-align","center","important");
   });
   return r};
@@ -14926,6 +14926,26 @@ fix267=function(){
       app.insertAdjacentHTML("beforeend",h2);
     }
   }catch(err){}
+  return r};
+/* log pop-up suggestions (tap to fill, x to remove) */
+var _a1023=act;
+act=function(a,d){
+  if(a==="qsg"){drafts.ql_t=d.t;var i=document.getElementById("ql_t");if(i){i.value=d.t;try{i.focus()}catch(e){}}return}
+  if(a==="qsgx"){var t=String(d.t||"").trim().toLowerCase();if(t&&qhide().indexOf(t)<0){S.qhide.push(t);save()}var y=window.scrollY;render();window.scrollTo(0,y);return}
+  return _a1023(a,d)};
+var _fz1023=fix267;
+fix267=function(){
+  var r=_fz1023.apply(this,arguments);
+  try{
+    var qb=document.querySelector(".qlpop .qbox");if(!qb||qb.parentNode.querySelector(".qsgrow"))return r;
+    var p=session.qlog;if(p!=="work"&&p!=="play"&&p!=="zen")return r;
+    var col={work:"#ffe047",play:"#ff4fa3",zen:"#8adfe2"}[p],hid=qhide();
+    var L=(p==="work"?WKSUG:p==="play"?SUG_P:SUG_Z).filter(function(x){return hid.indexOf(String(x).toLowerCase())<0});
+    if(!L.length)return r;
+    var h='<div class="qsgrow" role="group" aria-label="Suggestions" style="display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px">'+L.map(function(x){
+      return '<span style="display:inline-flex;align-items:center;border:1.5px solid '+col+';border-radius:999px;overflow:hidden"><button type="button" data-act="qsg" data-t="'+esc(x)+'" style="background:none;border:0;color:#f7eff2;font:inherit;font-size:14px;padding:5px 4px 5px 12px;min-height:0;cursor:pointer">'+esc(x)+'</button><button type="button" data-act="qsgx" data-t="'+esc(x)+'" aria-label="Remove suggestion '+esc(x)+'" style="background:none;border:0;color:#8f8896;font:inherit;font-size:14px;padding:5px 10px 5px 4px;min-height:0;cursor:pointer">✕</button></span>'}).join("")+'</div>';
+    qb.insertAdjacentHTML("beforebegin",h);
+  }catch(e){}
   return r};
 var _fz910=fix267;
 fix267=function(){
