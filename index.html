@@ -8921,7 +8921,7 @@ act=function(a,d){
 };
 
 /* v341 backup: export / import your data */
-var WPZ_VER="v1055";
+var WPZ_VER="v1056";
 var _sv341=settingsView;
 settingsView=function(){
   var o=_sv341();
@@ -15527,6 +15527,19 @@ fix267=function(){var r=_fzEnd.apply(this,arguments);try{[].forEach.call(documen
 
 try{(function(){if(S.fix3am)return;S.fix3am=1;var a=new Date(2026,10,17,0,0).getTime(),b=new Date(2026,10,17,3,0).getTime();
 [S.nightDone,S.gl,S.journal,S.moodLog].forEach(function(L){(L||[]).forEach(function(x){if(x&&x.ts>=a&&x.ts<b&&x.date==="2026-11-17")x.date="2026-11-16"})});save()})()}catch(e){}
+
+/* v1056 update check: on open, compare running label with the live file and reload once if newer */
+try{(function(){
+  if(!/^https?:$/.test(location.protocol)||!/github\.io$/.test(location.hostname))return;
+  function chk(){
+    fetch(location.pathname+"?_="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){
+      var m=t.match(/var WPZ_VER="(v\d+)"/);if(!m||m[1]===WPZ_VER)return;
+      var k="wpz-upd-"+m[1];try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,"1")}catch(e){}
+      location.replace(location.pathname+"?v="+m[1]);
+    }).catch(function(){});
+  }
+  chk();document.addEventListener("visibilitychange",function(){if(!document.hidden)chk()});
+})()}catch(e){}
 try{
   var st0=document.getElementsByTagName("style")[0],tx=st0?st0.textContent:"",ix=tx.indexOf(".featcard .fth");
   if(ix>=0){var ln=tx.indexOf("\n",ix);var css2=tx.slice(ix,ln<0?tx.length:ln);var se=document.createElement("style");se.setAttribute("data-wpz","late");se.textContent=css2;document.body.appendChild(se)}
