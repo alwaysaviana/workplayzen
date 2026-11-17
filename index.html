@@ -14904,12 +14904,12 @@ fix267=function(){
     var e=mnEntry();
     if(session.mnext&&!e)session.mnext=null;
     if(e){
-      var P=[["work","Work.","Move a little.","var(--work,#ffe047)"],["play","Play.","Find some joy.","var(--play,#ff8fb3)"],["zen","Zen.","Take a breath.","var(--zen,#8adfe2)"]];
+      var P=[["work","Movement","","var(--work,#ffe047)"],["play","Some Fun","","var(--play,#ff8fb3)"],["zen","To Breathe and Reflect","","var(--zen,#8adfe2)"]];
       var h='<div class="qmpop qlpop mnpop" role="dialog" aria-modal="true" aria-label="What do you need right now?"><div class="qmbk" data-act="mndone"></div><div class="qmbox"><div style="'+card+'">';
       h+='<p style="margin:0 0 4px;font-size:22px" aria-hidden="true">'+(MEM[e.mood]||"")+'</p><p style="margin:0 0 12px;font-size:15px;color:#d9cdd6">'+esc(MN_SAY[e.mood]||"Thanks for checking in.")+'</p>';
       if(e.mood==="Proud")h+='<label for="mn_proud" style="display:block;font-size:16px;font-weight:700;margin:0 0 6px">What are you proud of today?</label><input type="text" id="mn_proud" maxlength="200" placeholder="Optional" value="'+esc(session.mnext.txt||"")+'" style="width:100%;box-sizing:border-box;font-size:16px;border-radius:999px;padding:9px 14px;margin:0 0 14px;background:#141217;color:#f7eff2;border:1.5px solid #ffc2d4">';
       h+='<h2 style="font-size:18px;margin:0 0 10px;text-transform:none;letter-spacing:0;line-height:1.25">What do you need right now?</h2><div style="display:flex;flex-direction:column;gap:8px">';
-      P.forEach(function(p){h+='<button type="button" data-act="mnpick" data-p="'+p[0]+'" style="display:flex;align-items:baseline;justify-content:center;gap:8px;width:100%;background:none;border:1.5px solid '+p[3]+';border-radius:999px;padding:9px 12px;font:inherit;cursor:pointer;color:#f7eff2"><b style="font-size:17px;color:'+p[3]+'">'+p[1]+'</b><span style="font-size:15px">'+p[2]+'</span></button>'});
+      P.forEach(function(p){h+='<button type="button" data-act="mnpick" data-p="'+p[0]+'" style="display:flex;align-items:baseline;justify-content:center;gap:8px;width:100%;background:none;border:1.5px solid '+p[3]+';border-radius:999px;padding:9px 12px;font:inherit;cursor:pointer;color:#f7eff2"><b style="font-size:17px;color:'+p[3]+'">'+p[1]+'</b></button>'});
       h+='</div><button type="button" data-act="mndone" style="display:block;margin:12px auto 0;background:none;border:0;color:#bdb2bb;font:inherit;font-size:15px;padding:4px 12px;cursor:pointer;text-decoration:underline;text-underline-offset:3px">Finish check-in</button></div></div></div>';
       app.insertAdjacentHTML("beforeend",h);
     }
