@@ -14876,6 +14876,57 @@ fix267=function(){
   var r=_fz1021.apply(this,arguments);
   try{[].forEach.call(document.querySelectorAll(".fgv [data-exi]"),function(c){if(!c.querySelector(".ssblk"))return;[].forEach.call(c.querySelectorAll(".fchk,.frs"),function(b){if(!b.closest(".ssblk"))b.style.setProperty("visibility","hidden","important")})})}catch(e){}
   return r};
+/* Phase 3: mood check-in next step ("What do you need right now?") + proud moments */
+var MN_SAY={Happy:"Good to hear. Enjoy it.",Proud:"That is worth noticing.",Peaceful:"Nice. Stay with that for a minute.",Okay:"Meh days count too.",Tired:"Noted. Go easy where you can.",Heavy:"That is a lot to carry. Glad you checked in.",Frustrated:"Fair enough. That happens.",Angry:"That makes sense. You do not have to fix it right now."};
+function mnEntry(){var n=session.mnext;return n?S.moodLog.filter(function(e){return e.id===n.id})[0]:null}
+function mnKeep(){var e=mnEntry(),n=session.mnext;if(!e||!n)return;var t=String(n.txt||"").trim().slice(0,200);if(e.mood==="Proud"){if(t)e.proud=t;else delete e.proud;var k=e.date+"|"+e.slot,PL=(S.proudLog=S.proudLog||[]).filter(function(x){return x.key!==k});if(t)PL.push({id:uid(),key:k,ts:e.ts,date:e.date,slot:e.slot,proud:t});S.proudLog=PL}}
+function mnProudList(){return (S.proudLog||[]).slice().sort(function(a,b){return b.ts-a.ts})}
+var _a1022=act;
+act=function(a,d){
+  if(a==="mqok"){
+    var pd=session.mqPend,old=pd?S.moodLog.filter(function(e){return e.date===today()&&e.slot===pd.s})[0]:null;
+    var res=_a1022(a,d);
+    if(pd){var ne=S.moodLog.filter(function(e){return e.date===today()&&e.slot===pd.s&&e.mood===pd.m}).pop();
+      if(ne){if(old&&old.mood===ne.mood){if(old.proud)ne.proud=old.proud;if(old.need)ne.need=old.need;save()}
+        session.mnext={id:ne.id,txt:ne.proud||""};var y=window.scrollY;render();window.scrollTo(0,y)}}
+    return res}
+  if(a==="mnpick"){var e=mnEntry();if(e){mnKeep();e.need=d.p;save()}session.mnext=null;go(d.p);return}
+  if(a==="mndone"){var e2=mnEntry();if(e2){mnKeep();save()}session.mnext=null;var y2=window.scrollY;render();window.scrollTo(0,y2);toast("Check-in saved");return}
+  if(a==="mpopen"||a==="mpclose"){session.mpl=a==="mpopen";var y3=window.scrollY;render();window.scrollTo(0,y3);return}
+  return _a1022(a,d)};
+document.addEventListener("input",function(e){if(e.target&&e.target.id==="mn_proud"&&session.mnext)session.mnext.txt=e.target.value},true);
+var _fz1022=fix267;
+fix267=function(){
+  var r=_fz1022.apply(this,arguments);
+  try{
+    var app=document.getElementById("app");if(!app)return r;
+    var card='background:#201e24;border:1.5px solid #ffc2d4;border-radius:22px;padding:16px 14px 12px;text-align:center';
+    var e=mnEntry();
+    if(session.mnext&&!e)session.mnext=null;
+    if(e){
+      var P=[["work","Work.","Move a little.","var(--work,#ffe047)"],["play","Play.","Find some joy.","var(--play,#ff8fb3)"],["zen","Zen.","Take a breath.","var(--zen,#8adfe2)"]];
+      var h='<div class="qmpop qlpop mnpop" role="dialog" aria-modal="true" aria-label="What do you need right now?"><div class="qmbk" data-act="mndone"></div><div class="qmbox"><div style="'+card+'">';
+      h+='<p style="margin:0 0 4px;font-size:22px" aria-hidden="true">'+(MEM[e.mood]||"")+'</p><p style="margin:0 0 12px;font-size:15px;color:#d9cdd6">'+esc(MN_SAY[e.mood]||"Thanks for checking in.")+'</p>';
+      if(e.mood==="Proud")h+='<label for="mn_proud" style="display:block;font-size:16px;font-weight:700;margin:0 0 6px">What are you proud of today?</label><input type="text" id="mn_proud" maxlength="200" placeholder="Optional" value="'+esc(session.mnext.txt||"")+'" style="width:100%;box-sizing:border-box;font-size:16px;border-radius:999px;padding:9px 14px;margin:0 0 14px;background:#141217;color:#f7eff2;border:1.5px solid #ffc2d4">';
+      h+='<h2 style="font-size:18px;margin:0 0 10px;text-transform:none;letter-spacing:0;line-height:1.25">What do you need right now?</h2><div style="display:flex;flex-direction:column;gap:8px">';
+      P.forEach(function(p){h+='<button type="button" data-act="mnpick" data-p="'+p[0]+'" style="display:flex;align-items:baseline;justify-content:center;gap:8px;width:100%;background:none;border:1.5px solid '+p[3]+';border-radius:999px;padding:9px 12px;font:inherit;cursor:pointer;color:#f7eff2"><b style="font-size:17px;color:'+p[3]+'">'+p[1]+'</b><span style="font-size:15px">'+p[2]+'</span></button>'});
+      h+='</div><button type="button" data-act="mndone" style="display:block;margin:12px auto 0;background:none;border:0;color:#bdb2bb;font:inherit;font-size:15px;padding:4px 12px;cursor:pointer;text-decoration:underline;text-underline-offset:3px">Finish check-in</button></div></div></div>';
+      app.insertAdjacentHTML("beforeend",h);
+    }
+    var L=mnProudList();
+    if(view==="home"&&!session.hset&&L.length){
+      [].forEach.call(app.querySelectorAll(".moodch"),function(mc){
+        if(mc.querySelector(".mpbtn"))return;
+        mc.insertAdjacentHTML("beforeend",'<div style="text-align:center;margin:8px 0 0"><button type="button" class="mpbtn" data-act="mpopen" style="background:none;border:0;color:#ffc2d4;font:inherit;font-size:15px;font-weight:600;padding:4px 8px;cursor:pointer;text-decoration:underline;text-underline-offset:3px">Proud moments ('+L.length+')</button></div>')});
+    }
+    if(session.mpl){
+      var h2='<div class="qmpop qlpop mppop" role="dialog" aria-modal="true" aria-label="Proud moments"><div class="qmbk" data-act="mpclose"></div><div class="qmbox"><div style="'+card+';text-align:left"><h2 style="font-size:18px;margin:0 0 10px;text-transform:none;letter-spacing:0;text-align:center">Proud moments</h2>';
+      h2+=L.length?'<ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px">'+L.map(function(x){return '<li><div style="font-size:15px;color:#bdb2bb">'+esc(fmt(x.ts))+'</div><div style="font-size:16px;color:#f7eff2;overflow-wrap:anywhere">'+esc(x.proud)+'</div></li>'}).join("")+'</ul>':'<p style="font-size:15px;color:#bdb2bb;margin:0;text-align:center">Nothing saved yet.</p>';
+      h2+='<button type="button" data-act="mpclose" style="display:block;margin:12px auto 0;background:none;border:0;color:#8f8896;font:inherit;font-size:15px;padding:2px 12px;cursor:pointer">Close</button></div></div></div>';
+      app.insertAdjacentHTML("beforeend",h2);
+    }
+  }catch(err){}
+  return r};
 var _fz910=fix267;
 fix267=function(){
   var r=_fz910.apply(this,arguments);
