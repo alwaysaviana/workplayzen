@@ -13427,7 +13427,7 @@ balWeekRows=function(){
   var ws=weekStartSun(new Date()),t=today(),L="SMTWTFS",cells="",n=0;
   for(var i=0;i<7;i++){var ds=dstr(cyAdd(ws,i)),on=!!(S.sun&&S.sun[ds]),fut=ds>t;if(on)n++;
     cells+='<button type="button" class="bwc sunc'+(on?" on":"")+'" data-act="sunday" data-d="'+ds+'"'+(fut?' disabled':'')+' aria-pressed="'+on+'" aria-label="'+(on?"Sunshine logged for ":"Log sunshine for ")+ds+'">'+(on?"🌴":"")+'</button>'}
-  var row='<div class="bwl" style="color:#7ad65a;font-weight:700;text-transform:capitalize">Outside'+(n?' <span style="font-weight:500;text-transform:none">· '+n+(n===1?" day":" days")+'</span>':'')+'</div><div class="bwr">'+cells+'</div>';
+  var row='<div class="bwl" style="color:#7ad65a;font-weight:700;text-transform:capitalize;position:relative"><button type="button" data-act="outtip" aria-expanded="'+!!session.outTip+'" style="background:none;border:0;padding:0;margin:0;font:inherit;color:inherit;text-transform:inherit;cursor:pointer;min-height:0">Outside</button>'+(session.outTip?'<span role="tooltip" style="position:absolute;left:84px;top:50%;transform:translateY(-50%);z-index:5;background:#141217;border:1.5px solid #7ad65a;border-radius:12px;padding:4px 10px;font-size:12px;font-weight:500;line-height:1.25;color:#f7eff2;text-transform:none;white-space:normal;width:max-content;max-width:215px;box-shadow:0 4px 14px rgba(0,0,0,.5)">Spent at least 10 intentional minutes outside.</span>':'')+(n?' <span style="font-weight:500;text-transform:none">· '+n+(n===1?" day":" days")+'</span>':'')+'</div><div class="bwr">'+cells+'</div>';
   return o.slice(0,e).replace('<div class="bwk" role="img"','<div class="bwk"')+row+o.slice(e);
 };
 var _a775=act;
@@ -14985,6 +14985,10 @@ fix267=function(){
     }
   }catch(e){}
   return r};
+var _a1026=act,_otT=0;
+act=function(a,d){
+  if(a==="outtip"){session.outTip=!session.outTip;var y=window.scrollY;render();window.scrollTo(0,y);clearTimeout(_otT);if(session.outTip)_otT=setTimeout(function(){if(session.outTip){session.outTip=false;var y2=window.scrollY;render();window.scrollTo(0,y2)}},5000);return}
+  return _a1026(a,d)};
 var _fz910=fix267;
 fix267=function(){
   var r=_fz910.apply(this,arguments);
