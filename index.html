@@ -12081,7 +12081,7 @@ fix267=function(){
       if(lt&&lm){
         lt.remove();
         var nm=lm.querySelector(".nm"),ds=lm.querySelector(".ds");
-        if(nm)nm.textContent="Learn";if(ds)ds.textContent="Macros, muscles, stretching";
+        if(nm)nm.textContent="\uD83D\uDCD6 Learn something";if(ds)ds.textContent="Macros, muscles, stretching";
         var g=lm.parentElement;if(g){g.style.gridTemplateColumns="1fr 1fr"}
       }
     }
@@ -14382,7 +14382,7 @@ fix267=function(){
     [].forEach.call(document.querySelectorAll(".wkhabbtn"),function(x){x.remove()});
     if(app&&view==="work"&&!session.hset&&app.querySelector(".wkresbtn")){
       var br=app.querySelector(".backrow");
-      if(br){br.insertAdjacentHTML("afterend",'<div class="row wkhabbtn" style="margin:-14px 4px 4px 0;justify-content:flex-end"><button type="button" class="subbtn" data-act="habedit" style="white-space:nowrap">Update habits list</button></div>');var rb=app.querySelector(".wkresbtn"),hb=app.querySelector(".wkhabbtn button");if(rb&&hb){var cs=getComputedStyle(rb);hb.style.setProperty("color",cs.color,"important");hb.style.setProperty("font-weight",cs.fontWeight,"important");hb.style.setProperty("font-size",cs.fontSize,"important");hb.style.setProperty("font-family",cs.fontFamily,"important");hb.style.setProperty("padding","0","important");hb.style.setProperty("margin","0","important");hb.style.setProperty("width","auto","important");hb.style.setProperty("background","none","important");hb.style.setProperty("border","0","important")}}
+      if(br){br.insertAdjacentHTML("afterend",'<div class="row wkhabbtn" style="margin:-32px 4px 4px 0;justify-content:flex-end"><button type="button" class="subbtn" data-act="habedit" style="white-space:nowrap">Update habits list</button></div>');var rb=app.querySelector(".wkresbtn"),hb=app.querySelector(".wkhabbtn button");if(rb&&hb){var cs=getComputedStyle(rb);hb.style.setProperty("color",cs.color,"important");hb.style.setProperty("font-weight",cs.fontWeight,"important");hb.style.setProperty("font-size",cs.fontSize,"important");hb.style.setProperty("font-family",cs.fontFamily,"important");hb.style.setProperty("padding","0","important");hb.style.setProperty("margin","0","important");hb.style.setProperty("width","auto","important");hb.style.setProperty("background","none","important");hb.style.setProperty("border","0","important")}}
     }
   }catch(e){}
   return r;
@@ -15016,6 +15016,89 @@ fix267=function(){
   var r=_fz1028.apply(this,arguments);
   try{var sv=document.querySelector('.qlpop [data-act="qsave"]'),p=session.qlog;
     if(sv&&p){var t={work:"Log Work.",play:"Log Play.",zen:"Log Zen."}[p];if(t&&sv.textContent!==t)sv.textContent=t}}catch(e){}
+  return r};
+/* batch: monthly challenges, steps order, hydration save, small tweaks */
+function mcMo(){return today().slice(0,7)}
+function mcList(){return (S.myMChall||[]).filter(function(c){return c.mo===mcMo()})}
+function mcDone(c){return (S.activities||[]).some(function(a){return a.key==="mc:"+c.mo+":"+c.id})}
+var _ci1030=chItems;
+chItems=function(){
+  var out=_ci1030.apply(this,arguments);
+  (S.activities||[]).forEach(function(a){var k=String(a.key||"");if(k.indexOf("mc:")!==0)return;out.push({p:a.p,text:a.text,ts:a.ts,wk:k.split(":").slice(0,2).join(":")})});
+  return out};
+var _a1030=act;
+act=function(a,d){
+  if(a==="mcadd"){
+    var dm=new Date().getDate();if(dm>5){toast("Monthly challenges can be added on the 1st through the 5th");return}
+    var t=((document.getElementById("mc_in")||{}).value||drafts.mc_text||"").trim();
+    if(!t){toast("Type your challenge first");return}
+    if(mcList().length>=3){toast("You can create up to 3 challenges a month");return}
+    (S.myMChall=S.myMChall||[]).push({id:uid(),mo:mcMo(),text:t.slice(0,100),p:"zen"});
+    drafts.mc_text="";save();var y=window.scrollY;render();window.scrollTo(0,y);toast("Challenge added");return}
+  if(a==="mct"){
+    var c=(S.myMChall||[]).filter(function(x){return x.id===d.id})[0];if(!c)return;
+    var key="mc:"+c.mo+":"+c.id,y2=window.scrollY;
+    if(mcDone(c))S.activities=S.activities.filter(function(x){return x.key!==key});else logAct(c.text,c.p,key);
+    save();render();window.scrollTo(0,y2);return}
+  if(a==="mcdel"){session.mcDel=d.id;render();return}
+  if(a==="mcdelx"){session.mcDel="";render();return}
+  if(a==="mcdelyes"){var id=session.mcDel;S.myMChall=(S.myMChall||[]).filter(function(x){return x.id!==id});S.activities=S.activities.filter(function(x){var k=String(x.key||"");return !(k.indexOf("mc:")===0&&k.split(":")[2]===id)});session.mcDel="";save();render();toast("Challenge deleted");return}
+  return _a1030(a,d)};
+var _fz1030=fix267;
+fix267=function(){
+  var r=_fz1030.apply(this,arguments);
+  try{
+    var app=document.getElementById("app");if(!app)return r;
+    if(view==="home"&&!session.hset&&!session.cycv){
+      /* monthly challenges under the consistency chart */
+      [].forEach.call(app.querySelectorAll(".mcblk,.mcpop"),function(x){x.remove()});
+      var mc=null;[].forEach.call(app.querySelectorAll(":scope > .card"),function(c){var h=c.querySelector("h2");if(h&&/My Month at a Glance/i.test(h.textContent))mc=c});
+      var cons=mc&&mc.querySelector(".cons");
+      if(cons){
+        var L=mcList(),n=L.filter(mcDone).length,addOK=new Date().getDate()<=5&&L.length<3;
+        var h='<div class="mcblk"><p class="hint" style="margin:14px 0 0">Monthly challenges: <b style="color:#ffc2d4">'+n+' of '+L.length+'</b></p><ul class="chl chr3">';
+        h+=L.length?L.map(function(c){var d=mcDone(c),pc=CHP[c.p]||CHP.zen;
+          return '<li class="chr chx'+(d?' on':'')+'" style="--pc:'+pc.c+'"><div class="ccrow"><button type="button" class="chxb" data-act="mct" data-id="'+c.id+'" aria-pressed="'+d+'" aria-label="'+esc(c.text)+(d?'. Completed. Tap to undo.':'. Tap when completed.')+'"><span class="chxc" aria-hidden="true">'+(d?neonCheck("#ffc2d4","#ffe3ec","rgba(255,194,212,.85)"):"")+'</span><span class="chxm"><span class="chxd">'+esc(c.text)+'</span></span></button>'+(new Date().getDate()<=5?'<button type="button" class="iconbtn" aria-label="Delete this challenge" data-act="mcdel" data-id="'+c.id+'">✕</button>':'')+'</div></li>'}).join(""):'<li class="chr chx"><span class="chxd" style="font-size:15px;color:#d9cdd6">Create 1-3 challenges for yourself this month. Challenges can only be entered the 1st through the 5th of each month. Completed challenges will show up under My Year.</span></li>';
+        h+='</ul>';
+        if(L.length)h+='<p class="hint" style="margin:6px 0 0">Challenges can only be entered the 1st through the 5th of each month. Completed challenges will show up under My Year.</p>';
+        if(addOK)h+='<div class="ccadd"><input type="text" id="mc_in" data-draft="mc_text" maxlength="100" placeholder="Add your own monthly challenge" aria-label="Your monthly challenge" value="'+esc(drafts.mc_text||"")+'"><div style="text-align:right;margin-top:8px"><button type="button" data-act="mcadd" style="background:none;border:0;color:#fff;font:inherit;font-size:15px;font-weight:600;padding:6px 4px;cursor:pointer;text-decoration:underline;text-underline-offset:3px">Create challenge</button></div></div>';
+        h+='</div>';
+        cons.insertAdjacentHTML("afterend",h);
+      }
+      if(session.mcDel)app.insertAdjacentHTML("beforeend",'<div class="qmpop qlpop mcpop" role="dialog" aria-modal="true" aria-label="Delete challenge"><div class="qmbk" data-act="mcdelx"></div><div class="qmbox"><div class="card qlcard"><h2>Delete challenge?</h2><p style="font-size:16px;margin:0 0 12px">Are you sure you want to delete this challenge?</p><div class="row"><button type="button" class="btn small" data-act="mcdelyes">Yes, delete</button><button type="button" class="btn ghost small qlcan" data-act="mcdelx">Cancel</button></div></div></div></div>');
+      /* Log mood: no pink border; remove the 30-day mood chart for now */
+      [].forEach.call(app.querySelectorAll(".mlogbtn"),function(b){b.style.setProperty("border","0","important");b.style.setProperty("box-shadow","none","important")});
+      [].forEach.call(app.querySelectorAll(".moodch"),function(m){
+        [].forEach.call(m.children,function(k){
+          if(k.tagName==="H3"){[].slice.call(k.childNodes).forEach(function(n){if(n.nodeType===3)n.remove()});k.style.setProperty("margin","10px 0 6px","important")}
+          else if(!k.classList.contains("mpbtn")&&!k.querySelector(".mpbtn"))k.style.setProperty("display","none","important")})});
+      /* one-line small hint */
+      [].forEach.call(app.querySelectorAll("p.hint"),function(p){
+        if(!/no perfect mix/i.test(p.textContent))return;
+        p.style.setProperty("white-space","nowrap","important");p.style.setProperty("overflow","hidden","important");
+        var fs=15;p.style.setProperty("font-size",fs+"px","important");
+        while(p.scrollWidth>p.clientWidth+1&&fs>9){fs-=0.5;p.style.setProperty("font-size",fs+"px","important")}});
+    }
+    /* steps card order */
+    var sc=app.querySelector(".card.cardsteps");
+    if(sc){
+      var sv=sc.querySelector('[data-act="stsave"]'),rw=sv&&sv.closest(".row");
+      if(rw)rw.remove();
+      var why=sc.querySelector("details.stwhy"),seps=sc.querySelectorAll(":scope > .stsep"),edit=sc.querySelector("details.stedit");
+      if(seps[0]&&seps[0].nextElementSibling&&seps[0].nextElementSibling.classList.contains("strow"))seps[0].remove();
+      var tb=sc.querySelectorAll(":scope > .stbar");if(tb[0])tb[0].style.setProperty("margin-bottom","16px","important");
+      if(why&&edit){
+        var sm=why.querySelector("summary");if(sm&&sm.firstChild&&/Why 10,000/.test(sm.textContent))sm.innerHTML=sm.innerHTML.replace(/Why 10,000 steps\?[^<]*/,"Why 10,000 steps? What does it do for you?");
+        if(why.nextElementSibling!==edit){edit.insertAdjacentElement("beforebegin",why)}
+        why.style.setProperty("margin-bottom","10px","important")}
+    }
+    /* hydration Save matches the hydration border, no glow */
+    [].forEach.call(app.querySelectorAll(".hydcard .hydform .btn,.hydcard .btn"),function(b){b.style.setProperty("background","#4dabf7","important");b.style.setProperty("color","#04223d","important");b.style.setProperty("border-color","#4dabf7","important");b.style.setProperty("box-shadow","none","important");b.style.setProperty("text-shadow","none","important")});
+    /* My Year wording */
+    [].forEach.call(app.querySelectorAll(".ytch .hint"),function(p){if(/Complete a weekly challenge/.test(p.textContent))p.textContent="Complete a weekly or monthly challenge and it will be listed here for the year."});
+    /* small slider icon x on suggestions */
+    [].forEach.call(app.querySelectorAll('[data-act="qsgx"]'),function(b){b.style.setProperty("font-size","11px","important")});
+  }catch(e){}
   return r};
 var _fz910=fix267;
 fix267=function(){
