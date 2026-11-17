@@ -13427,7 +13427,7 @@ balWeekRows=function(){
   var ws=weekStartSun(new Date()),t=today(),L="SMTWTFS",cells="",n=0;
   for(var i=0;i<7;i++){var ds=dstr(cyAdd(ws,i)),on=!!(S.sun&&S.sun[ds]),fut=ds>t;if(on)n++;
     cells+='<button type="button" class="bwc sunc'+(on?" on":"")+'" data-act="sunday" data-d="'+ds+'"'+(fut?' disabled':'')+' aria-pressed="'+on+'" aria-label="'+(on?"Sunshine logged for ":"Log sunshine for ")+ds+'">'+(on?"🌴":"")+'</button>'}
-  var row='<div class="bwl" style="color:#7ad65a;font-weight:700;text-transform:capitalize">Outdoors'+(n?' <span style="font-weight:500;text-transform:none">· '+n+(n===1?" day":" days")+'</span>':'')+'</div><div class="bwr">'+cells+'</div>';
+  var row='<div class="bwl" style="color:#7ad65a;font-weight:700;text-transform:capitalize">Outside'+(n?' <span style="font-weight:500;text-transform:none">· '+n+(n===1?" day":" days")+'</span>':'')+'</div><div class="bwr">'+cells+'</div>';
   return o.slice(0,e).replace('<div class="bwk" role="img"','<div class="bwk"')+row+o.slice(e);
 };
 var _a775=act;
@@ -13446,7 +13446,7 @@ act=function(a,d){
     if(m<0||m>900)m=0;
     var nm=w||"Time outside";
     S.activities.push({id:uid(),ts:Date.now(),date:today(),text:"Outside: "+nm+(m?" · "+m+" min":""),what:nm,mins:m,p:"zen",kind:"outside",key:""});
-    S.sun=S.sun||{};S.sun[today()]=1;session.outOpen=false;save();render();toast("Logged. Outdoors added \uD83C\uDF34");return}
+    S.sun=S.sun||{};S.sun[today()]=1;session.outOpen=false;save();render();toast("Logged. Outside added \uD83C\uDF34");return}
   return _a776(a,d);
 };
 var _f776=fix267;
@@ -13603,7 +13603,7 @@ function ytotCard(){
   var mm=moments(),hl=heatList(HEAT_RE),cl=heatList(COLD_RE);
   function cnt(a,r){return a.filter(function(x){return x.ts>=r[0]&&x.ts<r[1]}).length}
   function sun(r){return Object.keys(S.sun||{}).filter(function(d){return d>=r[2]&&d<=r[3]}).length}
-  var rows=[["Work.","#ffe047",function(r){return cnt(mm.filter(function(x){return x.p==="work"}),r)}],["Play.","#ff4fa3",function(r){return cnt(mm.filter(function(x){return x.p==="play"}),r)}],["Zen.","#8adfe2",function(r){return cnt(mm.filter(function(x){return x.p==="zen"}),r)}],["Sauna 🥵","#d95f0e",function(r){return cnt(hl,r)}],["Cold plunge 🧊","#ffffff",function(r){return cnt(cl,r)}],["Outdoors 🌴","#ffd23f",sun]];
+  var rows=[["Work.","#ffe047",function(r){return cnt(mm.filter(function(x){return x.p==="work"}),r)}],["Play.","#ff4fa3",function(r){return cnt(mm.filter(function(x){return x.p==="play"}),r)}],["Zen.","#8adfe2",function(r){return cnt(mm.filter(function(x){return x.p==="zen"}),r)}],["Sauna 🥵","#d95f0e",function(r){return cnt(hl,r)}],["Cold plunge 🧊","#ffffff",function(r){return cnt(cl,r)}],["Outside 🌴","#ffd23f",sun]];
   var h='<div class="card ytot"><h2>My Year at a Glance '+yy+'</h2><div class="ytg"><span></span><b>Last week</b><b>Last month</b><b><button type="button" data-act="ytog" aria-label="Switch between this year and last year" style="background:none;border:0;border-bottom:1.5px dashed #ffc2d4;color:inherit;font:inherit;font-weight:700;padding:0 0 1px;cursor:pointer">'+(yl?"Last year":"This year")+'</button></b>';
   rows.forEach(function(q){h+='<span style="color:'+q[1]+';font-weight:700">'+q[0]+'</span>'+R.map(function(r){return '<span class="ytn">'+q[2](r)+'</span>'}).join("")});
   return h+'</div><p class="hint" style="margin:8px 0 0">Everything you have logged. Sauna and cold plunge also count as Zen.</p></div>';
@@ -13641,7 +13641,7 @@ sharedCal=function(off,y,m,base){
   var hotD={},coldD={};(S.activities||[]).forEach(function(a){var t=(a.text||"")+" "+(a.what||"");if(!a.date||a.p==="fit")return;if(/sauna/i.test(t))hotD[a.date]=1;if(/cold\s*plunge|ice\s*bath|\bice\b(?![\s-]*cream)|cryo/i.test(t))coldD[a.date]=1});
   o=o.replace(/(<button type="button" data-act="ccday" data-d="(\d{4}-\d\d-\d\d)"[^>]*>)([\s\S]*?)<\/button>/g,function(m0,a,d,inner){var HD=calHideEff();var ex=(!HD.sun&&S.sun&&S.sun[d]?"\uD83C\uDF34":"")+(!HD.sauna&&hotD[d]?"\uD83E\uDD75":"")+(!HD.ice&&coldD[d]?"\uD83E\uDDCA":"")+(!HD.steps&&(+stN()[d]||0)>=10000?"\uD83D\uDC5F":"")+"";if(!HD.food&&stkD[d])inner=inner.replace(/<\/span>\s*$/,' <span class="cchs" aria-label="hit protein goal" style="font-size:11px;line-height:1">\uD83E\uDD69</span></span>');return (ex||(!HD.food&&stkD[d]))?a+inner+(ex?'<span class="cysun" aria-label="sun, sauna or cold plunge logged">'+ex+'</span>':'')+'</button>':m0});
   o=o.replace(/<span style="font-weight:600">(\d+)((?: ?<span class="cchs"[^>]*>(?:(?!<\/span>)[\s\S])*<\/span>)+)<\/span>/g,'<span style="font-weight:600">$1</span><span class="cdck">$2</span>');
-  o=o.replace(' Food</span>',' Logged food</span><span><span aria-hidden="true">\uD83C\uDF34</span> Outdoors</span><span><span aria-hidden="true">\uD83E\uDD75</span> Sauna</span><span><span aria-hidden="true">\uD83E\uDDCA</span> Ice</span><span><span aria-hidden="true">\uD83D\uDC5F</span> 10k steps</span><span><span aria-hidden="true">\uD83E\uDD69</span> Protein goal</span>');
+  o=o.replace(' Food</span>',' Logged food</span><span><span aria-hidden="true">\uD83C\uDF34</span> Outside</span><span><span aria-hidden="true">\uD83E\uDD75</span> Sauna</span><span><span aria-hidden="true">\uD83E\uDDCA</span> Ice</span><span><span aria-hidden="true">\uD83D\uDC5F</span> 10k steps</span><span><span aria-hidden="true">\uD83E\uDD69</span> Protein goal</span>');
   return o;
 };
 
@@ -13777,7 +13777,7 @@ act=function(a,d){
 };
 
 /* v818: calendar legend: tap a marker to hide or show it (Work, Play and Zen always stay) */
-var CALOPT=[["food","Hit protein"],["sun","🌴 Outdoors"],["sauna","🥵 Sauna"],["ice","🧊 Ice"],["steps","👟 10k steps"]];
+var CALOPT=[["food","Hit protein"],["sun","🌴 Outside"],["sauna","🥵 Sauna"],["ice","🧊 Ice"],["steps","👟 10k steps"]];
 var _sc818=sharedCal;
 sharedCal=function(off,y,m,base){
   var o=_sc818(off,y,m,base),HD=calHideEff();
@@ -14574,7 +14574,7 @@ fix267=function(){var r=_fz1009.apply(this,arguments);
   mi.style.setProperty("flex","0 0 56px","important");mi.style.setProperty("width","56px","important");mi.style.setProperty("min-width","0","important");
   var sel=document.createElement("div");sel.className="qloutw";sel.style.cssText="flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:2px;width:62px";
   function ckh(){return session.qlOut?neonCheck("#ff9ec4","#ffe6ef","rgba(255,170,205,.95)").replace('width="20" height="18"','width="14" height="12"'):""}
-  sel.innerHTML='<span style="font-size:11px;line-height:1.1;color:#bdb2bb;white-space:nowrap">Outdoors? 🌴</span><button type="button" id="ql_loc" role="checkbox" aria-checked="'+!!session.qlOut+'" aria-label="Outdoors" style="width:24px;height:24px;box-sizing:border-box;padding:0;margin:0;border:1.5px solid '+cc+';background:'+bg+';border-radius:7px;display:flex;align-items:center;justify-content:center;min-height:0"></button>';
+  sel.innerHTML='<span style="font-size:11px;line-height:1.1;color:#bdb2bb;white-space:nowrap">Outside? 🌴</span><button type="button" id="ql_loc" role="checkbox" aria-checked="'+!!session.qlOut+'" aria-label="Outside" style="width:24px;height:24px;box-sizing:border-box;padding:0;margin:0;border:1.5px solid '+cc+';background:'+bg+';border-radius:7px;display:flex;align-items:center;justify-content:center;min-height:0"></button>';
   var bx=sel.querySelector("#ql_loc");bx.innerHTML=ckh();
   bx.addEventListener("click",function(e){e.preventDefault();e.stopPropagation();session.qlOut=!session.qlOut;bx.setAttribute("aria-checked",!!session.qlOut);bx.innerHTML=ckh()});
   mi.insertAdjacentElement("afterend",sel);
@@ -14584,7 +14584,7 @@ var _a1009=act;
 act=function(a,d){
   if(a==="qsave"){var sl=document.getElementById("ql_loc"),loc=sl?sl.value:"",tx=(drafts.ql_t||"").trim();
     var res=_a1009(a,d);
-    if(sl&&session.qlOut&&tx){S.sun=S.sun||{};S.sun[today()]=1;save();toast("Logged. Outdoors added")}
+    if(sl&&session.qlOut&&tx){S.sun=S.sun||{};S.sun[today()]=1;save();toast("Logged. Outside added")}
     if(tx){session.qlLoc="";session.qlOut=false}
     return res}
   return _a1009(a,d);
@@ -14652,7 +14652,7 @@ fix267=function(){var r=_fz1013.apply(this,arguments);
   sp(t,{"flex":"1 0 100%","width":"100%"});
   var r3=document.createElement("div");r3.style.cssText="display:flex;align-items:center;justify-content:center;gap:14px;margin:0";
   sp(mi,{"flex":"0 0 84px","width":"84px"});
-  var lab=document.createElement("span");lab.textContent="Outdoors? \uD83C\uDF34";lab.style.cssText="font-size:14px;color:#bdb2bb;white-space:nowrap";
+  var lab=document.createElement("span");lab.textContent="Outside? \uD83C\uDF34";lab.style.cssText="font-size:14px;color:#bdb2bb;white-space:nowrap";
   var ow2=document.createElement("div");ow2.style.cssText="display:flex;align-items:center;gap:8px";ow2.appendChild(box);ow2.appendChild(lab);
   lab.addEventListener("click",function(){box.click()});
   ow.remove();r3.appendChild(mi);r3.appendChild(ow2);
@@ -14735,7 +14735,7 @@ fix267=function(){var r=_fz1016.apply(this,arguments);
     +cb("ccpk",'data-p="work"',pk.p==="work","💪","Work","#ffe047")
     +cb("ccpk",'data-p="play"',pk.p==="play","💖","Play","#ff4fa3")
     +cb("ccpk",'data-p="zen"',pk.p==="zen","🕉️","Zen","#8adfe2")
-    +cb("ccpko","",pk.out,"🌴","Outdoors","#7ad65a")+'</div>'
+    +cb("ccpko","",pk.out,"🌴","Outside","#7ad65a")+'</div>'
     +'<div style="display:flex;align-items:center;gap:16px"><button type="button" class="btn" data-act="ccsave">Add</button><button type="button" data-act="ccclose" style="background:none;border:0;color:#8f8896;font:inherit;font-size:15px;cursor:pointer">Cancel</button></div>';
   }
   if(add)add.replaceWith(box);else it.appendChild(box);
@@ -14752,7 +14752,7 @@ act=function(a,d){
   if(a==="ccsave"){
     var pk3=session.ccPk||{p:"",out:false},cd=session.ccDay,cw=((document.getElementById("cc_what")||{}).value||drafts.cc_what||"").trim();
     if(!cd||cd>today())return;
-    if(!pk3.p&&!pk3.out){toast("Check Work, Play, Zen or Outdoors");return}
+    if(!pk3.p&&!pk3.out){toast("Check Work, Play, Zen or Outside");return}
     if(pk3.p&&!cw){toast("Write what you did first");return}
     if(pk3.p){logAct(cw,pk3.p,"own:"+uid());var cl=S.activities[S.activities.length-1];cl.date=cd;if(cd!==today())cl.ts=new Date(cd+"T12:00:00").getTime();
       var mn=parseInt((document.getElementById("cc_mins")||{}).value||drafts.cc_mins,10);if(mn>0)cl.mins=mn}
