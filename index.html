@@ -7250,7 +7250,7 @@ document.addEventListener("input",function(e){
 
 /* ===== v257: in-row rest countdown (1 min) replaces the set check mark ===== */
 var FS_REST=60;
-function fsPink(){return '<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#ffe047" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>'}
+function fsPink(){return '<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#ffc2d4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>'}
 function fsElapsed(s,A){var ref=(A&&!A.seg&&A.pAt)?A.pAt:Date.now();return Math.max(0,(ref-s.at)/1000)}
 function fsActive(s){return s&&s.done&&s.at&&(s.rt===undefined||s.rt===null)}
 function fsInner(s,A){
@@ -14859,9 +14859,18 @@ fContinue=function(id){
 (function(){
   if(document.getElementById("wpzfs"))return;
   var st=document.createElement("style");st.id="wpzfs";
-  st.textContent='.fgv .fchk.frs,.fgv .fchk.frs[aria-pressed="true"],.frs .frtx{border-color:#ffe047!important;color:#ffc2d4!important}.frs .frtx{border-color:#ffc2d4!important}.fgv [data-exi]:has(.ssblk) .fset .fchk:not(.ssblk *),.fgv [data-exi]:has(.ssblk) .fset .frs:not(.ssblk *){visibility:hidden!important}.fgv .fchk.frs.fin,.frs.fin .frtx{border-color:transparent!important}.fgv .frs .frt{color:#ffc2d4!important}.fgv .ssx:empty:before{content:attr(data-ph);color:#8f8896;font-style:italic;font-weight:400}.fgv .ssx{min-height:1.2em}';
+  st.textContent='html body #app .fgv .fchk,html body #app .fgv .frs .frtx,html body #app .fgv .frck{border-color:#ffc2d4!important;color:#ffc2d4!important}html body #app .fgv .fchk.frs.fin,html body #app .fgv .frs.fin .frtx{border-color:transparent!important}.frs .frtx{border-color:#ffc2d4!important}.fgv [data-exi]:has(.ssblk) .fset .fchk:not(.ssblk *),.fgv [data-exi]:has(.ssblk) .fset .frs:not(.ssblk *){visibility:hidden!important}.fgv .fchk.frs.fin,.frs.fin .frtx{border-color:transparent!important}.fgv .frs .frt{color:#ffc2d4!important}.fgv .ssx:empty:before{content:attr(data-ph);color:#8f8896;font-style:italic;font-weight:400}.fgv .ssx{min-height:1.2em}';
   document.head.appendChild(st);
 })();
+window.addEventListener("click",function(e){
+  var b=e.target&&e.target.closest&&e.target.closest('.fgv [data-act="fset"],.fgv [data-act="frtedit"],.fgv [data-act="sscheck"]');if(!b)return;
+  var A=S.fit&&S.fit.active;if(!A)return;
+  var c=b.closest("[data-exi]"),x=A.ex[c?parseInt(c.getAttribute("data-exi"),10):A.cur];if(!x)return;
+  var ss=b.getAttribute("data-act")==="sscheck",st=ss?(x.ss&&x.ss.sets[+b.getAttribute("data-i")]):x.sets[+b.getAttribute("data-i")];
+  if(!st||!st.done)return;
+  e.stopImmediatePropagation();e.preventDefault();
+  if(st.at&&(st.rt===undefined||st.rt===null)){st.rt=FS_REST;save();var y=window.scrollY;render();window.scrollTo(0,y)}
+},true);
 var _fz1021=fix267;
 fix267=function(){
   var r=_fz1021.apply(this,arguments);
