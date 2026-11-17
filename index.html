@@ -8027,7 +8027,7 @@ balWeekRows=function(){
 chYearCard=function(){
   var yr=new Date().getFullYear(),L=chItems().filter(function(x){return new Date(x.ts).getFullYear()===yr}),G={},ord=[];
   L.sort(function(a,b){return b.ts-a.ts}).forEach(function(x){var k=x.p+"|"+x.text;if(!G[k]){G[k]={p:x.p,text:x.text,n:0};ord.push(k)}G[k].n++});
-  var h='<div class="card"><h2>Weekly challenges</h2><p class="hint">'+(L.length?'<b style="color:#ffc2d4">'+L.length+'</b> completed in '+yr+'. Every one counts.':'Complete a weekly challenge and it will be listed here for the year.')+'</p>';
+  var h='<div class="card ytch"><h2>Completed Challenges</h2><p class="hint">'+(L.length?'<b style="color:#ffc2d4">'+L.length+'</b> completed in '+yr+'. Every one counts.':'Complete a weekly challenge and it will be listed here for the year.')+'</p>';
   if(L.length)h+='<ul class="chl">'+ord.map(function(k){var g=G[k];return '<li>'+esc(g.text)+' <span class="hint">('+CHP[g.p].n+')</span>'+(g.n>1?' <b style="color:#ffc2d4">x'+g.n+'</b>':'')+'</li>'}).join("")+'</ul>';
   return h+'</div>';
 };
@@ -13597,14 +13597,17 @@ fix267=function(){
 
 /* v785: My Year totals (last week, last month, this year) */
 function ytotCard(){
-  var now=new Date(),y0=now.getFullYear(),y=y0,ws=weekStartSun(now),lw0=cyAdd(ws,-7),lm0=new Date(y,now.getMonth()-1,1),m0=new Date(y,now.getMonth(),1);
-  var yl=session.ytL?1:0,yy=y0-yl;
-  var R=[[lw0.getTime(),ws.getTime(),dstr(lw0),dstr(cyAdd(ws,-1))],[lm0.getTime(),m0.getTime(),dstr(lm0),dstr(new Date(y,now.getMonth(),0))],[new Date(yy,0,1).getTime(),new Date(yy+1,0,1).getTime(),yy+"-01-01",yy+"-12-31"]];
+  var now=new Date(),y0=now.getFullYear(),y=y0,ws=weekStartSun(now),lw0=cyAdd(ws,-7),nw0=cyAdd(ws,7),lm0=new Date(y,now.getMonth()-1,1),m0=new Date(y,now.getMonth(),1),nm0=new Date(y,now.getMonth()+1,1);
+  var yl=session.ytL?1:0,yy=y0-yl,tw=!!session.ytW,tm=!!session.ytM;
+  var RW=tw?[ws.getTime(),nw0.getTime(),dstr(ws),dstr(cyAdd(ws,6))]:[lw0.getTime(),ws.getTime(),dstr(lw0),dstr(cyAdd(ws,-1))];
+  var RM=tm?[m0.getTime(),nm0.getTime(),dstr(m0),dstr(new Date(y,now.getMonth()+1,0))]:[lm0.getTime(),m0.getTime(),dstr(lm0),dstr(new Date(y,now.getMonth(),0))];
+  var R=[RW,RM,[new Date(yy,0,1).getTime(),new Date(yy+1,0,1).getTime(),yy+"-01-01",yy+"-12-31"]];
   var mm=moments(),hl=heatList(HEAT_RE),cl=heatList(COLD_RE);
   function cnt(a,r){return a.filter(function(x){return x.ts>=r[0]&&x.ts<r[1]}).length}
   function sun(r){return Object.keys(S.sun||{}).filter(function(d){return d>=r[2]&&d<=r[3]}).length}
   var rows=[["Work.","#ffe047",function(r){return cnt(mm.filter(function(x){return x.p==="work"}),r)}],["Play.","#ff4fa3",function(r){return cnt(mm.filter(function(x){return x.p==="play"}),r)}],["Zen.","#8adfe2",function(r){return cnt(mm.filter(function(x){return x.p==="zen"}),r)}],["Sauna 🥵","#d95f0e",function(r){return cnt(hl,r)}],["Cold plunge 🧊","#ffffff",function(r){return cnt(cl,r)}],["Outside 🌴","#ffd23f",sun]];
-  var h='<div class="card ytot"><h2>My Year at a Glance '+yy+'</h2><div class="ytg"><span></span><b>Last week</b><b>Last month</b><b><button type="button" data-act="ytog" aria-label="Switch between this year and last year" style="background:none;border:0;border-bottom:1.5px dashed #ffc2d4;color:inherit;font:inherit;font-weight:700;padding:0 0 1px;cursor:pointer">'+(yl?"Last year":"This year")+'</button></b>';
+  function tg(k,lab,al){return '<b><button type="button" data-act="ytog" data-k="'+k+'" aria-label="'+al+'" style="background:none;border:0;border-bottom:1.5px dashed #ffc2d4;color:inherit;font:inherit;font-weight:700;padding:0 0 1px;cursor:pointer">'+lab+'</button></b>'}
+  var h='<div class="card ytot"><h2>My Summary</h2><div class="ytg"><span></span>'+tg("w",tw?"This week":"Last week","Switch between last week and this week")+tg("m",tm?"This month":"Last month","Switch between last month and this month")+tg("y",(yl?"Last year ":"This year ")+yy,"Switch between this year and last year");
   rows.forEach(function(q){h+='<span style="color:'+q[1]+';font-weight:700">'+q[0]+'</span>'+R.map(function(r){return '<span class="ytn">'+q[2](r)+'</span>'}).join("")});
   return h+'</div><p class="hint" style="margin:8px 0 0">Everything you have logged. Sauna and cold plunge also count as Zen.</p></div>';
 }
@@ -13621,7 +13624,7 @@ fix267=function(){
 
 var _a1018=act;
 act=function(a,d){
-  if(a==="ytog"){session.ytL=!session.ytL;var y=window.scrollY;render();window.scrollTo(0,y);return}
+  if(a==="ytog"){var yk=d&&d.k==="w"?"ytW":d&&d.k==="m"?"ytM":"ytL";session[yk]=!session[yk];var y=window.scrollY;render();window.scrollTo(0,y);return}
   return _a1018(a,d)};
 
 /* v786: Frustrated and Angry flows */
@@ -14989,6 +14992,24 @@ var _a1026=act,_otT=0;
 act=function(a,d){
   if(a==="outtip"){session.outTip=!session.outTip;var y=window.scrollY;render();window.scrollTo(0,y);clearTimeout(_otT);if(session.outTip)_otT=setTimeout(function(){if(session.outTip){session.outTip=false;var y2=window.scrollY;render();window.scrollTo(0,y2)}},5000);return}
   return _a1026(a,d)};
+/* My Year: champagne gold cards, challenges under accomplishments, hide "Things I'm doing" card (data kept) */
+var _fz1027=fix267;
+fix267=function(){
+  var r=_fz1027.apply(this,arguments);
+  try{
+    if(view!=="myyear")return r;
+    var app=document.getElementById("app");
+    if(!document.getElementById("wpzgold")){var st=document.createElement("style");st.id="wpzgold";
+      st.textContent='html body #app .gld{border:2px solid #e6c88c!important;box-shadow:0 0 18px rgba(230,200,140,.55),inset 0 0 14px rgba(230,200,140,.12)!important}html body #app .gld>h2,html body #app .gld .ytc>b{color:#e6c88c!important;text-shadow:none!important}html body #app .gld .btn,html body #app .gld button.btn.small,html body #app .gld .btn.pinkfill{background:#e6c88c!important;color:#2a2010!important;border-color:#e6c88c!important;box-shadow:none!important;text-shadow:none!important}html body #app .gld input[type="text"],html body #app .gld input[type="number"],html body #app .gld input[type="date"],html body #app .gld select,html body #app .gld textarea{border-color:#e6c88c!important;box-shadow:none!important}html body #app .gld input[type="checkbox"]{accent-color:#e6c88c!important;border-color:#e6c88c!important}html body #app .gld .check,html body #app .gld .chip{border-color:#e6c88c!important}html body #app .gld .check[aria-pressed="true"],html body #app .gld .chip[aria-pressed="true"]{background:#e6c88c!important;color:#2a2010!important}';
+      document.head.appendChild(st)}
+    var acc=app.querySelector(".ytacc"),ch=app.querySelector(".ytch");
+    if(acc&&ch&&acc.nextElementSibling!==ch)acc.insertAdjacentElement("afterend",ch);
+    [].forEach.call(app.querySelectorAll(".ytwg,.card.yog,.card.wlc"),function(c){
+      var t=(c.querySelector("h2")||{}).textContent||"";
+      if(/^Things I.m doing to get there/i.test(t.trim())){c.style.setProperty("display","none","important");return}
+      c.classList.add("gld")});
+  }catch(e){}
+  return r};
 var _fz910=fix267;
 fix267=function(){
   var r=_fz910.apply(this,arguments);
