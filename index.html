@@ -13780,14 +13780,14 @@ act=function(a,d){
 };
 
 /* v818: calendar legend: tap a marker to hide or show it (Work, Play and Zen always stay) */
-var CALOPT=[["food","Hit protein"],["sun","🌴 Outside"],["sauna","🥵 Sauna"],["ice","🧊 Ice"],["steps","👟 10k steps"]];
+var CALOPT=[["food","\uD83E\uDD69 Hit protein"],["sun","🌴 Outside"],["sauna","🥵 Sauna"],["ice","🧊 Ice"],["steps","👟 10k steps"]];
 var _sc818=sharedCal;
 sharedCal=function(off,y,m,base){
   var o=_sc818(off,y,m,base),HD=calHideEff();
   var oc=neonCheck("#ff9a3c","#ffe0c2","rgba(255,154,60,.85)").replace('width="20" height="18"','width="12" height="11"');
   var fx=function(k,c){var a=CALN[c];return '<span><span class="cchs">'+neonCheck(a[0],a[1],a[2]).replace('width="20" height="18"','width="12" height="11"')+'</span> '+k+'</span>'};
   var lg='<div class="callegend" style="display:flex;flex-wrap:wrap;gap:4px 12px;justify-content:center;font-size:15px;color:var(--muted)">'+fx("Work.","var(--work)")+fx("Play.","var(--play)")+fx("Zen.","var(--zen)")
-   +CALOPT.filter(function(x){return !HD[x[0]]}).map(function(x){return '<span>'+(x[0]==="food"?'\uD83E\uDD69 ':'')+x[1]+'</span>'}).join("")+'</div>'
+   +CALOPT.filter(function(x){return !HD[x[0]]}).map(function(x){return '<span>'+x[1]+'</span>'}).join("")+'</div>'
    +'<div style="text-align:center;margin:2px 0 8px"><button type="button" class="calhidebtn" data-act="calpop">Tap to hide or show markers</button></div>';
   return o.replace(/<div class="callegend"[^>]*>[\s\S]*?<\/div>/,lg);
 };
