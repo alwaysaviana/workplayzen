@@ -8921,7 +8921,7 @@ act=function(a,d){
 };
 
 /* v341 backup: export / import your data */
-var WPZ_VER="v1057";
+var WPZ_VER="v1058";
 var _sv341=settingsView;
 settingsView=function(){
   var o=_sv341();
@@ -15663,6 +15663,11 @@ document.addEventListener("visibilitychange",function(){if(!document.hidden&&sbS
 window.addEventListener("online",function(){if(sbSess())sbSync(false)});
 (async function(){await sbCapture();if(sbSess())sbSync(false);if(session.sbMsg&&view==="settings")render()})();
 
+/* v1058 no cycle card on the Settings page */
+var _f1058=fix267;
+fix267=function(){var r=_f1058.apply(this,arguments);
+  try{if(view==="home"&&session.hset){var app=document.getElementById("app");if(app)[].forEach.call(app.querySelectorAll('[data-act="cycv"]'),function(b){var c=b.closest(".card");if(c&&c.querySelector("h2,.tag"))c.remove()})}}catch(e){}
+  return r};
 /* v1056 update check: on open, compare running label with the live file and reload once if newer */
 try{(function(){
   if(!/^https?:$/.test(location.protocol)||!/github\.io$/.test(location.hostname))return;
