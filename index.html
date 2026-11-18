@@ -8921,7 +8921,7 @@ act=function(a,d){
 };
 
 /* v341 backup: export / import your data */
-var WPZ_VER="v1056";
+var WPZ_VER="v1057";
 var _sv341=settingsView;
 settingsView=function(){
   var o=_sv341();
@@ -15527,6 +15527,141 @@ fix267=function(){var r=_fzEnd.apply(this,arguments);try{[].forEach.call(documen
 
 try{(function(){if(S.fix3am)return;S.fix3am=1;var a=new Date(2026,10,17,0,0).getTime(),b=new Date(2026,10,17,3,0).getTime();
 [S.nightDone,S.gl,S.journal,S.moodLog].forEach(function(L){(L||[]).forEach(function(x){if(x&&x.ts>=a&&x.ts<b&&x.date==="2026-11-17")x.date="2026-11-16"})});save()})()}catch(e){}
+
+/* v1057 accounts: sign in with Google and save your data to your account (Supabase). Only active on the live site. */
+var SB_URL="https://nnxvzrjzozmtgdpybpxq.supabase.co",SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ueHZ6cmp6b3ptdGdkcHlicHhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ5NzI5OTIsImV4cCI6MjExMDU0ODk5Mn0.er1ACJB3m-pVp5RdfrkxBnwevksy1Wl5kvwq6Kovguo";
+var SBK="wpz-sb",SBS="wpz-sbsync",sbApplying=false,sbTimer=null;
+function sbOn(){return !!window.WPZ_SB_TEST||(/^https?:$/.test(location.protocol)&&/github\.io$/.test(location.hostname))}
+function sbSess(){try{return JSON.parse(localStorage.getItem(SBK)||"null")}catch(e){return null}}
+function sbSetSess(v){try{if(v)localStorage.setItem(SBK,JSON.stringify(v));else localStorage.removeItem(SBK)}catch(e){}}
+function sbSt(){try{return JSON.parse(localStorage.getItem(SBS)||"{}")||{}}catch(e){return {}}}
+function sbSetSt(o){try{localStorage.setItem(SBS,JSON.stringify(o))}catch(e){}}
+function sbMsg(m){session.sbMsg=m;if(view==="settings")render()}
+async function sbToken(){
+  var s=sbSess();if(!s)return null;
+  if(s.expires_at-60>Date.now()/1000)return s.access_token;
+  try{
+    var r=await fetch(SB_URL+"/auth/v1/token?grant_type=refresh_token",{method:"POST",headers:{apikey:SB_KEY,"Content-Type":"application/json"},body:JSON.stringify({refresh_token:s.refresh_token})});
+    if(!r.ok){if(r.status===400||r.status===401){sbSetSess(null);sbMsg("Please sign in again.")}return null}
+    var j=await r.json();s.access_token=j.access_token;s.refresh_token=j.refresh_token||s.refresh_token;s.expires_at=Math.floor(Date.now()/1000)+(j.expires_in||3600);sbSetSess(s);return s.access_token;
+  }catch(e){return null}
+}
+async function sbApi(path,opt){
+  var t=await sbToken();if(!t)throw new Error("auth");
+  opt=opt||{};opt.headers=Object.assign({apikey:SB_KEY,Authorization:"Bearer "+t,Accept:"application/json"},opt.headers||{});
+  var r=await fetch(SB_URL+path,opt);if(!r.ok)throw new Error("http"+r.status);
+  var tx=await r.text();return tx?JSON.parse(tx):null;
+}
+async function sbCapture(){
+  if(!sbOn())return;
+  var h=location.hash||"";if(h.indexOf("access_token=")<0&&h.indexOf("error_description=")<0)return;
+  var p=new URLSearchParams(h.replace(/^#/,""));
+  try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}
+  if(p.get("error_description")){session.sbMsg="Sign-in didn't finish: "+p.get("error_description").replace(/\+/g," ");return}
+  var at=p.get("access_token");if(!at)return;
+  try{
+    var r=await fetch(SB_URL+"/auth/v1/user",{headers:{apikey:SB_KEY,Authorization:"Bearer "+at}});
+    if(!r.ok)throw new Error("user");var u=await r.json();
+    sbSetSess({access_token:at,refresh_token:p.get("refresh_token"),expires_at:Math.floor(Date.now()/1000)+(parseInt(p.get("expires_in"),10)||3600),user:{id:u.id,email:u.email}});
+    session.sbMsg="Signed in.";
+  }catch(e){session.sbMsg="Couldn't finish signing in. Please try again."}
+}
+function sbHasData(){var d=defaults();return Object.keys(S).some(function(k){return k!=="lastVisit"&&JSON.stringify(S[k])!==JSON.stringify(d[k])})}
+function sbApplyCloud(data){
+  try{localStorage.setItem(KEY+"-pre-sync",JSON.stringify(S))}catch(e){}
+  var base=defaults();Object.keys(data).forEach(function(k){base[k]=data[k]});
+  sbApplying=true;S=base;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}sbApplying=false;drafts={};
+}
+async function sbPush(force){
+  var s=sbSess();if(!s||!sbOn())return;
+  var st=sbSt();
+  try{
+    if(!force&&st.uid===s.user.id&&st.seen){
+      var cur=await sbApi("/rest/v1/app_state?select=updated_at&user_id=eq."+s.user.id);
+      if(cur&&cur[0]&&cur[0].updated_at!==st.seen){sbAsk(cur[0].updated_at);return}
+    }
+    var now=new Date().toISOString();
+    var rows=await sbApi("/rest/v1/app_state?on_conflict=user_id",{method:"POST",headers:{"Content-Type":"application/json",Prefer:"resolution=merge-duplicates,return=representation"},body:JSON.stringify({user_id:s.user.id,data:S,updated_at:now})});
+    sbSetSt({uid:s.user.id,seen:(rows&&rows[0]&&rows[0].updated_at)||now,dirty:false,at:Date.now()});
+    sbMsg("Saved to your account.");
+  }catch(e){var o=sbSt();o.dirty=true;sbSetSt(o);sbMsg("Couldn't reach your account. It will save when you're back online.")}
+}
+function sbDirty(){
+  if(sbApplying||!sbOn()||!sbSess())return;
+  var o=sbSt();o.dirty=true;sbSetSt(o);
+  clearTimeout(sbTimer);sbTimer=setTimeout(function(){sbPush(false)},4000);
+}
+function sbAsk(cloudAt){session.sbAsk={at:cloudAt||""};sbAskUI()}
+function sbAskUI(){
+  var old=document.getElementById("sbask");if(old)old.remove();
+  if(!session.sbAsk)return;
+  var d=document.createElement("div");d.id="sbask";d.setAttribute("role","dialog");d.setAttribute("aria-label","Choose which data to keep");
+  d.style.cssText="position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;padding:20px";
+  d.innerHTML='<div style="background:#1b1824;border:2px solid #ff4fa3;border-radius:20px;padding:20px;max-width:360px;width:100%;color:#fff;font-size:16px;line-height:1.45"><h2 style="margin:0 0 8px;font-size:20px">Which data should we keep?</h2><p style="margin:0 0 14px">Your account already has saved data, and this phone has different data. Pick one. The other one will be replaced. A copy of this phone\'s data is kept on the phone either way.</p><button type="button" class="btn" data-act="sbuse" style="width:100%;margin-bottom:10px">Use my account\'s data</button><button type="button" class="btn ghost" data-act="sbkeep" style="width:100%">Keep this phone\'s data</button></div>';
+  document.body.appendChild(d);
+}
+async function sbSync(manual){
+  var s=sbSess();if(!s||!sbOn()||session.sbBusy)return;
+  session.sbBusy=true;
+  try{
+    var rows=await sbApi("/rest/v1/app_state?select=data,updated_at&user_id=eq."+s.user.id);
+    var row=rows&&rows[0],st=sbSt();
+    if(!row){session.sbBusy=false;await sbPush(true);return}
+    if(st.uid===s.user.id&&st.seen===row.updated_at){
+      session.sbBusy=false;
+      if(st.dirty)await sbPush(false);else if(manual)sbMsg("Everything is up to date.");
+      return;
+    }
+    if(st.uid===s.user.id&&!st.dirty){
+      sbApplyCloud(row.data||{});sbSetSt({uid:s.user.id,seen:row.updated_at,dirty:false,at:Date.now()});
+      session.sbMsg="Updated from your account.";session.sbBusy=false;render();return;
+    }
+    if(!sbHasData()){
+      sbApplyCloud(row.data||{});sbSetSt({uid:s.user.id,seen:row.updated_at,dirty:false,at:Date.now()});
+      session.sbMsg="Loaded your account's data.";session.sbBusy=false;render();return;
+    }
+    session.sbBusy=false;sbAsk(row.updated_at);
+  }catch(e){session.sbBusy=false;if(manual)sbMsg("Couldn't reach your account. Check your connection and try again.")}
+}
+var _save1057=save;
+save=function(){_save1057();sbDirty()};
+var _sv1057=settingsView;
+settingsView=function(){
+  var o=_sv1057();if(!sbOn())return o;
+  var s=sbSess(),m=session.sbMsg?'<p class="hint" role="status" style="margin:8px 0 0">'+esc(session.sbMsg)+'</p>':'',c;
+  if(s&&s.user){
+    var st=sbSt(),when=st.at&&!st.dirty?"Last saved "+new Date(st.at).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})+".":(st.dirty?"Changes waiting to save.":"");
+    c='<div class="card"><h2>Your account</h2><p class="hint">Signed in as '+esc(s.user.email||"your account")+'. '+esc(when)+'</p><div class="row"><button type="button" class="btn small" data-act="sbnow">Sync now</button><button type="button" class="btn ghost small" data-act="sbout">Sign out</button></div>'+m+'</div>';
+  }else{
+    c='<div class="card"><h2>Your account</h2><p class="hint">Save your data to an account so it follows you to any device.</p><div class="row"><button type="button" class="btn small" data-act="sbgoogle">Continue with Google</button></div>'+m+'</div>';
+  }
+  var i=o.indexOf('<div class="card"><h2>Back up your data</h2>');
+  return i<0?c+o:o.slice(0,i)+c+o.slice(i);
+};
+var _a1057=act;
+act=function(a,d){
+  if(a==="sbgoogle"){location.href=SB_URL+"/auth/v1/authorize?provider=google&redirect_to="+encodeURIComponent(location.origin+location.pathname);return}
+  if(a==="sbnow"){sbMsg("Syncing...");sbSync(true);return}
+  if(a==="sbout"){clearTimeout(sbTimer);sbSetSess(null);sbSetSt({});session.sbMsg="Signed out. Your data stays on this phone.";render();return}
+  if(a==="sbuse"||a==="sbkeep"){
+    var s=sbSess();if(!s){session.sbAsk=null;sbAskUI();return}
+    (async function(){
+      try{
+        if(a==="sbuse"){
+          var rows=await sbApi("/rest/v1/app_state?select=data,updated_at&user_id=eq."+s.user.id),row=rows&&rows[0];
+          if(row){sbApplyCloud(row.data||{});sbSetSt({uid:s.user.id,seen:row.updated_at,dirty:false,at:Date.now()});session.sbMsg="Loaded your account's data."}
+        }else{try{localStorage.setItem(KEY+"-pre-sync",JSON.stringify(S))}catch(e){}await sbPush(true)}
+      }catch(e){session.sbMsg="Couldn't finish. Please try again."}
+      session.sbAsk=null;sbAskUI();render();
+    })();
+    return;
+  }
+  return _a1057(a,d);
+};
+document.addEventListener("click",function(e){var b=e.target&&e.target.closest&&e.target.closest("#sbask [data-act]");if(b){e.preventDefault();act(b.getAttribute("data-act"))}});
+document.addEventListener("visibilitychange",function(){if(!document.hidden&&sbSess())sbSync(false)});
+window.addEventListener("online",function(){if(sbSess())sbSync(false)});
+(async function(){await sbCapture();if(sbSess())sbSync(false);if(session.sbMsg&&view==="settings")render()})();
 
 /* v1056 update check: on open, compare running label with the live file and reload once if newer */
 try{(function(){
