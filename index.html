@@ -8927,7 +8927,7 @@ act=function(a,d){
 };
 
 /* v341 backup: export / import your data */
-var WPZ_VER="v1064";
+var WPZ_VER="v1073";
 var _sv341=settingsView;
 settingsView=function(){
   var o=_sv341();
@@ -15379,7 +15379,7 @@ fix267=function(){
       [].forEach.call(app.querySelectorAll(".card"),function(c){
         var h0=c.querySelector("h2"),t0=h0?h0.textContent.trim():"";
         var glow=function(col,rg){sp(c,{"border":"2px solid "+col,"box-shadow":"0 0 16px rgba("+rg+",.55), inset 0 0 12px rgba("+rg+",.1)"})};
-        if(/^What helps me feel my best/i.test(t0))glow("#ffc2d4","255,194,212");
+        if(/^What helps me feel my best/i.test(t0)){glow("#ffc2d4","255,194,212");c.style.setProperty("box-shadow","none","important")}
         else if(/^Health Code Insights/i.test(t0))glow("#ffffff","255,255,255");
         else if(/^(Things that|I'm grateful for|Felt most like myself|Made me smile|My affirmations)/i.test(t0))glow("#ffc2d4","255,194,212");});
       [].forEach.call(app.querySelectorAll("button"),function(b){if(/^Reset my entire health code/i.test(b.textContent.trim())){var rw=b.closest(".row")||b;rw.remove()}});
@@ -15700,8 +15700,8 @@ fix267=function(){
       [].forEach.call(app.querySelectorAll(".card"),function(c){
         var h=c.querySelector("h2");if(!h||!/^What helps me feel my best/i.test(h.textContent.trim()))return;
         var ff="'Fredoka',var(--display),sans-serif";
-        h.style.setProperty("font-family",ff,"important");
-        [].forEach.call(c.querySelectorAll("p,li,li span"),function(n){n.style.setProperty("font-family",ff,"important")});
+        h.style.setProperty("font-family","\"Barlow Condensed\",\"Arial Narrow\",Impact,sans-serif","important");h.style.setProperty("font-size","20px","important");[].forEach.call(c.querySelectorAll("li"),function(n){n.style.setProperty("color","#e8dde4","important")});h.style.setProperty("text-transform","uppercase","important");
+        
       });
     }
     if(session.todoEdit){
@@ -15808,7 +15808,7 @@ viewHome=function(){
 var _a1059=act;
 act=function(a,d){
   var A=FS().active;
-  if(a==="fopen"&&view!=="work"){go("work")}
+  if(a==="fopen"&&view!=="work"){var fromV=view,fromHset=session.hset;go("work");if(d&&d.v==="guided"){session.fPrev={tab:fromV,wkv:"",fv:null,fst:[],hset:fromHset}}}
   if(a==="stsave"){var o=document.getElementById("stale");if(o)o.remove();stSave();render();return}
   if(a==="stkeep"){session.stSkip=true;var o2=document.getElementById("stale");if(o2)o2.remove();render();return}
   if(a==="stdisc"){FS().active=null;session.fFin="";session.fv=null;save();var o3=document.getElementById("stale");if(o3)o3.remove();render();return}
@@ -15861,7 +15861,9 @@ fix267=function(){
             var html='<button type="button" class="fnbtn" data-act="fnote" data-k="'+key+'" aria-expanded="'+open+'">'+(s.note&&!open?"Edit note":(open?"Hide note":"Add note"))+'</button>';
             if(open)html+='<span class="fnote"><input type="text" data-nt="'+i+'|'+(inSS?"s":"m")+'" maxlength="200" placeholder="Note for set '+(i+1)+'" aria-label="Note for set '+(i+1)+'" value="'+esc(s.note||"")+'"></span>';
             var nx=row.nextElementSibling,ins=row;while(nx&&!nx.classList.contains("fset")&&nx.classList.contains("fsedit")){ins=nx;nx=nx.nextElementSibling}
-            ins.insertAdjacentHTML("afterend",html);
+            var nb=html.match(/^<button[\s\S]*?<\/button>/)[0],rest=html.slice(nb.length),ck=row.querySelector(".fchk");
+            if(ck){var wr=document.createElement("span");wr.className="fend";ck.parentNode.insertBefore(wr,ck);wr.insertAdjacentHTML("beforeend",nb);wr.appendChild(ck);if(rest)ins.insertAdjacentHTML("afterend",rest)}
+            else ins.insertAdjacentHTML("afterend",html);
           });
         });
       });
@@ -15911,7 +15913,7 @@ try{
 }catch(e){}
 
 /* v1061 My Year important dates */
-var YD_TABS=[["p","Personal"],["j","Job related"],["b","Birthdays"]],YD_Q=[["Q1",0,2],["Q2",3,5],["Q3",6,8],["Q4",9,11]];
+var YD_TABS=[["p","\u2728 For Me"],["j","\uD83D\uDCBC For Work"],["b","\uD83E\uDDC1 Birthdays"]],YD_Q=[["Q1",0,2],["Q2",3,5],["Q3",6,8],["Q4",9,11]];
 function YDS(){S.ydates=S.ydates||[];return S.ydates}
 function ydFmtDate(e){return MONTHS[e.m].slice(0,3)+" "+e.d}
 var _vmy1061b=viewMyYear;
@@ -15923,8 +15925,8 @@ viewMyYear=function(){
   }
   var tab=session.ydTab||"p",all=YDS().filter(function(e){return e.cat===tab});
   var h=head("play","Important dates.","MY YEAR","#e9d9ff");
-  h+='<div style="margin:0 0 10px"><button type="button" class="btn ghost" data-act="ydclose">‹ Back to My Year</button></div>';
-  h+='<div class="card ydc"><h2>Important dates</h2><div role="tablist" style="display:flex;gap:0;border:1.5px solid #9b5fc9;border-radius:999px;overflow:hidden;margin:8px 0 12px">'+YD_TABS.map(function(t){var on=t[0]===tab;return '<button type="button" role="tab" aria-selected="'+on+'" data-act="ydtab" data-t="'+t[0]+'" style="flex:1;min-height:44px;font-size:15px;border:0;cursor:pointer;background:'+(on?"#9b5fc9":"transparent")+';color:'+(on?"#fff":"inherit")+'">'+t[1]+'</button>'}).join("")+'</div>';
+  h+='<div style="margin:0 0 10px"><button type="button" class="btn ghost" data-act="ydclose">Back to My Year</button></div>';
+  h+='<div class="card ydc"><h2>Important dates</h2><div role="tablist" style="display:flex;gap:0;border:1.5px solid #9b5fc9;border-radius:999px;overflow:hidden;margin:8px 0 12px">'+YD_TABS.map(function(t){var on=t[0]===tab;return '<button type="button" role="tab" aria-selected="'+on+'" data-act="ydtab" data-t="'+t[0]+'" style="flex:1;min-height:48px;font-size:16px;white-space:nowrap;padding:0 2px;font-family:\'Barlow Condensed\',\'Arial Narrow\',Impact,sans-serif;font-weight:700;border:0;cursor:pointer;background:'+(on?"#9b5fc9":"transparent")+';color:'+(on?"#fff":"inherit")+'">'+t[1]+'</button>'}).join("")+'</div>';
   YD_Q.forEach(function(q){
     var L=all.filter(function(e){return e.m>=q[1]&&e.m<=q[2]}).sort(function(a,b){return a.m-b.m||a.d-b.d});
     h+='<h3 style="margin:12px 0 4px">'+q[0]+'</h3>';
@@ -15977,7 +15979,7 @@ fix267=function(){var r=_fz1061c.apply(this,arguments);try{
 
 /* v1063 layout round: Zen rows, Play grid, Learning Center, Home resume spot, cancel colour, Profile BMI + Macros */
 (function(){
-var st=document.createElement("style");st.textContent='.bmxl .b4lb{display:grid!important;grid-template-columns:1fr 1fr!important;gap:6px 8px!important;margin-top:8px}.bmxl .b4l{position:static!important;width:auto!important;transform:none!important;text-align:left!important;left:auto!important}.bmxl .b4l b{font-size:15px!important}.bmxl .b4l span{font-size:15px!important}[data-act="fdiscgo"]{background:#ff4fa3!important;border-color:#ff4fa3!important;color:#fff!important}';document.head.appendChild(st)})();
+var st=document.createElement("style");st.textContent='html body #app .fgall .fgx .fset,html body #app .fgv .fset{grid-template-columns:42px 68px minmax(0,1fr) 104px!important;gap:6px!important}.fgv .fgx .tag{color:var(--play)!important}.fend{display:flex;align-items:center;justify-content:flex-end;gap:8px}.fend .fnbtn{display:inline-block!important;margin:0!important;padding:0!important;font-size:15px!important;white-space:nowrap;min-height:44px;background:none;border:0;text-decoration:underline;color:#ff4fa3!important;cursor:pointer}.bmxl .b4lb{display:grid!important;grid-template-columns:1fr 1fr!important;gap:6px 8px!important;margin-top:8px}.bmxl .b4l{position:static!important;width:auto!important;transform:none!important;text-align:left!important;left:auto!important}.bmxl .b4l b{font-size:15px!important}.bmxl .b4l span{font-size:15px!important}[data-act="fdiscgo"]{background:#ff4fa3!important;border-color:#ff4fa3!important;color:#fff!important}';document.head.appendChild(st)})();
 function bmiTrackerHtml(){
   var cw=curW(),h=ciBaseH();
   if(!(cw&&h>0))return '<p class="hint" style="margin:0;font-size:15px">Add your height and weight, then tap Save and calculate.</p>';
@@ -16020,6 +16022,12 @@ fix267=function(){var r=_fz1063.apply(this,arguments);try{
       app.insertBefore(g2,ch);ch.remove();sur.remove();
     }
   }
+  /* resume card looks the same on every page */
+  [].forEach.call(app.querySelectorAll(".card"),function(c){if(c.querySelector('[data-act="fopen"][data-v="guided"]')&&/Workout in progress/.test(c.textContent)&&c.firstElementChild&&c.firstElementChild.classList.contains("tag")){
+    var tg=c.querySelector("span.tag"),h=c.querySelector("h2"),pp=c.querySelector("p.hint"),bt=c.querySelector("button");
+    c.style.padding="20px";tg.style.cssText+=";color:#ff4fa3;font-size:14px;letter-spacing:1.68px";
+    h.style.cssText+=';font-family:"Barlow Condensed","Arial Narrow",Impact,sans-serif!important;font-weight:700!important;letter-spacing:normal!important;text-transform:uppercase!important;font-size:26px!important;line-height:1.15!important;margin:0 0 8px!important;text-align:left!important';
+    if(pp)pp.style.fontSize="15px";if(bt)bt.style.fontSize="16px"}});
   /* Home: resume card under the log cards */
   if(view==="home"&&!session.hset){
     var rc=[].filter.call(app.children,function(c){return c.classList&&c.classList.contains("card")&&/Workout in progress/.test(c.textContent)&&c.querySelector('[data-act="fopen"]')})[0];
@@ -16047,6 +16055,40 @@ fix267=function(){var r=_fz1063.apply(this,arguments);try{
       }
       var LL=tw.querySelector(".bmxl");if(LL)LL.innerHTML='<b style="font-size:17px;color:var(--text)">BMI</b>'+bmiTrackerHtml();
     }
+  }
+}catch(x){}return r};
+
+/* v1067 no zoom when typing: 16px fields and a fixed viewport */
+(function(){
+  var st=document.createElement("style");st.textContent="input,textarea,select{font-size:16px!important}html,body{overscroll-behavior-x:none}";document.head.appendChild(st);
+  var m=document.querySelector('meta[name="viewport"]');if(!m){m=document.createElement("meta");m.name="viewport";document.head.appendChild(m)}
+  m.setAttribute("content","width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover");
+})();
+
+/* v1070 Health Code card borders follow their title colour */
+var _fz1070=fix267;
+fix267=function(){var r=_fz1070.apply(this,arguments);try{
+  if(view==="healthcode"){
+    [].forEach.call(document.querySelectorAll("#app .card.hcgl"),function(c){
+      var h=c.querySelector("h2");if(!h)return;var t=h.textContent.trim(),col;
+      if(/^My affirmations/i.test(t)){col=(getComputedStyle(document.documentElement).getPropertyValue("--zen")||"").trim()||"#8adfe2";h.style.setProperty("color",col,"important")}
+      else if(/^(I'm grateful for|Felt most like myself|Made me smile)/i.test(t))col=getComputedStyle(h).color;
+      if(!col)return;
+      var d=document.createElement("span");d.style.color=col;document.body.appendChild(d);var rg=getComputedStyle(d).color.match(/\d+/g);d.remove();
+      c.style.setProperty("border","2px solid "+col,"important");
+      if(rg)c.style.setProperty("box-shadow","0 0 16px rgba("+rg[0]+","+rg[1]+","+rg[2]+",.55), inset 0 0 12px rgba("+rg[0]+","+rg[1]+","+rg[2]+",.1)","important");
+    });
+  }
+}catch(x){}return r};
+
+/* v1071 sparkle bullets on Health Code cards */
+var _fz1071=fix267;
+fix267=function(){var r=_fz1071.apply(this,arguments);try{
+  if(view==="healthcode"){
+    [].forEach.call(document.querySelectorAll("#app .card li > span:first-child"),function(sp){
+      if(sp.dataset.spk)return;var w=parseFloat(sp.style.width)||0;
+      if(w&&w<=8&&/50%/.test(sp.style.borderRadius||"")){sp.dataset.spk="1";sp.removeAttribute("style");sp.style.cssText="flex:none;font-size:14px;line-height:1;background:none";sp.setAttribute("aria-hidden","true");sp.textContent="✨"}
+    });
   }
 }catch(x){}return r};
 
