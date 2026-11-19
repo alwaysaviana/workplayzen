@@ -8927,7 +8927,7 @@ act=function(a,d){
 };
 
 /* v341 backup: export / import your data */
-var WPZ_VER="v1079";
+var WPZ_VER="v1083";
 var _sv341=settingsView;
 settingsView=function(){
   var o=_sv341();
@@ -15942,6 +15942,8 @@ var _a1062=act;
 act=function(a,d){var r=_a1062(a,d);if(a==="fcalc"||a==="setname"){try{if(session.hset){var LL=document.querySelector("#app .bmxl");if(LL)LL.innerHTML='<b style="font-size:17px;color:var(--text)">BMI</b>'+bmiTrackerHtml()}}catch(x){}}return r};
 var _a1061=act;
 act=function(a,d){
+  if(a==="wbhome"){session.wb={open:true,sel:{}};session.wkLogOpen=false;session.qlOpen=false;return _a1061("fopen",{v:"explore"})}
+
   if(a==="ydopen"){session.ydOpen=true;render();window.scrollTo(0,0);return}
   if(a==="ydclose"){session.ydOpen=false;render();window.scrollTo(0,0);return}
   if(a==="ydtab"){session.ydTab=d.t;var y=window.scrollY;render();window.scrollTo(0,y);return}
@@ -15990,6 +15992,9 @@ function wpzTile(b,col){b.style.cssText+=";flex-direction:column!important;text-
 var _fz1063=fix267;
 fix267=function(){var r=_fz1063.apply(this,arguments);try{
   var app=document.getElementById("app");if(!app)return r;
+  [].forEach.call(app.querySelectorAll('.qlog button[data-act="lgscratch"]'),function(g){g.style.setProperty("border","2px solid #ff4fa3","important")});
+  /* Build my workout button replaces "Log an existing workout" */
+  [].forEach.call(app.querySelectorAll('button[data-act="lgchoosego"]'),function(ex){var nb=document.createElement("button");nb.type="button";nb.className=ex.className;nb.setAttribute("data-act","wbhome");nb.textContent="Build my workout";ex.parentNode.replaceChild(nb,ex)});
   /* Learning Center */
   [].forEach.call(app.querySelectorAll(".choice .nm"),function(n){var t=n.firstChild;if(t&&t.nodeType===3&&/^\s*Learn(\s+\S+)?\s*$/.test(t.nodeValue)&&!/Learn \w{2,}/.test(t.nodeValue))t.nodeValue=t.nodeValue.replace(/^(\s*)Learn/,"$1Learning Center")});
   /* Zen rows */
