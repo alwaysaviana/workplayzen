@@ -8927,7 +8927,7 @@ act=function(a,d){
 };
 
 /* v341 backup: export / import your data */
-var WPZ_VER="v1073";
+var WPZ_VER="v1079";
 var _sv341=settingsView;
 settingsView=function(){
   var o=_sv341();
@@ -15861,7 +15861,7 @@ fix267=function(){
             var html='<button type="button" class="fnbtn" data-act="fnote" data-k="'+key+'" aria-expanded="'+open+'">'+(s.note&&!open?"Edit note":(open?"Hide note":"Add note"))+'</button>';
             if(open)html+='<span class="fnote"><input type="text" data-nt="'+i+'|'+(inSS?"s":"m")+'" maxlength="200" placeholder="Note for set '+(i+1)+'" aria-label="Note for set '+(i+1)+'" value="'+esc(s.note||"")+'"></span>';
             var nx=row.nextElementSibling,ins=row;while(nx&&!nx.classList.contains("fset")&&nx.classList.contains("fsedit")){ins=nx;nx=nx.nextElementSibling}
-            var nb=html.match(/^<button[\s\S]*?<\/button>/)[0],rest=html.slice(nb.length),ck=row.querySelector(".fchk");
+            var nb=html.match(/^<button[\s\S]*?<\/button>/)[0],rest=html.slice(nb.length),ck=row.querySelector(".fchk")||row.querySelector(".frs");
             if(ck){var wr=document.createElement("span");wr.className="fend";ck.parentNode.insertBefore(wr,ck);wr.insertAdjacentHTML("beforeend",nb);wr.appendChild(ck);if(rest)ins.insertAdjacentHTML("afterend",rest)}
             else ins.insertAdjacentHTML("afterend",html);
           });
@@ -15979,7 +15979,7 @@ fix267=function(){var r=_fz1061c.apply(this,arguments);try{
 
 /* v1063 layout round: Zen rows, Play grid, Learning Center, Home resume spot, cancel colour, Profile BMI + Macros */
 (function(){
-var st=document.createElement("style");st.textContent='html body #app .fgall .fgx .fset,html body #app .fgv .fset{grid-template-columns:42px 68px minmax(0,1fr) 104px!important;gap:6px!important}.fgv .fgx .tag{color:var(--play)!important}.fend{display:flex;align-items:center;justify-content:flex-end;gap:8px}.fend .fnbtn{display:inline-block!important;margin:0!important;padding:0!important;font-size:15px!important;white-space:nowrap;min-height:44px;background:none;border:0;text-decoration:underline;color:#ff4fa3!important;cursor:pointer}.bmxl .b4lb{display:grid!important;grid-template-columns:1fr 1fr!important;gap:6px 8px!important;margin-top:8px}.bmxl .b4l{position:static!important;width:auto!important;transform:none!important;text-align:left!important;left:auto!important}.bmxl .b4l b{font-size:15px!important}.bmxl .b4l span{font-size:15px!important}[data-act="fdiscgo"]{background:#ff4fa3!important;border-color:#ff4fa3!important;color:#fff!important}';document.head.appendChild(st)})();
+var st=document.createElement("style");st.textContent='html body #app .fgall .fgx .fset,html body #app .fgv .fset{grid-template-columns:46px 78px 78px minmax(0,1fr)!important;gap:4px!important}.fgv .fgx .tag{color:var(--play)!important}.fend{display:flex;align-items:center;justify-content:flex-start;gap:6px;padding-left:4px}.fend .frs{margin-left:2px}.fend .fnbtn{display:inline-block!important;min-width:60px;text-align:left;margin:0!important;padding:0!important;font-size:15px!important;white-space:nowrap;min-height:44px;background:none;border:0;text-decoration:underline;color:#ff4fa3!important;cursor:pointer}.bmxl .b4lb{display:grid!important;grid-template-columns:1fr 1fr!important;gap:6px 8px!important;margin-top:8px}.bmxl .b4l{position:static!important;width:auto!important;transform:none!important;text-align:left!important;left:auto!important}.bmxl .b4l b{font-size:15px!important}.bmxl .b4l span{font-size:15px!important}[data-act="fdiscgo"]{background:#ff4fa3!important;border-color:#ff4fa3!important;color:#fff!important}';document.head.appendChild(st)})();
 function bmiTrackerHtml(){
   var cw=curW(),h=ciBaseH();
   if(!(cw&&h>0))return '<p class="hint" style="margin:0;font-size:15px">Add your height and weight, then tap Save and calculate.</p>';
@@ -16036,6 +16036,8 @@ fix267=function(){var r=_fz1063.apply(this,arguments);try{
   }
   /* Settings: BMI tracker left, Macros right */
   if(session.hset){
+    var ac=[].filter.call(app.querySelectorAll(".card"),function(c){var h=c.querySelector("h2");return h&&h.textContent.trim()==="Your account"})[0],pf=[].filter.call(app.querySelectorAll(".card"),function(c){var h=c.querySelector("h2");return h&&h.textContent.trim()==="Profile"})[0];
+    if(ac&&pf&&pf.nextElementSibling!==ac)pf.parentNode.insertBefore(ac,pf.nextSibling);
     var old=app.querySelector(".card.bmiset");if(old)old.remove();
     var tw=app.querySelector("#ftargets");
     if(tw){
@@ -16048,9 +16050,11 @@ fix267=function(){var r=_fz1063.apply(this,arguments);try{
           R.innerHTML='<b style="font-size:17px;color:var(--text)">Macros</b>';R.appendChild(ov);R.appendChild(mn);
           grid.appendChild(L);grid.appendChild(R);tw.insertBefore(grid,tw.firstChild);
           if(bm)bm.remove();
-          var col={Protein:"var(--play)",Carbs:"var(--work)","Healthy fats":"var(--zen)"};
+          var col={Protein:"#ff4fa3",Carbs:"#b9a6ff","Healthy fats":"#6fe3ff"};
           [].forEach.call(mn.querySelectorAll("b"),function(b){var c=col[b.textContent.trim()];if(c){b.style.setProperty("color",c,"important");b.style.fontWeight="800"}});
           [].forEach.call(R.querySelectorAll("p"),function(p){p.style.fontSize="15px"});
+          ov.style.textAlign="center";
+          [].forEach.call(mn.querySelectorAll("p.hint:not(#protnote)"),function(q){var bb=q.querySelector("b");if(!bb)return;var rest=q.innerHTML.slice(q.innerHTML.indexOf("</b>")+4).trim();q.innerHTML="";var w=document.createElement("b");w.textContent=bb.textContent;w.style.cssText=bb.style.cssText;w.style.fontSize="16px";q.appendChild(w);q.appendChild(document.createElement("br"));q.insertAdjacentHTML("beforeend",rest);q.style.cssText="margin:0 0 12px;padding:0;text-indent:0;text-align:center;font-size:15px"});
         }
       }
       var LL=tw.querySelector(".bmxl");if(LL)LL.innerHTML='<b style="font-size:17px;color:var(--text)">BMI</b>'+bmiTrackerHtml();
@@ -16060,7 +16064,7 @@ fix267=function(){var r=_fz1063.apply(this,arguments);try{
 
 /* v1067 no zoom when typing: 16px fields and a fixed viewport */
 (function(){
-  var st=document.createElement("style");st.textContent="input,textarea,select{font-size:16px!important}html,body{overscroll-behavior-x:none}";document.head.appendChild(st);
+  var st=document.createElement("style");st.textContent="input,textarea,select{font-size:16px!important}html body{padding-left:max(24px,env(safe-area-inset-left,0px))!important;padding-right:max(24px,env(safe-area-inset-right,0px))!important}html,body{overscroll-behavior-x:none}";document.head.appendChild(st);
   var m=document.querySelector('meta[name="viewport"]');if(!m){m=document.createElement("meta");m.name="viewport";document.head.appendChild(m)}
   m.setAttribute("content","width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover");
 })();
