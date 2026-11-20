@@ -8926,7 +8926,7 @@ act=function(a,d){
 };
 
 /* v341 backup: export / import your data */
-var WPZ_VER="v1091";
+var WPZ_VER="v1093";
 var _sv341=settingsView;
 settingsView=function(){
   var o=_sv341();
@@ -16081,7 +16081,7 @@ fix267=function(){var r=_fz1063.apply(this,arguments);try{
 (function(){
   var st=document.createElement("style");st.textContent="input,textarea,select{font-size:16px!important}*{scrollbar-width:none}.fhd{background:none;border:0;color:#ff4fa3;font:inherit;font-size:15px;text-align:left;padding:4px 0;min-height:36px;cursor:pointer;text-decoration:underline;white-space:nowrap}.bwl{display:flex;align-items:center;font-size:15px;opacity:.9}button[data-act=fsetadd],button[data-act=fsetrm],button[data-act=ssadd],button[data-act=ssrm]{border-width:1px!important;padding:5px 10px!important;min-height:36px!important}html{scrollbar-width:none}html::-webkit-scrollbar,body::-webkit-scrollbar,*::-webkit-scrollbar{display:none;width:0;height:0}html body #app .fgx h2{font-size:19px!important}html body{padding-left:max(24px,env(safe-area-inset-left,0px))!important;padding-right:max(24px,env(safe-area-inset-right,0px))!important}html,body{overscroll-behavior-x:none}";document.head.appendChild(st);
   var m=document.querySelector('meta[name="viewport"]');if(!m){m=document.createElement("meta");m.name="viewport";document.head.appendChild(m)}
-  var sw=window.screen&&screen.width||0;m.setAttribute("content",(sw&&sw<=500?"width="+Math.round(sw/1.20):"width=device-width")+",user-scalable=no,viewport-fit=cover");
+  var sw=window.screen&&screen.width||0;m.setAttribute("content","width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover");
 })();
 
 /* v1070 Health Code card borders follow their title colour */
@@ -16124,6 +16124,23 @@ fix267=function(){var r=_fz1091.apply(this,arguments);try{
     });
   }
 }catch(e){}return r};
+
+/* v1092 Build one for me soft baby pink theme */
+(function(){var st=document.createElement("style");st.textContent=
+"html body.wbsolo,html:has(body.wbsolo){background:#ffd9e6!important}"+"html body.wbsolo #app .sechead h1{text-shadow:none!important}"+
+"html body.wbsolo #app{color:#3d1030}"+
+"html body.wbsolo #app .sechead h1,html body.wbsolo #app .sechead p{color:#8a1f55!important}"+
+"html body.wbsolo #app .card{background:#fff3f8!important;border:1.5px solid #ff9cc4!important;box-shadow:none!important;color:#3d1030!important}"+
+"html body.wbsolo #app .card h2,html body.wbsolo #app .card .tag,html body.wbsolo #app .card .hint,html body.wbsolo #app .card p{color:#3d1030!important}"+
+"html body.wbsolo #app .card .tag{color:#c2185b!important}"+
+"html body.wbsolo #app .wbchip{background:#ffffff!important;color:#3d1030!important;border:1.5px solid #ff9cc4!important}"+
+"html body.wbsolo #app .wbchip[aria-pressed=true]{background:#ff4fa3!important;color:#fff!important;border-color:#ff4fa3!important}"+
+"html body.wbsolo #app .card .btn{background:#ff4fa3!important;color:#fff!important;border:1.5px solid #ff4fa3!important}"+
+"html body.wbsolo #app .card .btn.ghost{background:transparent!important;color:#c2185b!important}"+
+"html body.wbsolo #app .card .btn[disabled]{opacity:.5}";
+document.head.appendChild(st)})();
+var _fz1092=fix267;
+fix267=function(){var r=_fz1092.apply(this,arguments);try{document.body.classList.toggle("wbsolo",!!(view==="work"&&session.wb&&session.wb.solo))}catch(e){}return r};
 view=fromHash();render();
 })();
 </script>
