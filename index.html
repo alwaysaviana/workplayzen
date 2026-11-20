@@ -3071,7 +3071,7 @@ var NAV=[
  ["work","Work.","var(--work)","\ud83d\udcaa\ud83c\udffc"],
  ["play","Play.","var(--play)","\ud83d\udc96"],
  ["zen","Zen.","var(--zen)","\ud83d\udd49\ufe0f"],
- ["healthcode","Health Code.","#ffc2d9","\ud83d\udd11"],
+ ["healthcode","Align.","#ffc2d9","\ud83e\udeb7"],
  ["myyear","My Year.","#e9d9ff",'<rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>'],
 ];
 function renderNav(){
@@ -3755,7 +3755,7 @@ function philCard(){
 function viewHC(){
   hcFix();hcSyncLists();
   var h='';
-  h+=head("play","The things that bring you back to yourself.","MY HEALTH CODE","#ffb3c7");
+  h+=head("play","The things that bring you back to yourself.",'<span style="font-size:30px;line-height:1.1;display:block">Align with my Health Code.</span>',"#ffb3c7");
   h+=philCard();
   h+=hcSummary();
   h+=glHC();
@@ -7385,7 +7385,7 @@ viewZen=function(){
 /* ===== v260: all exercises on one page, drag to reorder, rest runs into next exercise ===== */
 var GRIP='<svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" fill="currentColor"><circle cx="7" cy="5" r="1.7"/><circle cx="13" cy="5" r="1.7"/><circle cx="7" cy="10" r="1.7"/><circle cx="13" cy="10" r="1.7"/><circle cx="7" cy="15" r="1.7"/><circle cx="13" cy="15" r="1.7"/></svg>';
 function fgCardN(A,ei){
-  var e=A.ex[ei],tot=A.ex.length,lib=EXM[e.n],sec=fgExU(e)==="sec",ld=lib?lib.ld:true,sd=fAdone(e),all=e.sets.length&&sd===e.sets.length;
+  var e=A.ex[ei],tot=A.ex.length,lib=EXM[e.n],sec=fgExU(e)==="sec",ld=true,sd=fAdone(e),all=e.sets.length&&sd===e.sets.length;
   var open=session.fFormI===ei;
   var h='<div class="card fgx'+(all?' fdn':'')+'" data-exi="'+ei+'"><div class="fgh"><span class="tag">Exercise '+(ei+1)+' of '+tot+(lib?' · '+esc(lib.p):'')+(all?' · Done':'')+'</span><span class="fgctl">'
    +(tot>1?fbtn("fgmv","fmv2",{dir:-1},'<svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M4 13l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',' aria-label="Move '+esc(e.n)+' up"'+(ei===0?' disabled':''))+fbtn("fgmv","fmv2",{dir:1},'<svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M4 7l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',' aria-label="Move '+esc(e.n)+' down"'+(ei===tot-1?' disabled':'')):'')
@@ -7395,10 +7395,9 @@ function fgCardN(A,ei){
   var pv=fPrevTxt(e.n);if(pv)h+='<p class="hint">'+esc(pv)+'</p>';
   h+='<div class="row">'+fbtn("btn ghost small","fform2",{},open?"Hide form guide":"Form guide")+'</div>';
   if(open)h+=fFormGuide(lib,e);
-  h+='<div class="lwt"><button type="button" class="lwsw" role="switch" aria-checked="'+sec+'" data-act="fu"><span>'+(sec?"Change seconds to reps":"Change reps to seconds")+'</span><i></i></button></div>';
-  h+='<div class="fsets"><div class="fset fsh"><span></span><span>'+(sec?"Seconds":"Reps")+'</span><span>'+(ld?"Weight":"")+'</span><span></span></div>';
+  h+='<div class="fsets"><div class="fset fsh"><span></span><button type="button" class="fhd" data-act="fu" aria-label="'+(sec?"Switch to reps":"Switch to seconds")+'">'+(sec?"Seconds":"Reps")+' \u21C4</button><button type="button" class="fhd" data-act="fbw" aria-label="'+(e.bw?"Switch to weight":"Switch to body weight")+'">'+(e.bw?"Body":"Weight")+' \u21C4</button><span></span></div>';
   e.sets.forEach(function(s,i){
-    h+='<div class="fset"><b>Set '+(i+1)+'</b><span class="lwf"><input type="text" inputmode="numeric" data-fs="'+i+'|r" placeholder="'+esc(sec?"":e.reps)+'" aria-label="'+(sec?"Seconds":"Reps")+' for set '+(i+1)+'" value="'+esc(s.r)+'"><em>'+(sec?"sec":"reps")+'</em></span>'+(ld?'<span class="lwf"><input type="text" inputmode="decimal" data-fs="'+i+'|w" aria-label="Weight for set '+(i+1)+'" value="'+esc(s.w)+'"><em>lb</em></span>':'<span class="hint">—</span>')+fsCheck(s,i)+'</div>'+fsEditor(e,s,i,A);
+    h+='<div class="fset"><b>Set '+(i+1)+'</b><span class="lwf"><input type="text" inputmode="numeric" data-fs="'+i+'|r" placeholder="'+esc(sec?"":e.reps)+'" aria-label="'+(sec?"Seconds":"Reps")+' for set '+(i+1)+'" value="'+esc(s.r)+'"><em>'+(sec?"sec":"reps")+'</em></span>'+(ld?(e.bw?'<span class="lwf bwl"><b>Body</b></span>':'<span class="lwf"><input type="text" inputmode="decimal" data-fs="'+i+'|w" aria-label="Weight for set '+(i+1)+'" value="'+esc(s.w)+'"><em>lb</em></span>'):'<span class="hint">—</span>')+fsCheck(s,i)+'</div>'+fsEditor(e,s,i,A);
   });
   h+='</div><div class="row">'+fbtn("btn ghost small","fsetadd",{},"Add set")+(e.sets.length>1?fbtn("btn ghost small","fsetrm",{},"Remove set"):"")+'</div></div>';
   return h;
@@ -8927,7 +8926,7 @@ act=function(a,d){
 };
 
 /* v341 backup: export / import your data */
-var WPZ_VER="v1083";
+var WPZ_VER="v1091";
 var _sv341=settingsView;
 settingsView=function(){
   var o=_sv341();
@@ -14564,7 +14563,7 @@ funListCard=function(){
   }
   var _vhc=viewHC;
   viewHC=function(){
-    if(session.hcq)return head("play","What helps you feel like you.","MY HEALTH CODE","#ffb3c7")+qPage();
+    if(session.hcq)return head("play","What helps you feel like you.",'<span style="font-size:30px;line-height:1.1;display:block">Align with my Health Code.</span>',"#ffb3c7")+qPage();
     var o=_vhc(),ex=discCard()+insightsCard();
     var i=o.indexOf('My Health Code at a glance</h2>');
     if(i>=0){var j=o.lastIndexOf('<div class="card',i);if(j>=0)return o.slice(0,j)+ex+o.slice(j)}
@@ -15591,7 +15590,7 @@ async function sbPush(force){
   try{
     if(!force&&st.uid===s.user.id&&st.seen){
       var cur=await sbApi("/rest/v1/app_state?select=updated_at&user_id=eq."+s.user.id);
-      if(cur&&cur[0]&&cur[0].updated_at!==st.seen){sbAsk(cur[0].updated_at);return}
+      if(cur&&cur[0]&&cur[0].updated_at!==st.seen){session.sbMsg="Your account has newer saved data. Tap Sync now in Settings to choose which to keep.";return}
     }
     var now=new Date().toISOString();
     var rows=await sbApi("/rest/v1/app_state?on_conflict=user_id",{method:"POST",headers:{"Content-Type":"application/json",Prefer:"resolution=merge-duplicates,return=representation"},body:JSON.stringify({user_id:s.user.id,data:S,updated_at:now})});
@@ -15788,15 +15787,15 @@ function wbBuild(sel){
 }
 function wbCard(){
   var w=session.wb||(session.wb={open:false,sel:{}});
-  var h='<div class="card"><span class="tag">Build my workout</span><h2>Pick the areas you want to work today</h2><p class="hint">Check the areas. I will build 6 to 8 exercises in an order that makes sense.</p>';
+  var h='<div class="card"><span class="tag">Build one for me</span><h2>Pick the areas you want to work today</h2><p class="hint">Check the areas. I will build 6 to 8 exercises in an order that makes sense.</p>';
   if(!w.open)return h+'<div class="row"><button type="button" class="btn small" data-act="wbopen">Choose areas</button></div></div>';
   h+='<div class="wbgrid" role="group" aria-label="Muscle areas">'+WB_AREAS.map(function(a){return '<button type="button" class="chip wbchip" data-act="wbtog" data-a="'+a[0]+'" aria-pressed="'+!!w.sel[a[0]]+'">'+a[1]+'</button>'}).join("")+'</div>';
   var n=Object.keys(w.sel).filter(function(k){return w.sel[k]}).length;
-  h+='<div class="row"><button type="button" class="btn small" data-act="wbgo"'+(n?'':' disabled')+'>Build my workout</button><button type="button" class="btn ghost small" data-act="wbclose">Close</button></div></div>';
+  h+='<div class="row"><button type="button" class="btn small" data-act="wbgo"'+(n?'':' disabled')+'>Build one for me</button><button type="button" class="btn ghost small" data-act="wbclose">Close</button></div></div>';
   return h;
 }
 var _fe1059=fExploreView;
-fExploreView=function(){return wbCard()+_fe1059.apply(this,arguments)};
+fExploreView=function(){if(session.wb&&session.wb.solo)return wbCard();return wbCard()+_fe1059.apply(this,arguments)};
 /* resume workout on Home */
 var _vh1059=viewHome;
 viewHome=function(){
@@ -15813,14 +15812,14 @@ act=function(a,d){
   if(a==="stkeep"){session.stSkip=true;var o2=document.getElementById("stale");if(o2)o2.remove();render();return}
   if(a==="stdisc"){FS().active=null;session.fFin="";session.fv=null;save();var o3=document.getElementById("stale");if(o3)o3.remove();render();return}
   if(a==="wbopen"){(session.wb||(session.wb={sel:{}})).open=true;render();return}
-  if(a==="wbclose"){session.wb.open=false;render();return}
+  if(a==="wbclose"){var sl=session.wb.solo;session.wb.open=false;session.wb.solo=false;if(sl)return act("fback",{});render();return}
   if(a==="wbtog"){var w=session.wb;w.sel[d.a]=!w.sel[d.a];render();return}
   if(a==="wbgo"){
     var ex=wbBuild(session.wb.sel);if(!ex.length){toast("Pick at least one area");return}
     var f=FS(),id=uid(),areas=Object.keys(session.wb.sel).filter(function(k){return session.wb.sel[k]});
     var list=ex.map(function(x){return {n:x.n,xid:exId(x.n),sets:x.sets||3,reps:String(x.reps||"10"),w:"",rest:60}});
     f.workouts.push({id:id,name:"Today: "+areas.join(", "),type:"Strength Training",mg:fMG(list),lv:"Custom",ex:list,ts:Date.now()});
-    session.wb.open=false;session.fv={v:"wo",id:id,pid:"",slot:""};save();render();window.scrollTo(0,0);return;
+    session.wb.open=false;session.wb.solo=false;session.fv={v:"wo",id:id,pid:"",slot:""};save();render();window.scrollTo(0,0);return;
   }
   if(a==="ssu"&&A){var e=A.ex[A.cur];if(e&&e.ss){var c=document.querySelector('.fgx[data-exi="'+A.cur+'"]'),m=!!(c&&/sec/.test((c.querySelector(".fset .lwf em")||{}).textContent||""));e.ss.u=((e.ss.u||(m?"sec":"reps"))==="sec")?"reps":"sec";save();render()}return}
   if(a==="sspick"&&A){var e2=A.ex[A.cur];if(e2&&e2.ss){e2.ss.n=d.n;save();render()}return}
@@ -15927,13 +15926,21 @@ viewMyYear=function(){
   var h=head("play","Important dates.","MY YEAR","#e9d9ff");
   h+='<div style="margin:0 0 10px"><button type="button" class="btn ghost" data-act="ydclose">Back to My Year</button></div>';
   h+='<div class="card ydc"><h2>Important dates</h2><div role="tablist" style="display:flex;gap:0;border:1.5px solid #9b5fc9;border-radius:999px;overflow:hidden;margin:8px 0 12px">'+YD_TABS.map(function(t){var on=t[0]===tab;return '<button type="button" role="tab" aria-selected="'+on+'" data-act="ydtab" data-t="'+t[0]+'" style="flex:1;min-height:48px;font-size:16px;white-space:nowrap;padding:0 2px;font-family:\'Barlow Condensed\',\'Arial Narrow\',Impact,sans-serif;font-weight:700;border:0;cursor:pointer;background:'+(on?"#9b5fc9":"transparent")+';color:'+(on?"#fff":"inherit")+'">'+t[1]+'</button>'}).join("")+'</div>';
+  var YD_MC=["#7fd0ff","#ff4fa3","#7ddc6a","#b78cff","#f7a8d8","#ffd54f","#4da3ff","#3fd0c9","#b9854f","#ff8a1f","#d2872b","#ff4d5e"];
   YD_Q.forEach(function(q){
-    var L=all.filter(function(e){return e.m>=q[1]&&e.m<=q[2]}).sort(function(a,b){return a.m-b.m||a.d-b.d});
-    h+='<h3 style="margin:12px 0 4px">'+q[0]+'</h3>';
-    if(!L.length)h+='<p class="hint" style="margin:0">Nothing yet.</p>';
-    else h+='<ul style="list-style:none;padding:0;margin:0">'+L.map(function(e){return '<li style="display:flex;align-items:center;gap:10px;padding:8px 0;font-size:15px"><span aria-hidden="true" style="width:9px;height:9px;border-radius:50%;background:#4b1d78;flex:none"></span><span style="font-weight:400;white-space:nowrap">'+ydFmtDate(e)+'</span><span style="font-weight:400;flex:1;min-width:0;overflow-wrap:anywhere">'+esc(e.text)+'</span><button type="button" class="iconbtn" data-act="yddel" data-id="'+e.id+'" aria-label="Remove '+esc(e.text)+'" style="min-width:36px;min-height:36px">✕</button></li>'}).join("")+'</ul>';
+    h+='<h3 style="margin:16px 0 2px;font-size:19px">'+q[0]+'</h3>';
+    for(var m=q[1];m<=q[2];m++){
+      var L=all.filter(function(e){return e.m===m}).sort(function(a,b){return a.d-b.d});
+      h+='<h4 style="margin:10px 0 2px;font-size:17px;color:'+YD_MC[m]+'">'+MONTHS[m]+'</h4>';
+      if(!L.length)h+='<p class="hint" style="margin:0">Nothing yet.</p>';
+      else h+='<ul style="list-style:none;padding:0;margin:0">'+L.map(function(e){return '<li style="display:flex;align-items:center;gap:10px;padding:6px 0;font-size:15px"><span aria-hidden="true" style="width:9px;height:9px;border-radius:50%;background:#4b1d78;flex:none"></span><span style="font-weight:400;white-space:nowrap">'+ydFmtDate(e)+'</span><span style="font-weight:400;flex:1;min-width:0;overflow-wrap:anywhere">'+esc(e.text)+'</span><button type="button" class="iconbtn" data-act="yddel" data-id="'+e.id+'" aria-label="Remove '+esc(e.text)+'" style="min-width:36px;min-height:36px">✕</button></li>'}).join("")+'</ul>';
+    }
   });
-  h+='<h3 style="margin:16px 0 6px">Add a date</h3><div class="fld"><label for="yd_d">Date</label><input type="date" id="yd_d" data-draft="yd_d" value="'+esc(drafts.yd_d||"")+'"></div><div class="fld"><label for="yd_t">'+(tab==="b"?"Whose birthday":"What is it")+'</label><input type="text" id="yd_t" data-draft="yd_t" maxlength="80" value="'+esc(drafts.yd_t||"")+'"></div><div class="row"><button type="button" class="btn" data-act="ydadd">Add</button></div></div>';
+  var dv=drafts.yd_d||"",dm=/^(\d{4})-(\d{2})-(\d{2})$/.exec(dv),dl=dm?MONTHS[+dm[2]-1].slice(0,3)+" "+(+dm[3]):"";
+  var fm='<div style="display:flex;gap:10px;align-items:flex-end;margin:0 0 6px"><div class="fld" style="flex:1;min-width:0;margin:0"><label for="yd_t">Event title</label><input type="text" id="yd_t" data-draft="yd_t" maxlength="80" value="'+esc(drafts.yd_t||"")+'"></div>'+
+   '<label class="ydcal" style="position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:56px;min-height:48px;border:1.5px solid #9b5fc9;border-radius:14px;color:#b784e0;cursor:pointer" aria-label="Choose date"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><input type="date" id="yd_d" data-draft="yd_d" value="'+esc(dv)+'" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer"></label></div>'+
+   '<p class="hint ydchosen" style="margin:0 0 8px;text-align:right;min-height:20px">'+(dl?"Date: "+dl:"No date picked yet")+'</p>';
+  h+='<h3 style="margin:18px 0 8px">Add a date</h3>'+fm+'<div class="row" style="justify-content:center"><button type="button" class="btn" data-act="ydadd">Add</button></div></div>';
   return h;
 };
 var _fz1061b=fix267;
@@ -15942,7 +15949,8 @@ var _a1062=act;
 act=function(a,d){var r=_a1062(a,d);if(a==="fcalc"||a==="setname"){try{if(session.hset){var LL=document.querySelector("#app .bmxl");if(LL)LL.innerHTML='<b style="font-size:17px;color:var(--text)">BMI</b>'+bmiTrackerHtml()}}catch(x){}}return r};
 var _a1061=act;
 act=function(a,d){
-  if(a==="wbhome"){session.wb={open:true,sel:{}};session.wkLogOpen=false;session.qlOpen=false;return _a1061("fopen",{v:"explore"})}
+  if(a==="fbw"){var Ab=FS().active;if(Ab){var eb=Ab.ex[Ab.cur];if(eb){eb.bw=!eb.bw;save();render()}}return}
+  if(a==="wbhome"){session.wb={open:true,sel:{},solo:true};session.wkLogOpen=false;session.qlOpen=false;session.qlog="";session.wkPop=false;session.qFromWork=false;return _a1061("fopen",{v:"explore"})}
 
   if(a==="ydopen"){session.ydOpen=true;render();window.scrollTo(0,0);return}
   if(a==="ydclose"){session.ydOpen=false;render();window.scrollTo(0,0);return}
@@ -15956,6 +15964,8 @@ act=function(a,d){
     drafts.yd_d="";drafts.yd_t="";save();var y3=window.scrollY;render();window.scrollTo(0,y3);toast("Date saved");return}
   return _a1061(a,d)};
 
+
+document.addEventListener("change",function(ev){var t=ev.target;if(t&&t.id==="yd_d"){var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(t.value||""),c=document.querySelector(".ydchosen");if(c)c.textContent=m?"Date: "+MONTHS[+m[2]-1].slice(0,3)+" "+(+m[3]):"No date picked yet"}});
 /* v1061 Body Stats wording, 30-60 day tip, BMI under Profile */
 function bmiSetCard(prof){
   var app=document.getElementById("app");if(!app)return;
@@ -15994,7 +16004,7 @@ fix267=function(){var r=_fz1063.apply(this,arguments);try{
   var app=document.getElementById("app");if(!app)return r;
   [].forEach.call(app.querySelectorAll('.qlog button[data-act="lgscratch"]'),function(g){g.style.setProperty("border","2px solid #ff4fa3","important")});
   /* Build my workout button replaces "Log an existing workout" */
-  [].forEach.call(app.querySelectorAll('button[data-act="lgchoosego"]'),function(ex){var nb=document.createElement("button");nb.type="button";nb.className=ex.className;nb.setAttribute("data-act","wbhome");nb.textContent="Build my workout";ex.parentNode.replaceChild(nb,ex)});
+  [].forEach.call(app.querySelectorAll('button[data-act="lgchoosego"]'),function(ex){var nb=document.createElement("button");nb.type="button";nb.className=ex.className;nb.setAttribute("data-act","wbhome");nb.textContent="Build one for me";ex.parentNode.replaceChild(nb,ex)});
   /* Learning Center */
   [].forEach.call(app.querySelectorAll(".choice .nm"),function(n){var t=n.firstChild;if(t&&t.nodeType===3&&/^\s*Learn(\s+\S+)?\s*$/.test(t.nodeValue)&&!/Learn \w{2,}/.test(t.nodeValue))t.nodeValue=t.nodeValue.replace(/^(\s*)Learn/,"$1Learning Center")});
   /* Zen rows */
@@ -16069,9 +16079,9 @@ fix267=function(){var r=_fz1063.apply(this,arguments);try{
 
 /* v1067 no zoom when typing: 16px fields and a fixed viewport */
 (function(){
-  var st=document.createElement("style");st.textContent="input,textarea,select{font-size:16px!important}html body{padding-left:max(24px,env(safe-area-inset-left,0px))!important;padding-right:max(24px,env(safe-area-inset-right,0px))!important}html,body{overscroll-behavior-x:none}";document.head.appendChild(st);
+  var st=document.createElement("style");st.textContent="input,textarea,select{font-size:16px!important}*{scrollbar-width:none}.fhd{background:none;border:0;color:#ff4fa3;font:inherit;font-size:15px;text-align:left;padding:4px 0;min-height:36px;cursor:pointer;text-decoration:underline;white-space:nowrap}.bwl{display:flex;align-items:center;font-size:15px;opacity:.9}button[data-act=fsetadd],button[data-act=fsetrm],button[data-act=ssadd],button[data-act=ssrm]{border-width:1px!important;padding:5px 10px!important;min-height:36px!important}html{scrollbar-width:none}html::-webkit-scrollbar,body::-webkit-scrollbar,*::-webkit-scrollbar{display:none;width:0;height:0}html body #app .fgx h2{font-size:19px!important}html body{padding-left:max(24px,env(safe-area-inset-left,0px))!important;padding-right:max(24px,env(safe-area-inset-right,0px))!important}html,body{overscroll-behavior-x:none}";document.head.appendChild(st);
   var m=document.querySelector('meta[name="viewport"]');if(!m){m=document.createElement("meta");m.name="viewport";document.head.appendChild(m)}
-  m.setAttribute("content","width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover");
+  var sw=window.screen&&screen.width||0;m.setAttribute("content",(sw&&sw<=500?"width="+Math.round(sw/1.20):"width=device-width")+",user-scalable=no,viewport-fit=cover");
 })();
 
 /* v1070 Health Code card borders follow their title colour */
@@ -16101,6 +16111,19 @@ fix267=function(){var r=_fz1071.apply(this,arguments);try{
   }
 }catch(x){}return r};
 
+
+/* v1091 Build one for me page shows only its own card */
+var _fz1091=fix267;
+fix267=function(){var r=_fz1091.apply(this,arguments);try{
+  var app=document.getElementById("app");
+  if(app&&view==="work"&&session.wb&&session.wb.solo){
+    [].slice.call(app.children).forEach(function(k){
+      if(k.matches(".qmpop,.qlpop")){k.parentNode.removeChild(k);return}
+      if(k.matches("nav,.nav,#nav,.tabbar,.bnav,.sechead")||k.querySelector(".wbgrid,[data-act=wbopen],[data-act=wbgo]")||k.matches(".wbgrid")||k.querySelector("[data-act=fback]")||/^\s*(‹|←)/.test(k.textContent||"")&&k.querySelectorAll("button").length<=1&&!k.querySelector(".card"))return;
+      k.parentNode.removeChild(k);
+    });
+  }
+}catch(e){}return r};
 view=fromHash();render();
 })();
 </script>
